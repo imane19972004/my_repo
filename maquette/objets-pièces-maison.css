@@ -1,0 +1,94 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Pour gérer les marges et paddings plus facilement */
+}
+
+body {
+    background-color: #D9D9D9;
+    display: grid;
+    grid-template: auto auto / 1fr;
+}
+
+header {
+    grid-column: 1 / 2;
+    height: 90px;
+    padding: 20px;
+    border-bottom: 5px solid #acacac; /* Couleur et épaisseur de la ligne */
+    font-family: Arial, sans-serif; /* Arial ou la première police disponible */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    color: #8223CF;
+}
+
+header .btn {
+    background-color: #8223CF; /* Couleur de fond des boutons */
+    color: #F0C94A; /* Couleur du texte */
+    padding: 10px 20px; /* Padding pour rendre les boutons plus grands */
+    font-size: 25px; /* Taille du texte */
+    border: none; /* Supprimer la bordure */
+    cursor: pointer; /* Changer le curseur en main au survol */
+    display: inline-flex;
+    align-items: center; /* Centrer les éléments à l'intérieur du bouton */
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+header .btn i {
+    margin-right: 10px; /* Espacement entre l'icône et le texte */
+}
+
+header .btn:hover {
+    background-color: #5002A3; /* Changer la couleur au survol */
+}
+
+
+body main {
+    display: flex;
+    justify-content: space-between; /* Espace entre la div gauche et droite */
+    padding: 20px;
+    /*background-color: red;*/
+    height: calc(100vh - 90px);
+}
+
+body main .left {
+    width: 50%; /* La div prend 50% de la largeur de l'écran */
+    height: calc(100% - 50px);
+    margin: 20px;
+    background-color: rgba(197, 202, 233, 0.65);
+    border-radius: 15px; /* Arrondir les coins */
+    border: 5px solid #acacac; /* Contour vert, 5px d'épaisseur */
+}
+
+body main .right {
+    width: 50%;
+    height: calc(100% - 50px);
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body main .right > * {
+    background-color: rgba(197, 202, 233, 0.65);
+    border-radius: 15px; /* Arrondir les coins */
+    border: 5px solid #acacac; /* Contour vert, 5px d'épaisseur */
+    flex: 1;
+}
+
+.object {
+    height: 40px;
+}
+
+.image {
+    height: 150px;
+}
+
+.object-image {
+    height: 125px;
+}
+

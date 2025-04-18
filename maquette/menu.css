@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Pour gérer les marges et paddings plus facilement */
+}
+
+body {
+    background-color: #D9D9D9;
+    display: grid;
+    grid-template: auto auto / 1fr;
+}
+
+header {
+    height: 90px;
+    padding: 20px;
+    border-bottom: 5px solid #acacac; /* Couleur et épaisseur de la ligne */
+    font-family: Arial, sans-serif; /* Arial ou la première police disponible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header h1 {
+    color: #8223CF;
+}

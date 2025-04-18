@@ -1,0 +1,19 @@
+<div class="user-form-card">
+  <h2>Créer un nouvel utilisateur</h2>
+
+  <form class="user-form" [formGroup]="userForm" (ngSubmit)="addUser()">
+    <div class="form-group">
+      <label for="firstName">Prénom</label>
+      <input class="input-custom" type="text" id="firstName" formControlName="firstName" placeholder="Entrez le prénom">
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">Nom</label>
+      <input class="input-custom" type="text" id="lastName" formControlName="lastName" placeholder="Entrez le nom">
+    </div>
+
+    <button type="submit" class="button-submit">
+      <i class="fas fa-user-plus"></i> Créer
+    </button>
+  </form>
+</div>

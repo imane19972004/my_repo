@@ -1,0 +1,12 @@
+<div class="home-container">
+  <h1 class="title">{{ title }}</h1>
+  <p class="description">Start your first app and explore its features!</p>
+
+  <button class="btn-primary" (click)="showHideSuccess()">Show success!</button>
+
+  <div class="success-message" *ngIf="showSuccess">
+    <span class="message">🎉 Wow! You made it! 🎉</span>
+  </div>
+
+  <a class="btn-secondary" [routerLink]="['/user-list']">Go to User List</a>
+</div>

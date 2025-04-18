@@ -1,0 +1,76 @@
+/* Conteneur du formulaire */
+.user-form-card {
+  background-color: #ffffff;
+  border: 2px solid #8223CF;
+  border-radius: 12px;
+  text-align: center;
+  padding: 25px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style du formulaire */
+.user-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Groupe de champs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Libellé */
+.form-group label {
+  font-weight: bold;
+  color: #8223CF;
+  margin-bottom: 5px;
+}
+
+/* Champs de saisie */
+.input-custom {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #8223CF;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border 0.3s ease-in-out;
+}
+
+.input-custom:focus {
+  border-color: #F0C94A;
+  outline: none;
+  box-shadow: 0 0 5px rgba(240, 201, 74, 0.5);
+}
+
+/* Bouton de soumission */
+.button-submit {
+  background-color: #8223CF;
+  color: #ffffff;
+  border: none;
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.button-submit i {
+  font-size: 14px;
+}
+
+.button-submit:hover {
+  background-color: #6519a8;
+  transform: scale(1.05);
+}

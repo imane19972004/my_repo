@@ -1,0 +1,9 @@
+<div *ngFor="let exercice of exercices">
+    <h3>{{ exercice.name }}</h3>
+    <ul>
+      <li *ngFor="let category of exercice.categories">{{ category.name }}</li>
+      <li *ngFor="let item of exercice.items">{{ item.name }} - {{ item.description }}</li>
+    </ul>
+    <button (click)="deleteExercice(exercice.id)">Supprimer</button>
+  </div>
+  

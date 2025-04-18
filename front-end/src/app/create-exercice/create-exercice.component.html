@@ -1,0 +1,54 @@
+<div class="form-wrapper">
+    <div class="form-card">
+      <h2>
+        <i class="fas fa-plus-circle"></i>
+        Créer un exercice
+      </h2>
+
+      <form>
+        <!-- Nom de l'exercice -->
+        <div class="form-group">
+          <label for="name">Nom de l'exercice</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+
+        <!-- Ajout de catégories -->
+        <div class="form-group">
+          <label>Ajouter une catégorie</label>
+          <input type="text" name="categoryName" placeholder="Nom de la catégorie" />
+          <input type="text" name="categoryDescription" placeholder="Description" />
+          <input type="text" name="categoryImagePath" placeholder="Lien de l'image" />
+
+          <!-- <button type="button" class="btn-add">
+            <i class="fas fa-plus"></i> Ajouter Catégorie
+          </button> -->
+
+          <!-- Liste des catégories ajoutées -->
+          <!-- <ul>
+            <li>📷 <strong>Nom de la catégorie</strong> - Description - Lien de l'image</li>
+          </ul>
+        </div> -->
+
+        <!-- Ajout d'objets -->
+        <div class="form-group">
+          <label>Ajouter des objets</label>
+
+          <div class="item-box">
+            <input type="text" name="itemName" placeholder="Nom de l'objet" />
+            <input type="text" name="itemDescription" placeholder="Description" />
+            <input type="text" name="itemImagePath" placeholder="Image (URL)" />
+            <input type="text" name="itemCategory" placeholder="Catégorie liée" />
+          </div>
+
+          <button type="button" class="btn-add">
+            <i class="fas fa-plus"></i> Ajouter un objet
+          </button>
+        </div>
+
+        <!-- Soumettre -->
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-check-circle"></i> Créer l'exercice
+        </button>
+      </form>
+    </div>
+  </div>

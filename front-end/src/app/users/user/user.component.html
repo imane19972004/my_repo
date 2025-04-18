@@ -1,0 +1,14 @@
+<div class="user-card">
+  <div class="user-avatar">
+    <i class="fas fa-user"></i>
+  </div>
+
+  <h2 class="user-name">
+    {{ user?.firstName }} {{ user?.lastName }}
+  </h2>
+
+  <button class="button-delete" (click)="delete()">
+    <i class="fas fa-trash-alt"></i> Supprimer
+  </button>
+  <button (click)="goToUserHistory()">Voir historique</button>
+</div>

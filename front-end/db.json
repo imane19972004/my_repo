@@ -1,0 +1,48 @@
+{
+  "users": [],
+  "userHistories": {
+    "1": [
+      {
+        "category": {
+          "name": "Category 1"
+        },
+        "success": 10,
+        "failure": 5,
+        "items": [
+          {
+            "name": "Item 1",
+            "description": "Description 1"
+          }
+        ]
+      },
+      {
+        "category": {
+          "name": "Category 2"
+        },
+        "success": 8,
+        "failure": 3,
+        "items": [
+          {
+            "name": "Item 2",
+            "description": "Description 2"
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "category": {
+          "name": "Category 1"
+        },
+        "success": 7,
+        "failure": 2,
+        "items": [
+          {
+            "name": "Item 3",
+            "description": "Description 3"
+          }
+        ]
+      }
+    ]
+  }
+}

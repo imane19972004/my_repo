@@ -1,0 +1,69 @@
+/* Style de la carte utilisateur */
+.user-card {
+  background-color: #ffffff;
+  border: 2px solid #8223CF;
+  border-radius: 12px;
+  text-align: center;
+  padding: 20px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Avatar */
+.user-avatar {
+  background-color: #8223CF;
+  color: #F0C94A;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+/* Nom de l'utilisateur */
+.user-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: #8223CF;
+  background-color: #F0C94A;
+  padding: 8px 12px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+/* Bouton de suppression */
+.button-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.button-delete i {
+  font-size: 14px;
+}
+
+.button-delete:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
