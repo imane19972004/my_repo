@@ -1,19 +1,74 @@
 <div class="user-form-card">
-  <h2>Créer un nouvel utilisateur</h2>
+  <form [formGroup]="userForm" (ngSubmit)="addUser()" class="user-form">
 
-  <form class="user-form" [formGroup]="userForm" (ngSubmit)="addUser()">
-    <div class="form-group">
-      <label for="firstName">Prénom</label>
-      <input class="input-custom" type="text" id="firstName" formControlName="firstName" placeholder="Entrez le prénom">
-    </div>
+    <!-- étape actuelle -->
+    <div class="step-indicator">Étape {{ step }} / 2</div>
 
-    <div class="form-group">
-      <label for="lastName">Nom</label>
-      <input class="input-custom" type="text" id="lastName" formControlName="lastName" placeholder="Entrez le nom">
-    </div>
+    <!-- Prénom & Nom -->
+    <ng-container *ngIf="step === 1">
+      <div class="form-group">
+        <label for="firstName">Prénom</label>
+        <input id="firstName" type="text" formControlName="firstName" class="input-custom" autocomplete="given-name" required />
+        <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
+          Le prénom est requis.
+        </div>
+      </div>
 
-    <button type="submit" class="button-submit">
-      <i class="fas fa-user-plus"></i> Créer
-    </button>
+      <div class="form-group">
+        <label for="lastName">Nom</label>
+        <input id="lastName" type="text" formControlName="lastName" class="input-custom" autocomplete="family-name" required />
+        <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched" class="error">
+          Le nom est requis.
+        </div>
+      </div>
+
+      <button type="button" (click)="nextStep()" class="button-submit">Suivant</button>
+    </ng-container>
+
+    <!-- Étape 2 : autres champs -->
+    <ng-container *ngIf="step === 2">
+      <div class="form-group">
+        <label for="age">Âge</label>
+        <input id="age" type="number" formControlName="age" class="input-custom" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label for="particularity">Particularité</label>
+        <select id="particularity" formControlName="particularity" class="input-custom">
+          <option value="">-- Sélectionnez une option --</option>
+          <option value="Mobilité réduite">Mobilité réduite</option>
+          <option value="Trouble cognitif">Trouble cognitif</option>
+          <option value="Déficience visuelle">Déficience visuelle</option>
+          <option value="Déficience auditive">Déficience auditive</option>
+          <option value="Situation d’addiction">Situation d’addiction</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Rôle</label>
+        <select id="role" formControlName="role" class="input-custom" required>
+          <option value="">-- Sélectionnez un rôle --</option>
+          <option value="Accueilli">Accueilli</option>
+          <option value="Encadrant">Encadrant</option>
+          <option value="Autre">Autre</option>
+        </select>
+        <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="error">
+          Le rôle est requis.
+        </div>
+      </div>
+
+      <div class="form-group" style="flex-direction: row; justify-content: space-between;">
+        <button type="button" (click)="previousStep()" class="button-submit" style="background-color: grey;">Retour</button>
+        <button type="submit" [disabled]="userForm.invalid" class="button-submit">
+          <i class="fas fa-user-plus"></i> Créer l'utilisateur
+        </button>
+      </div>
+
+      <div *ngIf="userCreated" class="success-message">
+        ✅ Utilisateur créé avec succès !
+      </div>
+    </ng-container>
+
   </form>
 </div>

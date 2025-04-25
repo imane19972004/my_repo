@@ -1,48 +1,150 @@
 {
-  "users": [],
-  "userHistories": {
-    "1": [
-      {
+  "users": [
+    {
+      "id": "a103",
+      "firstName": "Gustave",
+      "lastName": "Lavoisier"
+    },
+    {
+      "id": "09a7",
+      "firstName": "Suzane",
+      "lastName": "Gautier"
+    },
+    {
+      "id": "19cc",
+      "firstName": "Paul",
+      "lastName": "Legrand",
+      "age": 67,
+      "particularity": "",
+      "role": "Autre"
+    }
+  ],
+  "userHistories": [
+    {
+      "0": {
+        "userId": "4996",
         "category": {
-          "name": "Category 1"
+          "name": "",
+          "description": "",
+          "imagePath": ""
         },
-        "success": 10,
-        "failure": 5,
-        "items": [
-          {
-            "name": "Item 1",
-            "description": "Description 1"
-          }
-        ]
+        "items": [],
+        "success": 0,
+        "failure": 0
       },
-      {
+      "id": "2f8d"
+    },
+    {
+      "0": {
+        "userId": "8ff6",
         "category": {
-          "name": "Category 2"
+          "name": "",
+          "description": "",
+          "imagePath": ""
         },
-        "success": 8,
-        "failure": 3,
-        "items": [
-          {
-            "name": "Item 2",
-            "description": "Description 2"
-          }
-        ]
-      }
-    ],
-    "2": [
-      {
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "d5ea"
+    },
+    {
+      "0": {
+        "userId": "a060",
         "category": {
-          "name": "Category 1"
+          "name": "",
+          "description": "",
+          "imagePath": ""
         },
-        "success": 7,
-        "failure": 2,
-        "items": [
-          {
-            "name": "Item 3",
-            "description": "Description 3"
-          }
-        ]
-      }
-    ]
-  }
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "9218"
+    },
+    {
+      "0": {
+        "userId": "e1f2",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "990a"
+    },
+    {
+      "0": {
+        "userId": "a103",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "89f3"
+    },
+    {
+      "0": {
+        "userId": "09a7",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "1c88"
+    },
+    {
+      "0": {
+        "userId": "4b1f",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "399f"
+    },
+    {
+      "0": {
+        "userId": "4659",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "908c"
+    },
+    {
+      "0": {
+        "userId": "19cc",
+        "category": {
+          "name": "",
+          "description": "",
+          "imagePath": ""
+        },
+        "items": [],
+        "success": 0,
+        "failure": 0
+      },
+      "id": "2a0e"
+    }
+  ]
 }

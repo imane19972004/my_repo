@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -18,13 +19,15 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Groupe de champs */
 .form-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
 }
 
@@ -73,4 +76,32 @@
 .button-submit:hover {
   background-color: #6519a8;
   transform: scale(1.05);
+}
+
+/* Message d'erreur champ requis */
+.error {
+  color: #d9534f;
+  font-size: 0.85em;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+/* Message de succès */
+.success-message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
+
+.step-indicator {
+  font-weight: bold;
+  color: #8223CF;
+  margin-bottom: 15px;
+  font-size: 16px;
+  text-align: center;
 }

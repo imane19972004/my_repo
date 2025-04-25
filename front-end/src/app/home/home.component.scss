@@ -25,35 +25,33 @@
 }
 
 .btn-primary, .btn-secondary {
-  display: inline-block;
+  display: block;
   padding: 12px 20px;
-  font-size: 1rem;
+  font-size: large;
   border-radius: 5px;
   text-decoration: none;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
+  background-color: #6b03f8;
+  color: #F0C94A;
+  margin-top: 20px;
   width: 300px;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-  border: none;
-}
-
 .btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.btn-secondary {
-  background-color: #28a745;
-  color: white;
-  margin-top: 20px;
-  display: block;
+  background-color: #0decc9;
+  scale: 1.1;
 }
 
 .btn-secondary:hover {
-  background-color: #1e7e34;
+  background-color: #8223CF;
+  scale: 1.1;
+}
+
+.btn-secondary-content {
+  text-decoration: none;
+  font-size: large;
+  color: #F0C94A;
 }
 
 .success-message {

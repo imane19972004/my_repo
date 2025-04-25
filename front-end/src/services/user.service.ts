@@ -21,9 +21,30 @@ export class UserService {
     this.retrieveUsers();  // Charge les utilisateurs dès le démarrage
   }
 
-  // Ajout et mise à jour des utilisateurs
+  // Ajout et mise à jour des utilisateurs avec vérification des champs
+  // Création d’historique vide
   addUser(user: User) {
-    this.http.post<User>(this.userUrl, user, httpOptionsBase).subscribe(() => this.retrieveUsers());
+    this.http.post<User>(this.userUrl, user, httpOptionsBase).subscribe((createdUser) => {
+      if (!createdUser.firstName.trim() && !createdUser.lastName.trim()) {
+        // Si prénom et nom vides, on supprime l'utilisateur
+        this.deleteUser(createdUser);
+      } else {
+        // Crée un historique vide pour l'utilisateur, en associant le userId
+        const emptyHistory: UserHistory[] = [{
+          userId: createdUser.id,
+          category: { name: "", description: '', imagePath: '' },
+          items: [],  // Liste vide pour l'instant
+          success: 0,  // Valeur initiale
+          failure: 0   // Valeur initiale
+        }];
+
+        const historyUrl = `${this.userHistoryUrl}/${createdUser.id}`;  // Utilisation de l'ID de l'utilisateur pour créer son historique
+        this.http.post(this.userHistoryUrl, emptyHistory, httpOptionsBase).subscribe(() => {
+          // Met à jour la liste des utilisateurs après la création de l'historique
+          this.retrieveUsers();
+        });
+      }
+    });
   }
 
   // Suppression et mise à jour des utilisateurs

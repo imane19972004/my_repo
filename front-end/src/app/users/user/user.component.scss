@@ -11,6 +11,8 @@
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  justify-content: center;
+  gap: 3px;
 }
 
 .user-card:hover {
@@ -46,7 +48,7 @@
 
 /* Bouton de suppression */
 .button-delete {
-  background-color: #e74c3c;
+  background-color: rgba(232, 12, 12, 0.94);
   color: white;
   border: none;
   padding: 10px 15px;
@@ -56,7 +58,8 @@
   transition: background 0.3s ease-in-out, transform 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  width: 130px;
 }
 
 .button-delete i {
@@ -64,6 +67,26 @@
 }
 
 .button-delete:hover {
-  background-color: #c0392b;
+  background-color: #ff0000;
+  transform: scale(1.05);
+}
+/* Bouton de visionnage de l'historique */
+.button-voir-historique {
+  background-color: #F0C94A;
+  color: #8223CF;
+  border: none;
+  padding: 10px 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+}
+
+.button-voir-historique:hover {
+  background-color: #ffea00;
   transform: scale(1.05);
 }
