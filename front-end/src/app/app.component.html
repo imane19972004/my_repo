@@ -1,4 +1,4 @@
-<!-- app.component.html -->
+<!-- app.component.html
 <app-settings-applier>
   <app-header></app-header>
   
@@ -8,6 +8,15 @@
       <a routerLink="/exercice-list" style="margin-right: 15px; color: white; text-decoration: none;">Liste des exercices</a>
       <a routerLink="/create-quiz" style="color: white; text-decoration: none;">Créer un Quiz</a>
     </nav>
+    <router-outlet></router-outlet>
+  </div>
+</app-settings-applier> -->
+
+<app-settings-applier>
+  <app-header></app-header>
+  
+  <div class="main-content">
+    <!-- Barre de navigation supprimée car elle est maintenant dans le header -->
     <router-outlet></router-outlet>
   </div>
 </app-settings-applier>

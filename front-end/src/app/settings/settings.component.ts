@@ -1,7 +1,9 @@
+// 
+
 // settings.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+// Pas besoin d'importer CommonModule et FormsModule ici si c'est fait dans AppModule
+// Si le composant est standalone, on conserve ces imports
 
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 

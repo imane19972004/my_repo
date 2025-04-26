@@ -1,10 +1,58 @@
-import { Component } from '@angular/core';
+.header {
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
 
-@Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
-})
-export class HeaderComponent {
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
+  .logo img {
+    height: 50px;
+    width: auto;
+  }
+
+  .header-text {
+    flex: 1;
+    margin-left: 20px;
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+  }
+
+  .nav-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+
+    li {
+      margin-left: 20px;
+
+      a {
+        text-decoration: none;
+        color: #007bff;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .settings-button {
+    margin-left: 15px;
+    /* Le composant settings a déjà son propre style */
+  }
 }

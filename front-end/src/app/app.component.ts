@@ -16,29 +16,35 @@ export class AppComponent implements OnInit {
   constructor(private exerciceService: ExerciceService) {}
 
   ngOnInit() {
-    // Ajouter un exercice de test
-    this.exerciceService.addExercice({
-      id: uuidv4(),
-      name: 'Rangeons notre chambre !', // Nom amusant
-      theme: 'Objets et pièces de la maison', // Thème réel
-      description: 'Aidez à ranger les objets dans les bonnes pièces de la maison.',
-      items: [
-        { name: 'Brosse à dents', description: 'Utilisée pour se brosser les dents', imagePath: 'brosse.png', category: 'Salle de bain' },
-        { name: 'Poêle', description: 'Pour cuisiner', imagePath: 'poele.png', category: 'Cuisine' },
-        { name: 'Télécommande', description: 'Pour changer les chaînes', imagePath: 'telecommande.png', category: 'Salon' },
-      ],
-      categories: [
-        { name: 'Cuisine', description: 'Pièce pour cuisiner', imagePath: 'cuisine.png' },
-        { name: 'Salon', description: 'Pièce pour se détendre', imagePath: 'salon.png' },
-        { name: 'Salle de bain', description: 'Pièce pour se laver', imagePath: 'salle_de_bain.png' }
-      ]
-    });
+    // On peut garder cette logique pour ajouter un exercice de test
+    // si l'ExerciceService est correctement implémenté
+    if (this.exerciceService) {
+      try {
+        this.exerciceService.addExercice({
+          id: uuidv4(),
+          name: 'Rangeons notre chambre !',
+          theme: 'Objets et pièces de la maison',
+          description: 'Aidez à ranger les objets dans les bonnes pièces de la maison.',
+          items: [
+            { name: 'Brosse à dents', description: 'Utilisée pour se brosser les dents', imagePath: 'brosse.png', category: 'Salle de bain' },
+            { name: 'Poêle', description: 'Pour cuisiner', imagePath: 'poele.png', category: 'Cuisine' },
+            { name: 'Télécommande', description: 'Pour changer les chaînes', imagePath: 'telecommande.png', category: 'Salon' },
+          ],
+          categories: [
+            { name: 'Cuisine', description: 'Pièce pour cuisiner', imagePath: 'cuisine.png' },
+            { name: 'Salon', description: 'Pièce pour se détendre', imagePath: 'salon.png' },
+            { name: 'Salle de bain', description: 'Pièce pour se laver', imagePath: 'salle_de_bain.png' }
+          ]
+        });
 
-    // Récupérer et afficher les exercices
-    this.exerciceService.getExercices().subscribe(exercices => {
-      this.exercices = exercices;
-      console.log('Liste des exercices :', exercices);
-    });
+        this.exerciceService.getExercices().subscribe(exercices => {
+          this.exercices = exercices;
+          console.log('Liste des exercices :', exercices);
+        });
+      } catch (error) {
+        console.error('Erreur lors de l\'initialisation des exercices:', error);
+      }
+    }
   }
 
   showHideSuccess() {
