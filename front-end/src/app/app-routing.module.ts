@@ -15,8 +15,10 @@ const routes: Routes = [
   { path: 'user-list', component: UserListComponent },
   { path: 'users/:id/history', component: UserHistoryComponent},
   { path: 'exercice-list', component: ExerciceListComponent }, // Page pour voir la liste des exercices
+  { path: 'create-exercice', component: CreateExerciceComponent },
   { path: 'create-quiz', component: CreateExerciceComponent },
-  { path: '', redirectTo: 'create-quiz', pathMatch: 'full' },
+ 
+  
 ];
 
 @NgModule({
@@ -24,3 +26,7 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
+
+
+

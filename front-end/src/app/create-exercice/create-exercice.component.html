@@ -15,12 +15,10 @@
       <!-- Ajout de catégories -->
       <div class="form-group">
         <label>Ajouter une catégorie</label>
-        <div class="item-box">
-          <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie" />
-          <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description" />
-          <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien de l'image" />
-        </div>
-
+        <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie" />
+        <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description" />
+        <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien de l'image" />
+        
         <button type="button" class="btn-add" (click)="addCategory()">
           <i class="fas fa-plus"></i> Ajouter Catégorie
         </button>
@@ -28,7 +26,7 @@
         <!-- Liste des catégories ajoutées -->
         <ul *ngIf="exercice.categories.length > 0">
           <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
-            📷 <strong>{{ category.name }}</strong> - {{ category.description }}
+            <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
             <button type="button" class="btn-remove" (click)="removeCategory(i)">
               <i class="fas fa-trash"></i>
             </button>
@@ -59,7 +57,7 @@
         <!-- Liste des objets ajoutés -->
         <ul *ngIf="exercice.items.length > 0">
           <li *ngFor="let item of exercice.items; let i = index" class="item-list">
-            🧩 <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Catégorie: {{ item.category }}</em>
+            <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Catégorie: {{ item.category }}</em></span>
             <button type="button" class="btn-remove" (click)="removeItem(i)">
               <i class="fas fa-trash"></i>
             </button>

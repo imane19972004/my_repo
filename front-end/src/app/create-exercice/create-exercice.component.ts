@@ -4,14 +4,14 @@ import { ExerciceService } from '../../services/exercice.service';
 import { Exercice } from '../../models/exercice.model';
 import { Category } from '../../models/category.model';
 import { Item } from '../../models/item.model';
-// import { ViewEncapsulation } from '@angular/core';
+import { ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create-exercice',
   templateUrl: './create-exercice.component.html', // Correction de la référence au template
   styleUrls: ['./create-exercice.component.scss'],
-  // encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None
 })
 export class CreateExerciceComponent {
   exercice: Exercice = {
