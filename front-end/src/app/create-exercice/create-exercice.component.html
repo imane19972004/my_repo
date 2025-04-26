@@ -2,48 +2,69 @@
   <div class="form-card">
     <h2>
       <i class="fas fa-plus-circle"></i>
-      Créer un exercice
+      Créer un exercice amusant
     </h2>
 
     <form (ngSubmit)="onSubmit()">
+      <!-- Thème de l'exercice -->
+      <div class="form-group">
+        <label for="theme">Thème de l'exercice</label>
+        <select id="theme" name="theme" [(ngModel)]="exercice.theme" (change)="suggestName()" required>
+          <option value="">-- Sélectionner un thème --</option>
+          <option *ngFor="let theme of themeSuggestions" [value]="theme">{{ theme }}</option>
+        </select>
+      </div>
+
       <!-- Nom de l'exercice -->
       <div class="form-group">
-        <label for="name">Nom de l'exercice</label>
-        <input type="text" id="name" name="name" [(ngModel)]="exercice.name" required />
+        <label for="name">Nom amusant de l'exercice</label>
+        <input type="text" id="name" name="name" [(ngModel)]="exercice.name" placeholder="Ex: Rangeons notre maison !" required />
+      </div>
+
+      <!-- Description de l'exercice -->
+      <div class="form-group">
+        <label for="description">Description (optionnelle)</label>
+        <textarea id="description" name="description" [(ngModel)]="exercice.description" 
+                  placeholder="Décrivez brièvement l'objectif de cet exercice..."></textarea>
       </div>
 
       <!-- Ajout de catégories -->
       <div class="form-group">
         <label>Ajouter une catégorie</label>
-        <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie" />
-        <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description" />
-        <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien de l'image" />
+        <div class="category-form">
+          <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie (ex: Cuisine)" />
+          <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" />
+          <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien de l'image" />
+        </div>
         
         <button type="button" class="btn-add" (click)="addCategory()">
-          <i class="fas fa-plus"></i> Ajouter Catégorie
+          <i class="fas fa-plus"></i> Ajouter cette catégorie
         </button>
 
         <!-- Liste des catégories ajoutées -->
-        <ul *ngIf="exercice.categories.length > 0">
-          <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
-            <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
-            <button type="button" class="btn-remove" (click)="removeCategory(i)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </li>
-        </ul>
+        <div *ngIf="exercice.categories.length > 0" class="added-section">
+          <h4>Catégories ajoutées:</h4>
+          <ul>
+            <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
+              <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
+              <button type="button" class="btn-remove" (click)="removeCategory(i)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Ajout d'objets -->
       <div class="form-group">
-        <label>Ajouter des objets</label>
+        <label>Ajouter des objets à placer</label>
 
         <div class="item-box">
-          <input type="text" name="itemName" [(ngModel)]="itemInput.name" placeholder="Nom de l'objet" />
-          <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description" />
+          <input type="text" name="itemName" [(ngModel)]="itemInput.name" placeholder="Nom de l'objet (ex: Fourchette)" />
+          <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description (ex: Ustensile pour manger)" />
           <input type="text" name="itemImagePath" [(ngModel)]="itemInput.imagePath" placeholder="Image (URL)" />
           <select name="itemCategory" [(ngModel)]="itemInput.category">
-            <option value="">-- Sélectionner une catégorie --</option>
+            <option value="">-- Sélectionner la catégorie de cet objet --</option>
             <option *ngFor="let category of exercice.categories" [value]="category.name">
               {{ category.name }}
             </option>
@@ -51,18 +72,21 @@
         </div>
 
         <button type="button" class="btn-add" (click)="addItem()">
-          <i class="fas fa-plus"></i> Ajouter un objet
+          <i class="fas fa-plus"></i> Ajouter cet objet
         </button>
 
         <!-- Liste des objets ajoutés -->
-        <ul *ngIf="exercice.items.length > 0">
-          <li *ngFor="let item of exercice.items; let i = index" class="item-list">
-            <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Catégorie: {{ item.category }}</em></span>
-            <button type="button" class="btn-remove" (click)="removeItem(i)">
-              <i class="fas fa-trash"></i>
-            </button>
-          </li>
-        </ul>
+        <div *ngIf="exercice.items.length > 0" class="added-section">
+          <h4>Objets ajoutés:</h4>
+          <ul>
+            <li *ngFor="let item of exercice.items; let i = index" class="item-list">
+              <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Va dans: {{ item.category }}</em></span>
+              <button type="button" class="btn-remove" (click)="removeItem(i)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Message de succès -->
@@ -71,7 +95,7 @@
       </div>
 
       <!-- Soumettre -->
-      <button type="submit" class="btn-submit" [disabled]="!exercice.name || exercice.categories.length === 0">
+      <button type="submit" class="btn-submit" [disabled]="!exercice.name || !exercice.theme || exercice.categories.length === 0">
         <i class="fas fa-check-circle"></i> Créer l'exercice
       </button>
     </form>

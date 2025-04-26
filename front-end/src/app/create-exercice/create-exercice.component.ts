@@ -5,11 +5,10 @@ import { Exercice } from '../../models/exercice.model';
 import { Category } from '../../models/category.model';
 import { Item } from '../../models/item.model';
 import { ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create-exercice',
-  templateUrl: './create-exercice.component.html', // Correction de la référence au template
+  templateUrl: './create-exercice.component.html',
   styleUrls: ['./create-exercice.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
@@ -17,9 +16,28 @@ export class CreateExerciceComponent {
   exercice: Exercice = {
     id: '', // L'ID sera généré par le service
     name: '',
+    theme: '',
+    description: '',
     categories: [],
     items: []
   };
+
+  // Modèles de noms amusants pour les suggestions
+  themeSuggestions = [
+    "Objets et pièces de la maison",
+    "Vêtements et parties du corps",
+    "Vêtements et saisons",
+    "Monuments et capitales", 
+    "Ingrédients et plats"
+  ];
+
+  nameSuggestions = [
+    "Rangeons notre maison !",
+    "À chacun son vêtement !",
+    "Habillons-nous selon la saison !",
+    "Voyage autour du monde !",
+    "Préparons un festin !"
+  ];
 
   // Objets temporaires pour le formulaire
   categoryInput: Category = { name: '', description: '', imagePath: '' };
@@ -29,6 +47,14 @@ export class CreateExerciceComponent {
   exerciceCreated: boolean = false;
 
   constructor(private exerciceService: ExerciceService) {}
+
+  // Suggère un nom amusant en fonction du thème sélectionné
+  suggestName(): void {
+    const index = this.themeSuggestions.indexOf(this.exercice.theme);
+    if (index !== -1) {
+      this.exercice.name = this.nameSuggestions[index];
+    }
+  }
 
   // Fonction pour ajouter une catégorie
   addCategory(): void {
@@ -68,7 +94,7 @@ export class CreateExerciceComponent {
 
   // Soumettre l'exercice (ajouter à la liste globale via le service)
   onSubmit(): void {
-    if (this.exercice.name && this.exercice.categories.length > 0) {
+    if (this.exercice.name && this.exercice.theme && this.exercice.categories.length > 0) {
       this.exerciceService.addExercice(this.exercice);
       this.showSuccessMessage();
       this.resetForm();
@@ -87,7 +113,7 @@ export class CreateExerciceComponent {
 
   // Réinitialiser le formulaire
   resetForm(): void {
-    this.exercice = { id: '', name: '', categories: [], items: [] };
+    this.exercice = { id: '', name: '', theme: '', description: '', categories: [], items: [] };
     this.categoryInput = { name: '', description: '', imagePath: '' };
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
   }
