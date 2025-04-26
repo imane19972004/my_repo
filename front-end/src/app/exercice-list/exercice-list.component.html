@@ -12,29 +12,31 @@
     <div *ngFor="let exercice of exercices" class="exercice-card">
       <div class="card-header">
         <h3>{{ exercice.name }}</h3>
-        <span class="theme-label">{{ exercice.theme }}</span>
+        <span class="theme-badge">{{ exercice.theme }}</span>
       </div>
       
       <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
       
       <div class="card-content">
-        <div class="categories-section">
-          <h4>À placer dans:</h4>
-          <div class="categories-grid">
-            <div *ngFor="let category of exercice.categories" class="category-box">
-              <span class="category-name">{{ category.name }}</span>
+        <div class="exercice-preview">
+          <div class="preview-section">
+            <span class="preview-label">Catégories:</span>
+            <div class="tags-container">
+              <span *ngFor="let category of exercice.categories" class="category-tag">
+                {{ category.name }}
+              </span>
             </div>
           </div>
-        </div>
-        
-        <div class="items-section">
-          <h4>Objets à trier:</h4>
-          <div class="items-grid">
-            <div *ngFor="let item of exercice.items | slice:0:6" class="item-box">
-              {{ item.name }}
-            </div>
-            <div *ngIf="exercice.items.length > 6" class="more-items">
-              +{{ exercice.items.length - 6 }} autres...
+          
+          <div class="preview-section">
+            <span class="preview-label">Éléments:</span>
+            <div class="tags-container">
+              <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
+                {{ item.name }}
+              </span>
+              <span *ngIf="exercice.items.length > 5" class="more-items-tag">
+                +{{ exercice.items.length - 5 }}
+              </span>
             </div>
           </div>
         </div>

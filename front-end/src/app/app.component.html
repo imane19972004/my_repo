@@ -1,10 +1,13 @@
-<app-header></app-header>
-
-<div class="main-content">
-  <nav style="background-color: #6a0dad; padding: 10px;">
-    <a routerLink="/" style="margin-right: 15px; color: white; text-decoration: none;">Accueil</a>
-    <a routerLink="/exercice-list" style="margin-right: 15px; color: white; text-decoration: none;">Liste des exercices</a>
-    <a routerLink="/create-quiz" style="color: white; text-decoration: none;">Créer un Quiz</a>
-  </nav>
-  <router-outlet></router-outlet>
-</div>
+<!-- app.component.html -->
+<app-settings-applier>
+  <app-header></app-header>
+  
+  <div class="main-content">
+    <nav style="background-color: #6a0dad; padding: 10px;">
+      <a routerLink="/" style="margin-right: 15px; color: white; text-decoration: none;">Accueil</a>
+      <a routerLink="/exercice-list" style="margin-right: 15px; color: white; text-decoration: none;">Liste des exercices</a>
+      <a routerLink="/create-quiz" style="color: white; text-decoration: none;">Créer un Quiz</a>
+    </nav>
+    <router-outlet></router-outlet>
+  </div>
+</app-settings-applier>

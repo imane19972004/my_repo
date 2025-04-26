@@ -1,0 +1,130 @@
+<!-- settings.component.html -->
+<!-- Bouton flottant pour ouvrir les paramètres -->
+<div class="settings-toggle" (click)="toggleSettings()">
+    <i class="fas fa-cog"></i>
+  </div>
+  
+  <!-- Panneau de paramètres qui s'ouvre -->
+  <div class="settings-panel" [class.open]="isOpen">
+    <div class="settings-header">
+      <h2>Paramètres du Jeu</h2>
+      <button class="close-btn" (click)="toggleSettings()">×</button>
+    </div>
+  
+    <div class="settings-content">
+      <!-- Difficulté -->
+      <div class="section">
+        <h3>Difficulté</h3>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="difficulty" value="easy" 
+                  [(ngModel)]="settings.difficulty" 
+                  (change)="updateObjectsOptions('easy')"> Facile
+          </label>
+          <label>
+            <input type="radio" name="difficulty" value="medium" 
+                  [(ngModel)]="settings.difficulty"
+                  (change)="updateObjectsOptions('medium')"> Moyen
+          </label>
+          <label>
+            <input type="radio" name="difficulty" value="hard" 
+                  [(ngModel)]="settings.difficulty"
+                  (change)="updateObjectsOptions('hard')"> Difficile
+          </label>
+        </div>
+      </div>
+  
+      <!-- Nombre d'objets -->
+      <div class="section">
+        <h3>Nombre d'objets</h3>
+        <select [(ngModel)]="settings.objectsCount">
+          <option *ngFor="let option of objectsOptions[settings.difficulty]" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Paramètres Visuels -->
+      <div class="section">
+        <h3>Paramètres Visuels</h3>
+        
+        <div class="slider-control">
+          <label>Taille du texte : {{ settings.textSize }}px</label>
+          <input type="range" min="12" max="30" [(ngModel)]="settings.textSize">
+        </div>
+  
+        <div class="select-control">
+          <label>Style du texte :</label>
+          <select [(ngModel)]="settings.textStyle">
+            <option value="normal">Normal</option>
+            <option value="italic">Italique</option>
+            <option value="bold">Gras</option>
+          </select>
+        </div>
+  
+        <div class="slider-control">
+          <label>Contraste : {{ settings.contrast }}%</label>
+          <input type="range" min="0" max="100" [(ngModel)]="settings.contrast">
+        </div>
+      </div>
+  
+      <!-- Paramètres Sonores -->
+      <div class="section">
+        <h3>Paramètres Sonores</h3>
+        
+        <div class="slider-control">
+          <label>Musique : {{ settings.musicVolume }}%</label>
+          <input type="range" min="0" max="100" [(ngModel)]="settings.musicVolume">
+        </div>
+  
+        <div class="slider-control">
+          <label>Effets sonores : {{ settings.effectsVolume }}%</label>
+          <input type="range" min="0" max="100" [(ngModel)]="settings.effectsVolume">
+        </div>
+      </div>
+  
+      <!-- Paramètres d'Aide -->
+      <div class="section">
+        <h3>Paramètres d'Aide</h3>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="helpType" value="audio" [(ngModel)]="settings.helpType"> 
+            Aide audio
+          </label>
+          <label>
+            <input type="radio" name="helpType" value="text" [(ngModel)]="settings.helpType"> 
+            Aide écrite
+          </label>
+          <label>
+            <input type="radio" name="helpType" value="questions" [(ngModel)]="settings.helpType"> 
+            Aide par questions
+          </label>
+        </div>
+      </div>
+  
+      <!-- Gestion des Erreurs -->
+      <div class="section">
+        <h3>Gestion des Erreurs</h3>
+        
+        <div class="select-control">
+          <label>Fréquence de répétition en cas d'erreur :</label>
+          <select [(ngModel)]="settings.errorRetries">
+            <option value="1">1 fois</option>
+            <option value="2">2 fois</option>
+            <option value="3">3 fois</option>
+          </select>
+        </div>
+  
+        <div class="input-control">
+          <label>Durée du jeu (minutes) :</label>
+          <input type="number" min="1" max="60" [(ngModel)]="settings.gameDuration">
+        </div>
+      </div>
+  
+      <!-- Boutons de contrôle -->
+      <div class="settings-actions">
+        <button class="save-btn" (click)="saveSettings()">Enregistrer</button>
+        <button class="reset-btn" (click)="resetSettings()">Réinitialiser</button>
+      </div>
+    </div>
+  </div>
