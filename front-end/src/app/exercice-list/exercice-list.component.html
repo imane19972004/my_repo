@@ -1,9 +1,54 @@
-<div *ngFor="let exercice of exercices">
-    <h3>{{ exercice.name }}</h3>
-    <ul>
-      <li *ngFor="let category of exercice.categories">{{ category.name }}</li>
-      <li *ngFor="let item of exercice.items">{{ item.name }} - {{ item.description }}</li>
-    </ul>
-    <button (click)="deleteExercice(exercice.id)">Supprimer</button>
+<div class="exercice-list">
+  <h2>Liste des exercices</h2>
+  
+  <div *ngIf="exercices.length === 0" class="empty-state">
+    <p>Aucun exercice disponible pour le moment</p>
+    <button routerLink="/create-exercice" class="btn-create">
+      <i class="fas fa-plus-circle"></i> Créer un exercice
+    </button>
+  </div>
+
+  <div *ngIf="exercices.length > 0" class="exercice-cards">
+    <div *ngFor="let exercice of exercices" class="exercice-card">
+      <h3>{{ exercice.name }}</h3>
+      
+      <div class="card-content">
+        <div class="categories-section">
+          <h4>Catégories:</h4>
+          <ul class="categories-list">
+            <li *ngFor="let category of exercice.categories" class="category-item">
+              <span class="category-name">{{ category.name }}</span>
+              <span *ngIf="category.description" class="category-desc">- {{ category.description }}</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="items-section">
+          <h4>Objets:</h4>
+          <ul class="items-list">
+            <li *ngFor="let item of exercice.items" class="item-entry">
+              <span class="item-name">{{ item.name }}</span>
+              <span *ngIf="item.description" class="item-desc">- {{ item.description }}</span>
+              <span class="item-category">({{ item.category }})</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn-play" [routerLink]="['/game']" [queryParams]="{id: exercice.id}">
+          <i class="fas fa-play"></i> Jouer
+        </button>
+        <button class="btn-delete" (click)="deleteExercice(exercice.id)">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
   </div>
   
+  <div class="create-button-container" *ngIf="exercices.length > 0">
+    <button routerLink="/create-exercice" class="btn-create">
+      <i class="fas fa-plus-circle"></i> Créer un nouvel exercice
+    </button>
+  </div>
+</div>

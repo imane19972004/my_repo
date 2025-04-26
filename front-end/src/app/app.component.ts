@@ -1,6 +1,7 @@
 import { Component ,OnInit} from '@angular/core';
 import { ExerciceService } from '../services/exercice.service';
 import { Exercice } from '../models/exercice.model';
+import { v4 as uuidv4 } from 'uuid'; 
 
 
 @Component({
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit{
   ngOnInit() {
     // Tester l'ajout d'un exercice
     this.exerciceService.addExercice({
+      id: uuidv4(),
       name: 'Vêtements et saisons',
       items: [
         { name: 'Écharpe', description: 'Protège du froid', imagePath: 'echarpe.png', category: 'Hiver' }
