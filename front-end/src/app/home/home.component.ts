@@ -9,10 +9,6 @@ export class HomeComponent {
   title = 'Bienvenue dans MemoLink !';
   showSuccess = false;
 
-  showHideSuccess() {
-    this.showSuccess = !this.showSuccess;
-  }
-
   constructor() {};
 
 }

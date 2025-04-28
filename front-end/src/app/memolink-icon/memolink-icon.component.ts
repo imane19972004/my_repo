@@ -1,9 +1,11 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 
 @Component({
-    selector: 'memolink-icon',
-    template: '', // Pas besoin de template HTML ici
-    styleUrls: [''] // Optionnel, si tu as des styles pour ce composant
+  selector: 'memolink-icon',
+  template: '',
+  standalone: true,
+  // Pas besoin de template HTML ici
+  styleUrls: [''] // Optionnel, si tu as des styles pour ce composant
 })
 export class MemolinkIconComponent implements OnInit {
 

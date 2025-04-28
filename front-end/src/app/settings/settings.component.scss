@@ -8,7 +8,7 @@
   right: 20px;
   width: 50px;
   height: 50px;
-  background: #6a11cb;
+  background: #fff;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -18,15 +18,26 @@
   cursor: pointer;
   z-index: 1000;
   transition: transform 0.3s ease, background 0.3s ease;
-  
+
   &:hover {
     transform: scale(1.1);
     background: #7e22ce;
   }
-  
+
   i {
     font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+
+    img {
+      width: 50px;
+      border-radius: 50%;
+    }
   }
+
+
 }
 
 // Panneau de paramètres
@@ -44,9 +55,11 @@
   z-index: 999;
   overflow-y: auto;
   transition: right 0.4s ease;
-  
+  display: none;
+
   // Quand le panneau est ouvert
   &.open {
+    display: block;
     right: 0;
   }
 }
@@ -63,13 +76,13 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  
+
   h2 {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
   }
-  
+
   .close-btn {
     background: none;
     border: none;
@@ -92,7 +105,7 @@
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 20px;
-  
+
   h3 {
     margin-top: 0;
     font-size: 18px;
@@ -104,13 +117,13 @@
 // Contrôles
 .radio-group, .select-control, .slider-control, .input-control {
   margin-bottom: 15px;
-  
+
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 400;
   }
-  
+
   input[type="radio"] {
     margin-right: 8px;
   }
@@ -124,7 +137,7 @@ input[type="range"], select, input[type="number"] {
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  
+
   &:focus {
     outline: none;
     border-color: white;
@@ -146,7 +159,7 @@ input[type="range"], select, input[type="number"] {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-  
+
   button {
     padding: 12px 0;
     width: 48%;
@@ -155,25 +168,25 @@ input[type="range"], select, input[type="number"] {
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, background 0.2s ease;
-    
+
     &:hover {
       transform: translateY(-2px);
     }
   }
-  
+
   .save-btn {
     background: #28a745;
     color: white;
-    
+
     &:hover {
       background: #218838;
     }
   }
-  
+
   .reset-btn {
     background: #dc3545;
     color: white;
-    
+
     &:hover {
       background: #c82333;
     }

@@ -1,3 +1,4 @@
+<!-- Mise à jour de users/user/user.component.html -->
 <div class="user-card">
   <div class="user-avatar">
     <i class="fas fa-user"></i>
@@ -7,8 +8,15 @@
     {{ user?.firstName }} {{ user?.lastName }}
   </h2>
 
-  <button class="button-delete" (click)="delete()">
-    <i class="fas fa-trash-alt"></i> Supprimer
-  </button>
-  <button (click)="goToUserHistory()" class="button-voir-historique">Voir historique</button>
+  <div class="user-actions">
+    <button *ngIf="user?.role === 'Accueilli'" (click)="goToUserExercices()" class="button-exercices">
+      <i class="fas fa-gamepad"></i> Exercices
+    </button>
+    <button (click)="goToUserHistory()" class="button-voir-historique">
+      <i class="fas fa-history"></i> Historique
+    </button>
+    <button class="button-delete" (click)="delete()">
+      <i class="fas fa-trash-alt"></i> Supprimer
+    </button>
+  </div>
 </div>

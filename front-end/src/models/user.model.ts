@@ -5,4 +5,5 @@ export interface User {
   age?: number;
   particularity?: string;
   role: string;
+  assignedExercices?: string[]; // IDs des exercices assignés au patient
 }

@@ -1,6 +1,17 @@
-<h1> {{ exercice.name  }} </h1>
-<ul>
-  <li *ngFor="let item of exercice.items">
-    {{ item.name }}
-  </li>
-</ul>
+<div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
+  <div class="left">
+    <img *ngFor="let item of itemsInBulk"
+         [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
+         [alt]="item.name"
+         class="object-image">
+  </div>
+
+  <div class="right">
+    <div *ngFor="let category of exercice.categories" class="category-section">
+      <h2>{{ category.name }}</h2>
+      <img [src]="'assets/resources/objets-et-pieces-de-la-maison/' + category.imagePath"
+           [alt]="category.name"
+           class="image">
+    </div>
+  </div>
+</div>

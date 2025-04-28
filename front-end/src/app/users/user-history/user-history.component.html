@@ -1,0 +1,39 @@
+<div class="user-history">
+  <h2>Détails de l'utilisateur</h2>
+
+  <div *ngIf="user">
+    <p><strong>Nom :</strong> {{ user.firstName }} {{ user.lastName }}</p>
+    <p><strong>Âge :</strong> {{ user.age }}</p>
+    <p><strong>Particularité :</strong> {{ user.particularity }}</p>
+    <p><strong>Rôle :</strong> {{ user.role }}</p>
+  </div>
+
+  <hr>
+
+  <h2>Historique de l'utilisateur</h2>
+
+  <!-- Loading state -->
+  <div *ngIf="loading">
+    <p>Loading user history...</p>
+  </div>
+
+  <!-- No history message -->
+  <div *ngIf="!loading && userHistory.length === 0">
+    <p>No history found for this user.</p>
+  </div>
+
+  <!-- Display the user history -->
+  <div *ngFor="let record of userHistory" class="card">
+    <h3>{{ record.category.name || 'Unknown Category' }}</h3>
+    <p><strong>Succès :</strong> {{ record.success }}</p>
+    <p><strong>Échecs :</strong> {{ record.failure }}</p>
+
+    <ul *ngIf="record.items?.length">
+      <li *ngFor="let item of record.items">
+        {{ item.name }} - {{ item.description }}
+      </li>
+    </ul>
+
+    <p *ngIf="!record.items?.length">Aucun élément disponible pour cet enregistrement.</p>
+  </div>
+</div>

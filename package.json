@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@angular/cdk": "^19.2.11",
     "uuid": "^11.1.0"
   }
 }

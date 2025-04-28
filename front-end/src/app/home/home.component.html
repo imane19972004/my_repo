@@ -1,14 +1,19 @@
 <div class="home-container">
   <h1 class="title">{{ title }}</h1>
-  <p class="description"> Passez un moment de détente tout en entraînant votre mémoire ! </p>
+  <p class="description">Passez un moment de détente tout en entraînant votre mémoire !</p>
 
-  <button class="btn-primary" (click)="showHideSuccess()"> Message de succès ! </button>
+  <button class="btn-primary" [routerLink]="['/choose-user']">Jouer</button>
 
   <div class="success-message" *ngIf="showSuccess">
-    <span class="message">🎉 Wow! Vous avez réussis ! 🎉</span>
+    <span class="message">🎉 Wow! Vous avez réussi ! 🎉</span>
   </div>
 
   <button class="btn-secondary">
-    <a class="btn-secondary-content" [routerLink]="['/user-list']"> Voir la liste des utilisateurs </a>
+    <a class="btn-secondary-content" [routerLink]="['/exercice-list-manager']">Voir la liste des exercices</a>
   </button>
+
+  <button class="btn-secondary">
+    <a class="btn-secondary-content" [routerLink]="['/user-list']">Voir la liste des utilisateurs</a>
+  </button>
+
 </div>

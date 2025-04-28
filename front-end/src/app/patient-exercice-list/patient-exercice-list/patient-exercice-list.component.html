@@ -1,0 +1,74 @@
+<!-- Nouveau fichier: src/app/patient-exercice-list/patient-exercice-list.component.html -->
+<div class="patient-exercice-container">
+    <div class="patient-header">
+      <h2>Exercices de {{ patient?.firstName }} {{ patient?.lastName }}</h2>
+      <p class="role-badge">{{ patient?.role }}</p>
+    </div>
+    
+    <!-- Liste des exercices assignés -->
+    <div class="exercice-section">
+      <h3>Exercices personnalisés</h3>
+      
+      <div *ngIf="assignedExercices.length === 0" class="empty-list">
+        <p>Aucun exercice n'est encore assigné à ce patient.</p>
+      </div>
+      
+      <div class="exercice-list">
+        <div *ngFor="let exercice of assignedExercices" class="exercice-card">
+          <div class="card-header">
+            <h4>{{ exercice.name }}</h4>
+            <span class="theme-badge">{{ exercice.theme }}</span>
+          </div>
+          
+          <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+          
+          <div class="card-actions">
+            <button class="btn-play" (click)="playExercice(exercice.id)">
+              <i class="fas fa-play"></i> Jouer
+            </button>
+            <button class="btn-remove" (click)="removeExercice(exercice.id)">
+              <i class="fas fa-minus-circle"></i> Retirer
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-create" [routerLink]="['/create-exercice']">
+          <i class="fas fa-plus-circle"></i> Créer un nouvel exercice
+        </button>
+      </div>
+    </div>
+    
+    <!-- Section pour ajouter des exercices existants -->
+    <div class="exercice-section">
+      <h3>Ajouter des exercices existants</h3>
+      
+      <div *ngIf="availableExercices.length === 0" class="empty-list">
+        <p>Tous les exercices disponibles sont déjà assignés à ce patient.</p>
+      </div>
+      
+      <div class="exercice-list available-list">
+        <div *ngFor="let exercice of availableExercices" class="exercice-card available-card">
+          <div class="card-header">
+            <h4>{{ exercice.name }}</h4>
+            <span class="theme-badge">{{ exercice.theme }}</span>
+          </div>
+          
+          <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+          
+          <div class="card-actions">
+            <button class="btn-add" (click)="addExerciceToPatient(exercice.id)">
+              <i class="fas fa-plus"></i> Ajouter pour ce patient
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-browse" [routerLink]="['/exercice-list']">
+          <i class="fas fa-list"></i> Voir tous les exercices
+        </button>
+      </div>
+    </div>
+  </div>

@@ -31,4 +31,11 @@ export class UserComponent implements OnInit {
       this.router.navigate([`/users/${this.user.id}/history`]);  // Navigate to user history page
     }
   }
+
+  selectUser() {
+    if (this.user) {
+      this.goToUser.emit(this.user);  // On émet l'utilisateur choisi
+    }
+  }
+
 }

@@ -1,17 +1,18 @@
-// game-page.component.ts
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import { Exercice } from '../../../models/exercice.model';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
-import { Exercice } from '../../../models/exercice.model';
 import { Item } from '../../../models/item.model';
+
 
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
-  styleUrls: ['./game-page.component.scss']
+  styleUrls: ['./game-page.component.scss'],
 })
+
 export class GamePageComponent implements OnInit {
-  exercice: Exercice;  
+  exercice: Exercice;
   itemsInBulk: Item[] = [];  // Items non encore placés
   itemsByCategory: {[category: string]: Item[]} = {};  // Items déjà placés par catégorie
   successMessage: string = '';
@@ -21,28 +22,26 @@ export class GamePageComponent implements OnInit {
     private route: ActivatedRoute,
     private exerciceService: ExerciceService
   ) {
-    // Initialiser avec un exercice vide
+     // Initialiser avec un exercice vide
     this.exercice = {
       id: '',
-      name: '',
+      name: "",
       theme: '',
       categories: [],
       items: []
+
     };
   }
-
   ngOnInit(): void {
     // Récupérer l'ID de l'exercice depuis les paramètres d'URL
-    this.route.queryParams.subscribe(params => {
-      const exerciceId = params['id'];
-      if (exerciceId) {
-        this.loadExercice(exerciceId);
-      } else {
-        console.error('Aucun ID d\'exercice spécifié');
-      }
-    });
+    const exerciceId = this.route.snapshot.params['idExercice'];
+    if (exerciceId) {
+      this.loadExercice(exerciceId);
+      return;
+    } else {
+      console.error('Aucun ID d\'exercice spécifié');
+    }
   }
-
   loadExercice(id: string): void {
     this.exerciceService.getExerciceById(id).subscribe(exercice => {
       if (exercice) {
@@ -53,24 +52,22 @@ export class GamePageComponent implements OnInit {
       }
     });
   }
-
   initializeGame(): void {
     // Initialiser tous les objets dans le conteneur "en vrac"
     this.itemsInBulk = [...this.exercice.items];
-    
+
     // Initialiser les conteneurs de catégories vides
     this.itemsByCategory = {};
     this.exercice.categories.forEach(category => {
       this.itemsByCategory[category.name] = [];
     });
-    
+
     // Mélanger les objets pour plus de fun
     this.shuffleArray(this.itemsInBulk);
-    
+
     this.gameCompleted = false;
     this.successMessage = '';
   }
-
   // Méthode pour mélanger un tableau
   shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
@@ -78,27 +75,26 @@ export class GamePageComponent implements OnInit {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
-
   // Méthode appelée lorsqu'un objet est déplacé
   onItemMoved(item: Item, targetCategory: string): void {
     // Retirer l'objet du conteneur "en vrac"
     this.itemsInBulk = this.itemsInBulk.filter(i => i !== item);
-    
+
     // Ajouter l'objet à la catégorie cible
     this.itemsByCategory[targetCategory].push(item);
-    
+
     // Vérifier si la réponse est correcte
     if (item.category === targetCategory) {
       this.successMessage = 'Bien joué !';
     } else {
       this.successMessage = 'Hmm, êtes-vous sûr ?';
     }
-    
+
     // Effacer le message après 2 secondes
     setTimeout(() => {
       this.successMessage = '';
     }, 2000);
-    
+
     // Vérifier si le jeu est terminé
     this.checkGameCompletion();
   }
@@ -108,7 +104,7 @@ export class GamePageComponent implements OnInit {
       // Calculer le score
       let correctAnswers = 0;
       let totalItems = this.exercice.items.length;
-      
+
       Object.keys(this.itemsByCategory).forEach(category => {
         this.itemsByCategory[category].forEach(item => {
           if (item.category === category) {
@@ -116,7 +112,7 @@ export class GamePageComponent implements OnInit {
           }
         });
       });
-      
+
       const score = Math.round((correctAnswers / totalItems) * 100);
       this.gameCompleted = true;
       this.successMessage = `Exercice terminé ! Votre score: ${score}%`;
@@ -127,4 +123,8 @@ export class GamePageComponent implements OnInit {
   resetGame(): void {
     this.initializeGame();
   }
+
+
+
+
 }

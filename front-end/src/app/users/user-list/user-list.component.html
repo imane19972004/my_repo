@@ -1,11 +1,14 @@
 <div class="user-list-page">
-  <app-user-form></app-user-form>
+  <app-user-form *ngIf="mode === 'manage'"></app-user-form>
+
   <div class="user-list">
-    <div class="user" *ngFor="let user of userList">
-      <app-user [user]="user"
-                (deleteUser)="deleteUser($event)"
-                (goToUser)="goToUserHistory($event.id)">
-      </app-user>
+    <div class="users" *ngFor="let user of userList">
+      <div class="user" (click)="selectUser(user)"> <!-- on utilise (click) ici -->
+        <app-user
+          [user]="user"
+          (deleteUser)="deleteUser($event)">
+        </app-user>
+      </div>
     </div>
   </div>
 </div>
