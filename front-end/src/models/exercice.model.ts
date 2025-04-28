@@ -8,4 +8,5 @@ export interface Exercice {
   description?:string;
   categories: Category[];
   items: Item[];
+  assignedPatients?: string[]; // ID des patients auxquels cet exercice est assigné
 }

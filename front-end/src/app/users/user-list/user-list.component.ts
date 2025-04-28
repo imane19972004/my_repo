@@ -30,6 +30,11 @@ export class UserListComponent implements OnInit {
   }
 
   ngOnInit() {}
+  // Ajouter une méthode pour naviguer vers la liste d'exercices du patient
+
+viewPatientExercices(userId: string): void {
+  this.router.navigate([`/users/${userId}/exercices`]);
+}
 
   deleteUser(user: User) {
     this.userService.deleteUser(user);

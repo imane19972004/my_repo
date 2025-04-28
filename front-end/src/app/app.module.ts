@@ -19,6 +19,7 @@ import {CreateExerciceComponent } from "./exercice-list/create-exercice/create-e
 import {ExerciceListComponent} from "./exercice-list/exercice-list-manager/exercice-list.component";
 import { SettingsComponent } from './settings/settings.component';
 import { SettingsApplierComponent } from './settings/settings-applier/settings-applier.component';
+import { PatientExerciceListComponent } from './patient-exercice-list/patient-exercice-list/patient-exercice-list.component';
 
 
 
@@ -41,6 +42,7 @@ import { SettingsApplierComponent } from './settings/settings-applier/settings-a
     ExerciceListComponent,
     SettingsComponent,
     SettingsApplierComponent,
+    PatientExerciceListComponent,
   ],
 
   imports: [

@@ -1,148 +1,98 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {Exercice} from '../models/exercice.model';
-import {DEFAULT_EXERCISE_DATA} from "../mocks/exercices-data";
+// src/services/exercice.service.ts - Mise à jour
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Exercice } from '../models/exercice.model';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExerciceService {
-  // Stockage réactif des exercices
+  private exercices: Exercice[] = [];
   private exercicesSubject = new BehaviorSubject<Exercice[]>([]);
-
-  // Clé pour le stockage local
+  private selectedExerciceId: string | null = null;
+  
+  // LocalStorage keys
   private readonly STORAGE_KEY = 'memolink_exercices';
-
+  
   constructor() {
-    // Réinitialisation
-    this.clearLocalStorage();
-    // Chargement initial des exercices
-    this.loadExercices();
+    this.loadFromLocalStorage();
   }
-
-  /**
-   * Charge les exercices depuis le localStorage.
-   * Si absent ou invalide, initialise avec les exercices par défaut.
-   */
-  private loadExercices(): void {
+  
+  private loadFromLocalStorage(): void {
     const storedExercices = localStorage.getItem(this.STORAGE_KEY);
     if (storedExercices) {
-      try {
-        const exercices = JSON.parse(storedExercices);
-        this.exercicesSubject.next(exercices);
-      } catch (error) {
-        console.error('Erreur lors du chargement des exercices:', error);
-        this.exercicesSubject.next([]);
-      }
-    } else {
-      this.initDefaultExercices();
+      this.exercices = JSON.parse(storedExercices);
+      this.exercicesSubject.next([...this.exercices]);
     }
   }
-
-  /**
-   * Initialise avec les exercices par défaut.
-   */
-  private initDefaultExercices(): void {
-    const defaultExercices: Exercice[] = DEFAULT_EXERCISE_DATA
-
-    this.exercicesSubject.next(defaultExercices);
-    this.saveExercices(defaultExercices);
+  
+  private saveToLocalStorage(): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.exercices));
   }
-
-  /**
-   * Sauvegarde la liste des exercices dans le localStorage.
-   */
-  private saveExercices(exercices: Exercice[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercices));
-  }
-
-  /**
-   * Efface les exercices du localStorage et réinitialise le service.
-   */
-  clearLocalStorage(): void {
-    localStorage.removeItem(this.STORAGE_KEY); // Effacer le stockage local
-    this.exercicesSubject.next([]); // Réinitialiser le flux des exercices
-    this.initDefaultExercices(); // Recharger les exercices par défaut
-  }
-
-  /**
-   * Retourne un observable de tous les exercices.
-   */
+  
   getExercices(): Observable<Exercice[]> {
     return this.exercicesSubject.asObservable();
   }
-
-  /**
-   * Retourne un observable d'un exercice selon son ID.
-   */
-  getExerciceById(id: string): Observable<Exercice | undefined> {
-    return new Observable(observer => {
-      const exercices = this.exercicesSubject.value;
-      const exercice = exercices.find(e => e.id === id);
-      observer.next(exercice);
-      observer.complete();
-    });
+  
+  getExerciceById(id: string): Exercice | undefined {
+    return this.exercices.find(ex => ex.id === id);
   }
-
-  /**
-   * Ajoute un nouvel exercice en générant automatiquement son ID.
-   */
-  addExercice(exercice: Exercice): void {
-    const currentExercices = this.exercicesSubject.value;
-    // Assigner un ID unique exo-{n}
-    exercice.id = `exo-${currentExercices.length + 1}`;
-
-    const updatedExercices = [...currentExercices, exercice];
-    this.exercicesSubject.next(updatedExercices);
-    this.saveExercices(updatedExercices);
+  
+  // Nouvelle méthode pour obtenir les exercices d'un patient spécifique
+  getPatientExercices(patientId: string): Observable<Exercice[]> {
+    const patientExercices = this.exercices.filter(ex => 
+      ex.assignedPatients && ex.assignedPatients.includes(patientId)
+    );
+    return new BehaviorSubject<Exercice[]>(patientExercices).asObservable();
   }
-
-  /**
-   * Met à jour un exercice existant.
-   */
-  updateExercice(updatedExercice: Exercice): void {
-    const currentExercices = this.exercicesSubject.value;
-    const index = currentExercices.findIndex(e => e.id === updatedExercice.id);
-
-    if (index !== -1) {
-      const updatedExercices = [...currentExercices];
-      updatedExercices[index] = updatedExercice;
-
-      this.exercicesSubject.next(updatedExercices);
-      this.saveExercices(updatedExercices);
+  
+  // Méthode pour assigner un exercice à un patient
+  assignExerciceToPatient(exerciceId: string, patientId: string): void {
+    const exercice = this.exercices.find(ex => ex.id === exerciceId);
+    if (exercice) {
+      if (!exercice.assignedPatients) {
+        exercice.assignedPatients = [];
+      }
+      if (!exercice.assignedPatients.includes(patientId)) {
+        exercice.assignedPatients.push(patientId);
+        this.saveToLocalStorage();
+        this.exercicesSubject.next([...this.exercices]);
+      }
     }
   }
-
-  /**
-   * Supprime un exercice par son ID et réattribue tous les IDs.
-   */
+  
+  // Méthode pour dissocier un exercice d'un patient
+  removeExerciceFromPatient(exerciceId: string, patientId: string): void {
+    const exercice = this.exercices.find(ex => ex.id === exerciceId);
+    if (exercice && exercice.assignedPatients) {
+      exercice.assignedPatients = exercice.assignedPatients.filter(id => id !== patientId);
+      this.saveToLocalStorage();
+      this.exercicesSubject.next([...this.exercices]);
+    }
+  }
+  
+  addExercice(exercice: Exercice): void {
+    // Générer un ID unique si non fourni
+    if (!exercice.id) {
+      exercice.id = uuidv4();
+    }
+    this.exercices.push({...exercice});
+    this.saveToLocalStorage();
+    this.exercicesSubject.next([...this.exercices]);
+  }
+  
   deleteExercice(id: string): void {
-    const currentExercices = this.exercicesSubject.value;
-
-    // Filtrer l'exercice à supprimer
-    let updatedExercices = currentExercices.filter(exercice => exercice.id !== id);
-
-    // Réassigner les IDs proprement
-    updatedExercices = updatedExercices.map((exercice, index) => ({
-      ...exercice,
-      id: `exo-${index + 1}`
-    }));
-
-    this.exercicesSubject.next(updatedExercices);
-    this.saveExercices(updatedExercices);
+    this.exercices = this.exercices.filter(ex => ex.id !== id);
+    this.saveToLocalStorage();
+    this.exercicesSubject.next([...this.exercices]);
   }
-
-  private selectedExerciceSubject$ = new BehaviorSubject<Exercice | null>(null);
-
-  // Sélectionner un exercice
+  
   setSelectedExercice(id: string): void {
-    const exercices = this.exercicesSubject.value;
-    const selectedExercice = exercices.find(ex => ex.id === id);
-    this.selectedExerciceSubject$.next(selectedExercice || null);
+    this.selectedExerciceId = id;
   }
-
-  getSelectedExercice() {
-    return this.selectedExerciceSubject$.asObservable();
+  
+  getSelectedExerciceId(): string | null {
+    return this.selectedExerciceId;
   }
-
 }
