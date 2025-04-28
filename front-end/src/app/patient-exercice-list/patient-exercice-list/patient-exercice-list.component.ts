@@ -1,6 +1,6 @@
-// Nouveau fichier: src/app/patient-exercice-list/patient-exercice-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { ExerciceService } from '../../../services/exercice.service';
 import { UserService } from '../../../services/user.service';
 import { Exercice } from '../../../models/exercice.model';
@@ -10,7 +10,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-patient-exercice-list',
   templateUrl: './patient-exercice-list.component.html',
-  styleUrls: ['./patient-exercice-list.component.scss']
+  styleUrls: ['./patient-exercice-list.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule]  // Ajoutez RouterModule ici
 })
 export class PatientExerciceListComponent implements OnInit {
   patientId: string = '';
@@ -38,16 +40,21 @@ export class PatientExerciceListComponent implements OnInit {
     }
   }
   
-  loadPatientData(): void {
-    this.userService.getUserById(this.patientId).subscribe(user => {
-      this.patient = user;
+  // Dans la méthode loadPatientData
+loadPatientData(): void {
+  this.userService.getUserById(this.patientId).subscribe(user => {
+    this.patient = user;
+    // Vérifiez que user existe avant d'y accéder
+    if (user) {
       // Si user n'a pas de propriété assignedExercices, nous l'initialisons
       if (!user.assignedExercices) {
         user.assignedExercices = [];
-        this.userService.updateUser(user);
+        this.userService.updateUser(user); // Cette ligne est maintenant sécurisée
       }
-    });
-  }
+    }
+  });
+}
+
   
   loadExercices(): void {
     this.exercicesSubscription = this.exerciceService.getExercices().subscribe(allExercices => {
@@ -66,6 +73,7 @@ export class PatientExerciceListComponent implements OnInit {
       });
     });
   }
+  
   
   playExercice(exerciceId: string): void {
     this.router.navigate(['/game'], { queryParams: { id: exerciceId } });

@@ -6,6 +6,8 @@ import { UserHistory } from '../models/user-history.model';
 import { MOCK_USERS } from '../mocks/mock-users-data';
 import { MOCK_USER_HISTORY } from '../mocks/mock-users-history-data';
 import { serverUrl, httpOptionsBase } from '../configs/server.config';
+import { map } from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
@@ -111,14 +113,22 @@ getUserById(id: string): Observable<User | undefined> {
 }
 
 // Méthode pour mettre à jour un utilisateur
+// Méthode pour mettre à jour un utilisateur
+// Méthode pour mettre à jour un utilisateur
 updateUser(updatedUser: User): void {
-  const users = this.users.map(u => 
+  // Obtenir la valeur actuelle de users$ (les utilisateurs)
+  const currentUsers = this.users$.getValue();
+  
+  // Créer un nouveau tableau avec l'utilisateur mis à jour
+  const updatedUsers = currentUsers.map((u: User) => 
     u.id === updatedUser.id ? updatedUser : u
   );
   
-  this.users = users;
-  this.users$.next(users);
-  this.saveUsers();
+  // Mettre à jour le BehaviorSubject avec la nouvelle liste
+  this.users$.next(updatedUsers);
+  
+  // Si vous souhaitez persister les données (facultatif)
+  localStorage.setItem('users', JSON.stringify(updatedUsers));
 }
 
   // // Récupérer un utilisateur par son ID
