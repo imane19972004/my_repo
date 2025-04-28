@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
 import { Item } from '../../../models/item.model';
 
-
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
@@ -29,9 +28,9 @@ export class GamePageComponent implements OnInit {
       theme: '',
       categories: [],
       items: []
-
     };
   }
+  
   ngOnInit(): void {
     // Récupérer l'ID de l'exercice depuis les paramètres d'URL
     const exerciceId = this.route.snapshot.params['idExercice'];
@@ -42,16 +41,18 @@ export class GamePageComponent implements OnInit {
       console.error('Aucun ID d\'exercice spécifié');
     }
   }
+  
   loadExercice(id: string): void {
-    this.exerciceService.getExerciceById(id).subscribe(exercice => {
-      if (exercice) {
-        this.exercice = exercice;
-        this.initializeGame();
-      } else {
-        console.error('Exercice introuvable');
-      }
-    });
+    // Correction: obtenir l'exercice depuis le service de façon synchrone
+    const exercice = this.exerciceService.getExerciceById(id);
+    if (exercice) {
+      this.exercice = exercice;
+      this.initializeGame();
+    } else {
+      console.error('Exercice introuvable');
+    }
   }
+  
   initializeGame(): void {
     // Initialiser tous les objets dans le conteneur "en vrac"
     this.itemsInBulk = [...this.exercice.items];
@@ -68,6 +69,7 @@ export class GamePageComponent implements OnInit {
     this.gameCompleted = false;
     this.successMessage = '';
   }
+  
   // Méthode pour mélanger un tableau
   shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
@@ -75,6 +77,7 @@ export class GamePageComponent implements OnInit {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
+  
   // Méthode appelée lorsqu'un objet est déplacé
   onItemMoved(item: Item, targetCategory: string): void {
     // Retirer l'objet du conteneur "en vrac"
@@ -123,8 +126,4 @@ export class GamePageComponent implements OnInit {
   resetGame(): void {
     this.initializeGame();
   }
-
-
-
-
 }

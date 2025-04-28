@@ -8,12 +8,10 @@ import { MOCK_USER_HISTORY } from '../mocks/mock-users-history-data';
 import { serverUrl, httpOptionsBase } from '../configs/server.config';
 import { map } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
   private serverUrlLoc: string = 'http://localhost:9428'; // URL locale pour le backend
   private userUrl = this.serverUrlLoc + '/users'; // Route pour les users
   private userHistoryUrl = this.serverUrlLoc + '/userHistories'; // Route pour les historiques
@@ -26,15 +24,20 @@ export class UserService {
   public userSelected$: Subject<User> = new Subject<User>();
 
   // Copie locale des mocks pour pouvoir les modifier sans casser les fichiers mocks
-  private mockUsers = [...MOCK_USERS];
-  private mockUserHistories = [...MOCK_USER_HISTORY];
+  private mockUsers: User[] = [...MOCK_USERS];
+  private mockUserHistories: UserHistory[] = [...MOCK_USER_HISTORY];
 
   constructor(private http: HttpClient) {
     this.retrieveUsers(); // On charge les users au démarrage
   }
 
+  // Méthode pour sauvegarder les utilisateurs dans le localStorage
+  private saveToLocalStorage(): void {
+    localStorage.setItem('users', JSON.stringify(this.users$.value));
+  }
+
   // Ajouter un utilisateur
-  addUser(user: User) {
+  addUser(user: User): void {
     if (this.USE_MOCK) {
       // Simule un id unique comme une vraie DB
       user.id = (Math.random() * 100000).toFixed(0).toString();
@@ -51,6 +54,7 @@ export class UserService {
       };
       this.mockUserHistories.push(emptyHistory);
       this.users$.next([...this.mockUsers]); // Met à jour la liste observable
+      this.saveToLocalStorage();
     } else {
       // Version avec backend
       this.http.post<User>(this.userUrl, user, httpOptionsBase).subscribe(() => {
@@ -60,21 +64,22 @@ export class UserService {
   }
 
   // Supprimer un utilisateur
-  deleteUser(user: User) {
-    if (this.USE_MOCK) {// Supprime l'utilisateur dans les mocks et l'historique lié puis mettre à jour la liste observable
+  deleteUser(user: User): void {
+    if (this.USE_MOCK) {
+      // Supprime l'utilisateur dans les mocks et l'historique lié puis mettre à jour la liste observable
       this.mockUsers = this.mockUsers.filter(u => u.id !== user.id);
       this.mockUserHistories = this.mockUserHistories.filter(h => h.userId !== user.id);
-
       this.users$.next([...this.mockUsers]);
+      this.saveToLocalStorage();
     } else {
-      // Version  avec backend
+      // Version avec backend
       const urlWithId = `${this.userUrl}/${user.id}`;
       this.http.delete(urlWithId, httpOptionsBase).subscribe(() => this.retrieveUsers());
     }
   }
 
   // Récupérer tous les utilisateurs
-  private retrieveUsers() {
+  private retrieveUsers(): void {
     if (this.USE_MOCK) {
       // Version mock : copie et push dans l'observable
       this.users$.next([...this.mockUsers]);
@@ -86,9 +91,8 @@ export class UserService {
     }
   }
 
-
   // Sélectionner un utilisateur
-  setSelectedUser(user: User) {
+  setSelectedUser(user: User): void {
     if (this.USE_MOCK) {
       // Trouver l'utilisateur dans les mocks
       const foundUser = this.mockUsers.find(u => u.id === user.id);
@@ -103,45 +107,30 @@ export class UserService {
       });
     }
   }
-    // Ajout de méthodes dans services/user.service.ts
 
-// Méthode pour obtenir un utilisateur par son ID
-getUserById(id: string): Observable<User | undefined> {
-  return this.users$.pipe(
-    map(users => users.find(user => user.id === id))
-  );
-}
+  // Méthode pour obtenir un utilisateur par son ID
+  getUserById(id: string): Observable<User | undefined> {
+    return this.users$.pipe(
+      map(users => users.find(user => user.id === id))
+    );
+  }
 
-// Méthode pour mettre à jour un utilisateur
-// Méthode pour mettre à jour un utilisateur
-// Méthode pour mettre à jour un utilisateur
-updateUser(updatedUser: User): void {
-  // Obtenir la valeur actuelle de users$ (les utilisateurs)
-  const currentUsers = this.users$.getValue();
-  
-  // Créer un nouveau tableau avec l'utilisateur mis à jour
-  const updatedUsers = currentUsers.map((u: User) => 
-    u.id === updatedUser.id ? updatedUser : u
-  );
-  
-  // Mettre à jour le BehaviorSubject avec la nouvelle liste
-  this.users$.next(updatedUsers);
-  
-  // Si vous souhaitez persister les données (facultatif)
-  localStorage.setItem('users', JSON.stringify(updatedUsers));
-}
-
-  // // Récupérer un utilisateur par son ID
-  // getUserById(userId: string): Observable<User | undefined> {
-  //   if (this.USE_MOCK) {
-  //     const user = this.mockUsers.find(u => u.id === userId);
-  //     return of(user);
-  //   } else {
-  //     const urlWithId = `${this.userUrl}/${userId}`;
-  //     return this.http.get<User>(urlWithId, httpOptionsBase);
-  //   }
-  // }
-
+  // Méthode pour mettre à jour un utilisateur
+  updateUser(updatedUser: User): void {
+    // Obtenir la valeur actuelle de users$ (les utilisateurs)
+    const currentUsers = this.users$.getValue();
+    
+    // Créer un nouveau tableau avec l'utilisateur mis à jour
+    const updatedUsers = currentUsers.map((u: User) => 
+      u.id === updatedUser.id ? updatedUser : u
+    );
+    
+    // Mettre à jour le BehaviorSubject avec la nouvelle liste
+    this.users$.next(updatedUsers);
+    
+    // Sauvegarder dans localStorage
+    this.saveToLocalStorage();
+  }
 
   // Récupérer l'historique d'un utilisateur par son ID
   getUserHistoryById(userId: string): Observable<UserHistory[]> {
@@ -153,5 +142,4 @@ updateUser(updatedUser: User): void {
       return this.http.get<UserHistory[]>(urlWithId, httpOptionsBase);
     }
   }
-
 }
