@@ -46,6 +46,10 @@ export class CreateExerciceComponent {
   // Variables pour les messages
   exerciceCreated: boolean = false;
 
+  // Variables pour la gestion des fichiers
+  categoryImageFile: File | null = null;
+  itemImageFile: File | null = null;
+
   constructor(private exerciceService: ExerciceService) {}
 
   // Suggère un nom amusant en fonction du thème sélectionné
@@ -53,6 +57,36 @@ export class CreateExerciceComponent {
     const index = this.themeSuggestions.indexOf(this.exercice.theme);
     if (index !== -1) {
       this.exercice.name = this.nameSuggestions[index];
+    }
+  }
+
+  // Gestion du téléchargement d'images pour les catégories
+  onCategoryImageSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.categoryImageFile = file;
+      
+      // Lecture du fichier pour prévisualisation
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.categoryInput.imagePath = e.target.result;
+      };
+      reader.readAsDataURL(file); // Passage du fichier directement, pas de la variable qui peut être null
+    }
+  }
+
+  // Gestion du téléchargement d'images pour les items
+  onItemImageSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.itemImageFile = file;
+      
+      // Lecture du fichier pour prévisualisation
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.itemInput.imagePath = e.target.result;
+      };
+      reader.readAsDataURL(file); // Passage du fichier directement, pas de la variable qui peut être null
     }
   }
 
@@ -64,6 +98,7 @@ export class CreateExerciceComponent {
 
       // Réinitialisation du formulaire de catégorie
       this.categoryInput = { name: '', description: '', imagePath: '' };
+      this.categoryImageFile = null;
     } else {
       console.log('Veuillez remplir tous les champs de la catégorie.');
     }
@@ -77,6 +112,7 @@ export class CreateExerciceComponent {
 
       // Réinitialisation du formulaire d'objet
       this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+      this.itemImageFile = null;
     } else {
       console.log('Veuillez remplir tous les champs de l\'objet.');
     }
@@ -116,5 +152,7 @@ export class CreateExerciceComponent {
     this.exercice = { id: '', name: '', theme: '', description: '', categories: [], items: [] };
     this.categoryInput = { name: '', description: '', imagePath: '' };
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+    this.categoryImageFile = null;
+    this.itemImageFile = null;
   }
 }

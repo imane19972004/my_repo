@@ -34,7 +34,25 @@
         <div class="category-form">
           <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie (ex: Cuisine)" />
           <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" />
-          <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien de l'image" />
+          
+          <div class="image-upload-container">
+            <div class="image-input">
+              <label for="categoryImageUpload" class="upload-label">
+                <i class="fas fa-upload"></i> Image de la catégorie
+              </label>
+              <input type="file" id="categoryImageUpload" (change)="onCategoryImageSelected($event)" accept="image/*" class="file-input" />
+            </div>
+            
+            <div class="url-input">
+              <span>OU</span>
+              <input type="text" name="categoryImagePath" [(ngModel)]="categoryInput.imagePath" placeholder="Lien URL de l'image" />
+            </div>
+            
+            <!-- Prévisualisation de l'image -->
+            <div *ngIf="categoryInput.imagePath" class="image-preview">
+              <img [src]="categoryInput.imagePath" alt="Aperçu de l'image">
+            </div>
+          </div>
         </div>
         
         <button type="button" class="btn-add" (click)="addCategory()">
@@ -46,7 +64,10 @@
           <h4>Catégories ajoutées:</h4>
           <ul>
             <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
-              <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
+              <span>
+                <img *ngIf="category.imagePath" [src]="category.imagePath" class="thumbnail" alt="Image miniature"/>
+                <strong>{{ category.name }}</strong> - {{ category.description }}
+              </span>
               <button type="button" class="btn-remove" (click)="removeCategory(i)">
                 <i class="fas fa-trash"></i>
               </button>
@@ -62,7 +83,26 @@
         <div class="item-box">
           <input type="text" name="itemName" [(ngModel)]="itemInput.name" placeholder="Nom de l'objet (ex: Fourchette)" />
           <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description (ex: Ustensile pour manger)" />
-          <input type="text" name="itemImagePath" [(ngModel)]="itemInput.imagePath" placeholder="Image (URL)" />
+          
+          <div class="image-upload-container">
+            <div class="image-input">
+              <label for="itemImageUpload" class="upload-label">
+                <i class="fas fa-upload"></i> Image de l'objet
+              </label>
+              <input type="file" id="itemImageUpload" (change)="onItemImageSelected($event)" accept="image/*" class="file-input" />
+            </div>
+            
+            <div class="url-input">
+              <span>OU</span>
+              <input type="text" name="itemImagePath" [(ngModel)]="itemInput.imagePath" placeholder="Lien URL de l'image" />
+            </div>
+            
+            <!-- Prévisualisation de l'image -->
+            <div *ngIf="itemInput.imagePath" class="image-preview">
+              <img [src]="itemInput.imagePath" alt="Aperçu de l'image">
+            </div>
+          </div>
+          
           <select name="itemCategory" [(ngModel)]="itemInput.category">
             <option value="">-- Sélectionner la catégorie de cet objet --</option>
             <option *ngFor="let category of exercice.categories" [value]="category.name">
@@ -80,7 +120,10 @@
           <h4>Objets ajoutés:</h4>
           <ul>
             <li *ngFor="let item of exercice.items; let i = index" class="item-list">
-              <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Va dans: {{ item.category }}</em></span>
+              <span>
+                <img *ngIf="item.imagePath" [src]="item.imagePath" class="thumbnail" alt="Image miniature"/>
+                <strong>{{ item.name }}</strong> - {{ item.description }} - <em>Va dans: {{ item.category }}</em>
+              </span>
               <button type="button" class="btn-remove" (click)="removeItem(i)">
                 <i class="fas fa-trash"></i>
               </button>

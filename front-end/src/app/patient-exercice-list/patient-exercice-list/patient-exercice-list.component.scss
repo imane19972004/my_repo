@@ -207,15 +207,37 @@
     }
   }
   
-  .btn-create {
-    background-color: #6a0dad;
+/* src/app/patient-exercice-list/patient-exercice-list/patient-exercice-list.component.scss */
+/* Uniquement la partie concernant le bouton créer */
+
+.btn-create {
+    background-color: #6c696d;
     color: white;
     font-size: 16px;
     padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 4px 8px rgba(106, 13, 173, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     
     &:hover {
       background-color: #580e9d;
+      transform: scale(1.05);
     }
+  }
+  
+  /* Cette classe pourrait être ajoutée à la section contenant le bouton pour mieux le distinguer */
+  .create-exercice-container {
+    background-color: #f9f0ff;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #6a0dad;
+    margin-bottom: 20px;
   }
   
   .btn-assign {
