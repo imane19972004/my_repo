@@ -1,10 +1,8 @@
-import {Category} from "./category.model";
-import {Item} from "./item.model";
-
 export interface UserHistory {
-  userId: string;
-  category: Category;
-  items: Item[]; // List of items with names and descriptions
+  userId?: string;
+  exerciceId: string;
+  date: string;
+  exerciceName: string;
   success: number; // Number of successful actions
   failure: number; // Number of failed actions
 }

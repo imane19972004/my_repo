@@ -55,7 +55,7 @@
         </button>
 
         <!-- Si mode 'manage', affiche le bouton "Supprimer" -->
-        <button *ngIf="mode === 'manage'" class="btn-delete" (click)="deleteExercice(exercice)">
+        <button class="btn-delete" (click)="deleteExercice(exercice)">
           <i class="fas fa-trash"></i> Supprimer
         </button>
       </div>
@@ -63,7 +63,7 @@
   </div>
 
   <!-- Bouton pour créer un nouvel exercice (affiché dans tous les cas sauf quand il n'y a aucun exercice) -->
-  <div class="create-button-container" *ngIf="exerciceList.length > 0 && mode === 'manage'">
+  <div class="create-button-container" *ngIf="exerciceList.length > 0">
     <button routerLink="/create-exercice" class="btn-create">
       <i class="fas fa-plus-circle"></i> Créer un nouvel exercice
     </button>

@@ -36,11 +36,11 @@
           <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" />
           
           <div class="image-upload-container">
-            <div class="image-input">
-              <label for="categoryImageUpload" class="upload-label">
-                <i class="fas fa-upload"></i> Image de la catégorie
-              </label>
-              <input type="file" id="categoryImageUpload" (change)="onCategoryImageSelected($event)" accept="image/*" class="file-input" />
+            <div class="custom-file-upload">
+              <button type="button" class="btn-upload" (click)="triggerCategoryFileInput()">
+                <i class="fas fa-desktop"></i> Sélectionner depuis l'ordinateur
+              </button>
+              <input type="file" #categoryFileInput id="categoryImageUpload" (change)="onCategoryImageSelected($event)" accept="image/*" class="file-input" />
             </div>
             
             <div class="url-input">
@@ -51,6 +51,7 @@
             <!-- Prévisualisation de l'image -->
             <div *ngIf="categoryInput.imagePath" class="image-preview">
               <img [src]="categoryInput.imagePath" alt="Aperçu de l'image">
+              <span class="file-name" *ngIf="categoryImageFile">{{ categoryImageFile.name }}</span>
             </div>
           </div>
         </div>
@@ -85,11 +86,11 @@
           <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description (ex: Ustensile pour manger)" />
           
           <div class="image-upload-container">
-            <div class="image-input">
-              <label for="itemImageUpload" class="upload-label">
-                <i class="fas fa-upload"></i> Image de l'objet
-              </label>
-              <input type="file" id="itemImageUpload" (change)="onItemImageSelected($event)" accept="image/*" class="file-input" />
+            <div class="custom-file-upload">
+              <button type="button" class="btn-upload" (click)="triggerItemFileInput()">
+                <i class="fas fa-desktop"></i> Sélectionner depuis l'ordinateur
+              </button>
+              <input type="file" #itemFileInput id="itemImageUpload" (change)="onItemImageSelected($event)" accept="image/*" class="file-input" />
             </div>
             
             <div class="url-input">
@@ -100,6 +101,7 @@
             <!-- Prévisualisation de l'image -->
             <div *ngIf="itemInput.imagePath" class="image-preview">
               <img [src]="itemInput.imagePath" alt="Aperçu de l'image">
+              <span class="file-name" *ngIf="itemImageFile">{{ itemImageFile.name }}</span>
             </div>
           </div>
           

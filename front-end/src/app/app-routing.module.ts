@@ -6,7 +6,6 @@ import { HomeComponent } from './home/home.component';
 import {UserHistoryComponent} from "./users/user-history/user-history.component";
 import { CreateExerciceComponent } from "./exercice-list/create-exercice/create-exercice.component"; // Ajout du composant de création d'exercice
 import { ExerciceListComponent } from "./exercice-list/exercice-list-manager/exercice-list.component"; // Ajout du composant de liste des exercices
-import {PatientExerciceListComponent} from "./patient-exercice-list/patient-exercice-list/patient-exercice-list.component"
 
 
 
@@ -18,8 +17,6 @@ const routes: Routes = [
   { path: 'choose-user', component: UserListComponent },
   { path: ':idUser/choose-exercice', component: ExerciceListComponent },
   { path: 'users/:id/history', component: UserHistoryComponent},
-  { path: 'users/:id/exercices', component: PatientExerciceListComponent }, // Nouvelle route
-  { path: 'exercice-list', component: ExerciceListComponent },
   { path: 'exercice-list-manager', component: ExerciceListComponent }, // Page pour voir la liste des exercices
   { path: 'create-quiz', component: CreateExerciceComponent },
   { path: 'create-exercice', component: CreateExerciceComponent },

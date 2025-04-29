@@ -3,6 +3,9 @@ import { Exercice } from '../../../models/exercice.model';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
 import { Item } from '../../../models/item.model';
+import {UserHistory} from "../../../models/user-history.model";
+import {UserService} from "../../../services/user.service";
+
 
 @Component({
   selector: 'app-game-page',
@@ -12,6 +15,7 @@ import { Item } from '../../../models/item.model';
 
 export class GamePageComponent implements OnInit {
   exercice: Exercice;
+  userID!: string;
   itemsInBulk: Item[] = [];  // Items non encore placés
   itemsByCategory: {[category: string]: Item[]} = {};  // Items déjà placés par catégorie
   successMessage: string = '';
@@ -19,7 +23,8 @@ export class GamePageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private exerciceService: ExerciceService
+    private exerciceService: ExerciceService,
+    private userService: UserService,
   ) {
      // Initialiser avec un exercice vide
     this.exercice = {
@@ -28,12 +33,15 @@ export class GamePageComponent implements OnInit {
       theme: '',
       categories: [],
       items: []
+
     };
   }
-  
+
   ngOnInit(): void {
     // Récupérer l'ID de l'exercice depuis les paramètres d'URL
     const exerciceId = this.route.snapshot.params['idExercice'];
+    this.userID = this.route.snapshot.params['idUser'];
+    console.log("This user id is: ",this.userID);
     if (exerciceId) {
       this.loadExercice(exerciceId);
       return;
@@ -41,18 +49,18 @@ export class GamePageComponent implements OnInit {
       console.error('Aucun ID d\'exercice spécifié');
     }
   }
-  
+
   loadExercice(id: string): void {
-    // Correction: obtenir l'exercice depuis le service de façon synchrone
-    const exercice = this.exerciceService.getExerciceById(id);
-    if (exercice) {
-      this.exercice = exercice;
-      this.initializeGame();
-    } else {
-      console.error('Exercice introuvable');
-    }
+    this.exerciceService.getExerciceById(id).subscribe(exercice => {
+      if (exercice) {
+        this.exercice = exercice;
+        this.initializeGame();
+      } else {
+        console.error('Exercice introuvable');
+      }
+    });
   }
-  
+
   initializeGame(): void {
     // Initialiser tous les objets dans le conteneur "en vrac"
     this.itemsInBulk = [...this.exercice.items];
@@ -69,7 +77,7 @@ export class GamePageComponent implements OnInit {
     this.gameCompleted = false;
     this.successMessage = '';
   }
-  
+
   // Méthode pour mélanger un tableau
   shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
@@ -77,7 +85,6 @@ export class GamePageComponent implements OnInit {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
-  
   // Méthode appelée lorsqu'un objet est déplacé
   onItemMoved(item: Item, targetCategory: string): void {
     // Retirer l'objet du conteneur "en vrac"
@@ -104,7 +111,6 @@ export class GamePageComponent implements OnInit {
 
   checkGameCompletion(): void {
     if (this.itemsInBulk.length === 0) {
-      // Calculer le score
       let correctAnswers = 0;
       let totalItems = this.exercice.items.length;
 
@@ -119,6 +125,19 @@ export class GamePageComponent implements OnInit {
       const score = Math.round((correctAnswers / totalItems) * 100);
       this.gameCompleted = true;
       this.successMessage = `Exercice terminé ! Votre score: ${score}%`;
+
+      const failures = totalItems - correctAnswers;
+
+      const newHistory: UserHistory = {
+        userId: this.userID,
+        exerciceId: this.exercice.id,
+        exerciceName: this.exercice.name,
+        date: new Date().toISOString(),
+        success: correctAnswers,
+        failure: failures
+      };
+
+      this.userService.addUserHistory(newHistory);
     }
   }
 
@@ -126,4 +145,8 @@ export class GamePageComponent implements OnInit {
   resetGame(): void {
     this.initializeGame();
   }
+
+
+
+
 }

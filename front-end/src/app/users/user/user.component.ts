@@ -1,4 +1,3 @@
-// Dans src/app/users/user/user.component.ts
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '../../../models/user.model';
@@ -29,20 +28,14 @@ export class UserComponent implements OnInit {
 
   goToUserHistory() {
     if (this.user) {
-      this.router.navigate([`/users/${this.user.id}/history`]);
-    }
-  }
-
-  // Ajoutez cette méthode
-  goToUserExercices() {
-    if (this.user) {
-      this.router.navigate([`/users/${this.user.id}/exercices`]);
+      this.router.navigate([`/users/${this.user.id}/history`]);  // Navigate to user history page
     }
   }
 
   selectUser() {
     if (this.user) {
-      this.goToUser.emit(this.user);
+      this.goToUser.emit(this.user);  // On émet l'utilisateur choisi
     }
   }
+
 }

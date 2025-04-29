@@ -1,5 +1,5 @@
 // create-exercice.component.ts
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ExerciceService } from '../../services/exercice.service';
 import { Exercice } from '../../models/exercice.model';
 import { Category } from '../../models/category.model';
@@ -13,6 +13,10 @@ import { ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class CreateExerciceComponent {
+  // Références aux éléments d'input file pour pouvoir les déclencher via JS
+  @ViewChild('categoryFileInput') categoryFileInput!: ElementRef;
+  @ViewChild('itemFileInput') itemFileInput!: ElementRef;
+
   exercice: Exercice = {
     id: '', // L'ID sera généré par le service
     name: '',
@@ -52,6 +56,15 @@ export class CreateExerciceComponent {
 
   constructor(private exerciceService: ExerciceService) {}
 
+  // Méthodes pour déclencher les sélecteurs de fichiers
+  triggerCategoryFileInput(): void {
+    this.categoryFileInput.nativeElement.click();
+  }
+
+  triggerItemFileInput(): void {
+    this.itemFileInput.nativeElement.click();
+  }
+
   // Suggère un nom amusant en fonction du thème sélectionné
   suggestName(): void {
     const index = this.themeSuggestions.indexOf(this.exercice.theme);
@@ -71,7 +84,7 @@ export class CreateExerciceComponent {
       reader.onload = (e: any) => {
         this.categoryInput.imagePath = e.target.result;
       };
-      reader.readAsDataURL(file); // Passage du fichier directement, pas de la variable qui peut être null
+      reader.readAsDataURL(file);
     }
   }
 
@@ -86,7 +99,7 @@ export class CreateExerciceComponent {
       reader.onload = (e: any) => {
         this.itemInput.imagePath = e.target.result;
       };
-      reader.readAsDataURL(file); // Passage du fichier directement, pas de la variable qui peut être null
+      reader.readAsDataURL(file);
     }
   }
 
@@ -99,8 +112,13 @@ export class CreateExerciceComponent {
       // Réinitialisation du formulaire de catégorie
       this.categoryInput = { name: '', description: '', imagePath: '' };
       this.categoryImageFile = null;
+      
+      // Réinitialiser également l'input file
+      if (this.categoryFileInput) {
+        this.categoryFileInput.nativeElement.value = '';
+      }
     } else {
-      console.log('Veuillez remplir tous les champs de la catégorie.');
+      alert('Veuillez remplir tous les champs de la catégorie.');
     }
   }
 
@@ -113,8 +131,13 @@ export class CreateExerciceComponent {
       // Réinitialisation du formulaire d'objet
       this.itemInput = { name: '', description: '', imagePath: '', category: '' };
       this.itemImageFile = null;
+      
+      // Réinitialiser également l'input file
+      if (this.itemFileInput) {
+        this.itemFileInput.nativeElement.value = '';
+      }
     } else {
-      console.log('Veuillez remplir tous les champs de l\'objet.');
+      alert('Veuillez remplir tous les champs de l\'objet.');
     }
   }
 
@@ -135,7 +158,7 @@ export class CreateExerciceComponent {
       this.showSuccessMessage();
       this.resetForm();
     } else {
-      console.log('Le formulaire est incomplet.');
+      alert('Le formulaire est incomplet. Veuillez ajouter au moins une catégorie et renseigner le nom et le thème de l\'exercice.');
     }
   }
 
@@ -154,5 +177,13 @@ export class CreateExerciceComponent {
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
     this.categoryImageFile = null;
     this.itemImageFile = null;
+    
+    // Réinitialiser les inputs file
+    if (this.categoryFileInput) {
+      this.categoryFileInput.nativeElement.value = '';
+    }
+    if (this.itemFileInput) {
+      this.itemFileInput.nativeElement.value = '';
+    }
   }
 }
