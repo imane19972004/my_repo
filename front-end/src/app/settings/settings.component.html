@@ -14,10 +14,24 @@
   </div>
 
   <div class="settings-content">
+    <!-- Niveau de difficulté (informatif) -->
+    <div class="section difficulty-section">
+      <h3>Niveau de difficulté actuel: <span class="difficulty-label">{{ difficultyLabel }}</span></h3>
+      <p class="difficulty-info">Le niveau de difficulté est déterminé par le nombre d'objets.</p>
+    </div>
+
     <!-- Nombre d'objets -->
     <div class="section">
       <h3>Nombre d'objets</h3>
-      <input type="number" min="2" max="8" [(ngModel)]="settings.objectsCount" (change)="onSettingChange()">
+      <div class="slider-control">
+        <label>Objets : {{ settings.objectsCount }}</label>
+        <input type="range" min="2" max="8" [(ngModel)]="settings.objectsCount" (change)="onObjectsCountChange()">
+        <div class="difficulty-range">
+          <span class="easy">Facile</span>
+          <span class="medium">Moyen</span>
+          <span class="hard">Difficile</span>
+        </div>
+      </div>
     </div>
 
     <!-- Paramètres Visuels -->

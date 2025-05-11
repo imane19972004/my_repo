@@ -11,6 +11,11 @@ export interface GameSettings {
   helpType: string;
   errorRetries: number;
   gameDuration: number;
+  // Nouvelles propriétés liées à la difficulté
+  imageSize?: number;        // Taille des images d'objets
+  animationSpeed?: number;   // Vitesse des animations
+  timeBonus?: number;        // Bonus de temps pour les réponses correctes
+  mistakesAllowed?: number;  // Nombre d'erreurs autorisées avant pénalité
 }
 
 @Injectable({
@@ -26,7 +31,11 @@ export class SettingsService {
     contrast: 50,
     helpType: 'text',
     errorRetries: 2,
-    gameDuration: 10
+    gameDuration: 10,
+    imageSize: 150,
+    animationSpeed: 0.3,
+    timeBonus: 5,
+    mistakesAllowed: 3,
   };
 
   // BehaviorSubject pour suivre les changements de paramètres
@@ -45,9 +54,11 @@ export class SettingsService {
     if (storedSettings) {
       try {
         const parsedSettings = JSON.parse(storedSettings);
-        // S'assurer que la difficulté est correctement définie selon le nombre d'objets
-        parsedSettings.difficulty = this.calculateDifficulty(parsedSettings.objectsCount);
-        this.settingsSubject.next(parsedSettings);
+        // Calcul de la difficulté et des paramètres associés
+        const difficulty = this.calculateDifficulty(parsedSettings.objectsCount);
+        const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...parsedSettings, difficulty});
+        
+        this.settingsSubject.next(adjustedSettings);
       } catch (e) {
         console.error('Erreur lors du chargement des paramètres:', e);
         // En cas d'erreur, on utilise les paramètres par défaut
@@ -59,9 +70,11 @@ export class SettingsService {
   // Sauvegarde les paramètres
   saveSettings(settings: GameSettings): void {
     // S'assurer que la difficulté est correctement définie selon le nombre d'objets
-    settings.difficulty = this.calculateDifficulty(settings.objectsCount);
-    localStorage.setItem('gameSettings', JSON.stringify(settings));
-    this.settingsSubject.next(settings);
+    const difficulty = this.calculateDifficulty(settings.objectsCount);
+    const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...settings, difficulty});
+    
+    localStorage.setItem('gameSettings', JSON.stringify(adjustedSettings));
+    this.settingsSubject.next(adjustedSettings);
   }
 
   // Réinitialise les paramètres
@@ -80,12 +93,14 @@ export class SettingsService {
     const currentSettings = this.getCurrentSettings();
     const newSettings = { ...currentSettings, [key]: value };
     
-    // Si on met à jour le nombre d'objets, recalculer la difficulté
+    // Si on met à jour le nombre d'objets, recalculer la difficulté et ajuster les paramètres
     if (key === 'objectsCount') {
-      newSettings.difficulty = this.calculateDifficulty(value);
+      const difficulty = this.calculateDifficulty(value);
+      const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...newSettings, difficulty});
+      this.saveSettings(adjustedSettings);
+    } else {
+      this.saveSettings(newSettings);
     }
-    
-    this.saveSettings(newSettings);
   }
   
   // Calcule la difficulté en fonction du nombre d'objets
@@ -97,5 +112,46 @@ export class SettingsService {
     } else {
       return 'hard';
     }
+  }
+
+  // Ajuste automatiquement les paramètres en fonction de la difficulté
+  private adjustSettingsBasedOnDifficulty(settings: GameSettings): GameSettings {
+    const { difficulty } = settings;
+    const adjustedSettings = { ...settings };
+
+    // Ajustement selon le niveau de difficulté
+    switch (difficulty) {
+      case 'easy':
+        // Pour un niveau facile, tout est plus grand et plus lent
+        adjustedSettings.textSize = Math.max(settings.textSize, 20); // Texte plus grand
+        adjustedSettings.imageSize = 180; // Images plus grandes
+        adjustedSettings.animationSpeed = 0.5; // Animations plus lentes
+        adjustedSettings.timeBonus = 8; // Plus de bonus de temps
+        adjustedSettings.mistakesAllowed = 5; // Plus d'erreurs permises
+        adjustedSettings.contrast = Math.max(settings.contrast, 70); // Contraste plus élevé
+        break;
+      
+      case 'medium':
+        // Paramètres standards
+        adjustedSettings.textSize = Math.max(settings.textSize, 16); // Texte standard
+        adjustedSettings.imageSize = 150; // Images standard
+        adjustedSettings.animationSpeed = 0.3; // Vitesse d'animation standard
+        adjustedSettings.timeBonus = 5; // Bonus de temps standard
+        adjustedSettings.mistakesAllowed = 3; // Nombre d'erreurs standard
+        adjustedSettings.contrast = Math.max(settings.contrast, 50); // Contraste standard
+        break;
+      
+      case 'hard':
+        // Pour un niveau difficile, tout est plus petit et plus rapide
+        adjustedSettings.textSize = Math.min(settings.textSize, 14); // Texte plus petit
+        adjustedSettings.imageSize = 120; // Images plus petites
+        adjustedSettings.animationSpeed = 0.2; // Animations plus rapides
+        adjustedSettings.timeBonus = 3; // Moins de bonus de temps
+        adjustedSettings.mistakesAllowed = 2; // Moins d'erreurs permises
+        adjustedSettings.contrast = Math.min(settings.contrast, 40); // Contraste plus faible
+        break;
+    }
+
+    return adjustedSettings;
   }
 }
