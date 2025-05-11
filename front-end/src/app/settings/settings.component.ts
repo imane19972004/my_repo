@@ -83,5 +83,26 @@ export class SettingsComponent implements OnInit {
     } else {
       return 'hard';
     }
+  
   }
+
+  get difficultyLabel(): string {
+  switch (this.settings.difficulty) {
+    case 'easy':
+      return 'Facile';
+    case 'medium':
+      return 'Moyen';
+    case 'hard':
+      return 'Difficile';
+    default:
+      return 'Inconnu';
+  }
+}
+
+onObjectsCountChange(): void {
+  this.onSettingChange(); // Réutilise ta logique déjà définie
+}
+
+
+  
 }
