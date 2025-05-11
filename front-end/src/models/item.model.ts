@@ -3,4 +3,7 @@ export interface Item {
   description: string;
   imagePath: string;
   category: string;
+   // Ajouter cette propriété
+  helpText?: string; // Description de l'objet pour l'aide
 }
+

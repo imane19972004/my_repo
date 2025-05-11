@@ -154,3 +154,48 @@
     font-size: 18px;
   }
 }
+
+// 5. Ajout des styles CSS pour l'aide
+// Ajouter dans game-page.component.scss:
+
+// Dans game-page.component.scss
+.help-message {
+  grid-column: span 2;
+  position: fixed;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 236, 179, 0.95);
+  border: 3px solid #ffc107;
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 80%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.help-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-content i {
+  font-size: 32px;
+  color: #ffc107;
+  margin-bottom: 10px;
+}
+
+.help-content p {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

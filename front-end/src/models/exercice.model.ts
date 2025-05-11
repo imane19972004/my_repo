@@ -8,4 +8,6 @@ export interface Exercice {
   description?:string;
   categories: Category[];
   items: Item[];
+  helpTexts?: { [itemId: string]: string }; // Optionnel : textes d'aide par item
+
 }
