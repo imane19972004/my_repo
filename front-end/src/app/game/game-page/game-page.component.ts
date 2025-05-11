@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+// Dans front-end/src/app/game/game-page/game-page.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
 import { UserService } from '../../../services/user.service';
+import { SettingsService, GameSettings } from '../../../services/settings.service';
 import { Exercice } from '../../../models/exercice.model';
 import { Item } from '../../../models/item.model';
 import { UserHistory } from '../../../models/user-history.model';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
   styleUrls: ['./game-page.component.scss']
 })
-export class GamePageComponent implements OnInit {
+export class GamePageComponent implements OnInit, OnDestroy {
   exercice: Exercice = { id: '', name: '', theme: '', categories: [], items: [] };
   userID!: string;
   itemsInBulk: Item[] = [];
@@ -21,17 +24,41 @@ export class GamePageComponent implements OnInit {
   successMessage: string = '';
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
+  
+  // Ajouter cette propriété pour stocker les paramètres
+  settings: GameSettings | null = null;
+  private settingsSubscription: Subscription | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private exerciceService: ExerciceService,
-    private userService: UserService
+    private userService: UserService,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
+    // S'abonner aux changements de paramètres
+    this.settingsSubscription = this.settingsService.settings$.subscribe(newSettings => {
+      this.settings = newSettings;
+      if (this.exercice.id) {
+        // Réinitialiser le jeu si les paramètres changent
+        this.initializeGame();
+      }
+    });
+    
+    // Charger les paramètres actuels
+    this.settings = this.settingsService.getCurrentSettings();
+    
     const exerciceId = this.route.snapshot.params['idExercice'];
     this.userID = this.route.snapshot.params['idUser'];
     if (exerciceId) this.loadExercice(exerciceId);
+  }
+  
+  ngOnDestroy(): void {
+    // Se désabonner pour éviter les fuites de mémoire
+    if (this.settingsSubscription) {
+      this.settingsSubscription.unsubscribe();
+    }
   }
 
   // Récupère l'exercice à partir de l'ID
@@ -46,13 +73,27 @@ export class GamePageComponent implements OnInit {
 
   // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
-    this.itemsInBulk = [...this.exercice.items];
+    // Filtrer les items en fonction du paramètre objectsCount
+    const objectsCount = this.settings?.objectsCount || 4; // Utilise 4 comme valeur par défaut
+    
+    // Copier puis mélanger tous les items
+    const allItems = [...this.exercice.items];
+    this.shuffleArray(allItems);
+    
+    // Limiter le nombre d'items selon le paramètre objectsCount
+    this.itemsInBulk = allItems.slice(0, objectsCount);
+    
+    // Initialiser les catégories vides
     this.itemsByCategory = {};
     this.exercice.categories.forEach(c => this.itemsByCategory[c.name] = []);
+    
+    // Connecter les zones de drop
     this.connectedDropListsIds = ['bulk-list', ...this.exercice.categories.map(c => `category-${c.name}`)];
-    this.shuffleArray(this.itemsInBulk);
+    
+    // Réinitialiser l'état du jeu
     this.gameCompleted = false;
     this.successMessage = '';
+    this.numberOfFailure = 0;
   }
 
   // Mélange aléatoirement les items

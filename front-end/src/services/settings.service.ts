@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject,Observable } from 'rxjs';
+// Vérifiez si votre service de paramètres contient bien toutes les propriétés nécessaires
+// Voici comment le fichier devrait être (ou similaire):
 
-// Interface simplifiée pour les paramètres du jeu
+// src/services/settings.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
 export interface GameSettings {
-  difficulty?: string; // Calculé automatiquement à partir du nombre d'objets
   objectsCount: number;
   textSize: number;
   textStyle: string;
@@ -11,13 +13,11 @@ export interface GameSettings {
   helpType: string;
   errorRetries: number;
   gameDuration: number;
-  // Nouvelles propriétés liées à la difficulté
-  imageSize?: number;        // Taille des images d'objets
-  animationSpeed?: number;   // Vitesse des animations
-  timeBonus?: number;        // Bonus de temps pour les réponses correctes
-  mistakesAllowed?: number;  // Nombre d'erreurs autorisées avant pénalité
-  categoryImageSize?: number;   // Taille des images de catégories (calculé automatiquement)
-  categoryTextSize?: number;    // Taille du texte des catégories (calculé automatiquement)
+  imageSize?: number;
+  animationSpeed?: number;
+  difficulty?: string;
+  timeBonus?: number;
+  mistakesAllowed?: number;
 }
 
 @Injectable({
@@ -26,7 +26,6 @@ export interface GameSettings {
 export class SettingsService {
   // Paramètres par défaut
   private defaultSettings: GameSettings = {
-    difficulty: 'medium',
     objectsCount: 4,
     textSize: 16,
     textStyle: 'normal',
@@ -36,174 +35,55 @@ export class SettingsService {
     gameDuration: 10,
     imageSize: 150,
     animationSpeed: 0.3,
-    timeBonus: 5,
-    mistakesAllowed: 3,
-    categoryImageSize: 180,
-    categoryTextSize: 24,
+    difficulty: 'medium'
   };
 
-  // BehaviorSubject pour suivre les changements de paramètres
+  // Subject pour observer les changements
   private settingsSubject = new BehaviorSubject<GameSettings>(this.defaultSettings);
   
-  // Observable que les composants peuvent souscrire
-  public settings$ = this.settingsSubject.asObservable();
-  
+  // Observable pour s'abonner aux changements
+  settings$ = this.settingsSubject.asObservable();
+
   constructor() {
+    // Charger les paramètres depuis le localStorage au démarrage
     this.loadSettings();
   }
 
-  // Charge les paramètres depuis le localStorage
+  // Obtenir les paramètres actuels
+  getCurrentSettings(): GameSettings {
+    return this.settingsSubject.getValue();
+  }
+
+  // Sauvegarder de nouveaux paramètres
+  saveSettings(settings: GameSettings): void {
+    // Mettre à jour les paramètres dans le BehaviorSubject
+    this.settingsSubject.next(settings);
+    
+    // Sauvegarder dans le localStorage
+    localStorage.setItem('gameSettings', JSON.stringify(settings));
+  }
+
+  // Charger les paramètres depuis le localStorage
   private loadSettings(): void {
-    const storedSettings = localStorage.getItem('gameSettings');
-    if (storedSettings) {
+    const savedSettings = localStorage.getItem('gameSettings');
+    
+    if (savedSettings) {
       try {
-        const parsedSettings = JSON.parse(storedSettings);
-        // Calcul de la difficulté et des paramètres associés
-        const difficulty = this.calculateDifficulty(parsedSettings.objectsCount);
-        const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...parsedSettings, difficulty});
-        
-        this.settingsSubject.next(adjustedSettings);
+        const parsedSettings = JSON.parse(savedSettings);
+        // Fusionner avec les paramètres par défaut pour assurer la présence de toutes les propriétés
+        const mergedSettings = { ...this.defaultSettings, ...parsedSettings };
+        this.settingsSubject.next(mergedSettings);
       } catch (e) {
         console.error('Erreur lors du chargement des paramètres:', e);
-        // En cas d'erreur, on utilise les paramètres par défaut
-        this.settingsSubject.next(this.defaultSettings);
+        // En cas d'erreur, utiliser les paramètres par défaut
+        this.resetSettings();
       }
     }
   }
 
-  // Sauvegarde les paramètres
-  saveSettings(settings: GameSettings): void {
-    // S'assurer que la difficulté est correctement définie selon le nombre d'objets
-    const difficulty = this.calculateDifficulty(settings.objectsCount);
-    const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...settings, difficulty});
-    
-    localStorage.setItem('gameSettings', JSON.stringify(adjustedSettings));
-    this.settingsSubject.next(adjustedSettings);
-  }
-
-  // Réinitialise les paramètres
+  // Réinitialiser les paramètres
   resetSettings(): void {
-    localStorage.removeItem('gameSettings');
     this.settingsSubject.next(this.defaultSettings);
-  }
-
-  // Récupère les paramètres actuels (valeur courante)
-  getCurrentSettings(): GameSettings {
-    return this.settingsSubject.value;
-  }
-
-  // Met à jour un paramètre spécifique
-  updateSetting(key: keyof GameSettings, value: any): void {
-    const currentSettings = this.getCurrentSettings();
-    const newSettings = { ...currentSettings, [key]: value };
-    
-    // Si on met à jour le nombre d'objets, recalculer la difficulté et ajuster les paramètres
-    if (key === 'objectsCount') {
-      const difficulty = this.calculateDifficulty(value);
-      const adjustedSettings = this.adjustSettingsBasedOnDifficulty({...newSettings, difficulty});
-      this.saveSettings(adjustedSettings);
-    } else {
-      this.saveSettings(newSettings);
-    }
-  }
-  
-  // Calcule la difficulté en fonction du nombre d'objets
-  private calculateDifficulty(objectsCount: number): string {
-    if (objectsCount <= 3) {
-      return 'easy';
-    } else if (objectsCount <= 5) {
-      return 'medium';
-    } else {
-      return 'hard';
-    }
-  }
-
-  // Ajuste automatiquement les paramètres en fonction de la difficulté
-  private adjustSettingsBasedOnDifficulty(settings: GameSettings): GameSettings {
-    const { difficulty } = settings;
-    const adjustedSettings = { ...settings };
-
-    // Ajustement selon le niveau de difficulté
-    switch (difficulty) {
-      case 'easy':
-        // Pour un niveau facile, tout est plus grand et plus lent
-        adjustedSettings.textSize = Math.max(settings.textSize, 20); // Texte plus grand
-        adjustedSettings.imageSize = 180; // Images plus grandes
-        adjustedSettings.animationSpeed = 0.5; // Animations plus lentes
-        adjustedSettings.timeBonus = 8; // Plus de bonus de temps
-        adjustedSettings.mistakesAllowed = 5; // Plus d'erreurs permises
-        adjustedSettings.contrast = Math.max(settings.contrast, 70); // Contraste plus élevé
-          // Recalculer les valeurs dérivées après ajustement
-        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
-        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
-        break;
-      
-      case 'medium':
-        // Paramètres standards
-        adjustedSettings.textSize = Math.max(settings.textSize, 16); // Texte standard
-        adjustedSettings.imageSize = 150; // Images standard
-        adjustedSettings.animationSpeed = 0.3; // Vitesse d'animation standard
-        adjustedSettings.timeBonus = 5; // Bonus de temps standard
-        adjustedSettings.mistakesAllowed = 3; // Nombre d'erreurs standard
-        adjustedSettings.contrast = Math.max(settings.contrast, 50); // Contraste standard
-         // Recalculer les valeurs dérivées après ajustement
-        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
-        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
-        break;
-      
-      case 'hard':
-        // Pour un niveau difficile, tout est plus petit et plus rapide
-        adjustedSettings.textSize = Math.min(settings.textSize, 14); // Texte plus petit
-        adjustedSettings.imageSize = 120; // Images plus petites
-        adjustedSettings.animationSpeed = 0.2; // Animations plus rapides
-        adjustedSettings.timeBonus = 3; // Moins de bonus de temps
-        adjustedSettings.mistakesAllowed = 2; // Moins d'erreurs permises
-        adjustedSettings.contrast = Math.min(settings.contrast, 40); // Contraste plus faible
-         // Recalculer les valeurs dérivées après ajustement
-        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
-        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
-        break;
-    }
-
-    return adjustedSettings;
-  }// Applique les paramètres globaux à l'ensemble de l'application
-  applyGlobalStyles(settings: GameSettings = this.getCurrentSettings()): void {
-    const styleId = 'global-settings-styles';
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
-    
-    if (!styleElement) {
-      styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
-    }
-    
-    // Définir les variables CSS globales
-    styleElement.innerHTML = `
-      :root {
-        --app-text-size: ${settings.textSize}px;
-        --app-category-text-size: ${settings.categoryTextSize}px;
-        --app-text-style: ${settings.textStyle};
-        --app-image-size: ${settings.imageSize}px;
-        --app-category-image-size: ${settings.categoryImageSize}px;
-        --app-animation-speed: ${settings.animationSpeed}s;
-
-        --app-contrast: ${settings.contrast}%;
-      }
-      
-      body {
-        background-color: var(--app-background-color);
-      }
-      
-      .game-page {
-        background-color: var(--app-background-color);
-      }
-      
-      h2 {
-        color: var(--app-primary-color);
-        font-size: var(--app-category-text-size);
-        font-weight: ${settings.textStyle === 'bold' ? 'bold' : 'normal'};
-        font-style: ${settings.textStyle === 'italic' ? 'italic' : 'normal'};
-      }
-    `;
+    localStorage.removeItem('gameSettings');
   }
 }
