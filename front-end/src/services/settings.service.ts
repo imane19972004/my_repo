@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject,Observable } from 'rxjs';
 
 // Interface simplifiée pour les paramètres du jeu
 export interface GameSettings {
@@ -16,6 +16,8 @@ export interface GameSettings {
   animationSpeed?: number;   // Vitesse des animations
   timeBonus?: number;        // Bonus de temps pour les réponses correctes
   mistakesAllowed?: number;  // Nombre d'erreurs autorisées avant pénalité
+  categoryImageSize?: number;   // Taille des images de catégories (calculé automatiquement)
+  categoryTextSize?: number;    // Taille du texte des catégories (calculé automatiquement)
 }
 
 @Injectable({
@@ -36,6 +38,8 @@ export class SettingsService {
     animationSpeed: 0.3,
     timeBonus: 5,
     mistakesAllowed: 3,
+    categoryImageSize: 180,
+    categoryTextSize: 24,
   };
 
   // BehaviorSubject pour suivre les changements de paramètres
@@ -129,6 +133,9 @@ export class SettingsService {
         adjustedSettings.timeBonus = 8; // Plus de bonus de temps
         adjustedSettings.mistakesAllowed = 5; // Plus d'erreurs permises
         adjustedSettings.contrast = Math.max(settings.contrast, 70); // Contraste plus élevé
+          // Recalculer les valeurs dérivées après ajustement
+        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
+        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
         break;
       
       case 'medium':
@@ -139,6 +146,9 @@ export class SettingsService {
         adjustedSettings.timeBonus = 5; // Bonus de temps standard
         adjustedSettings.mistakesAllowed = 3; // Nombre d'erreurs standard
         adjustedSettings.contrast = Math.max(settings.contrast, 50); // Contraste standard
+         // Recalculer les valeurs dérivées après ajustement
+        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
+        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
         break;
       
       case 'hard':
@@ -149,9 +159,51 @@ export class SettingsService {
         adjustedSettings.timeBonus = 3; // Moins de bonus de temps
         adjustedSettings.mistakesAllowed = 2; // Moins d'erreurs permises
         adjustedSettings.contrast = Math.min(settings.contrast, 40); // Contraste plus faible
+         // Recalculer les valeurs dérivées après ajustement
+        adjustedSettings.categoryTextSize = adjustedSettings.textSize + 8;
+        adjustedSettings.categoryImageSize = Math.round(adjustedSettings.imageSize * 1.2);
         break;
     }
 
     return adjustedSettings;
+  }// Applique les paramètres globaux à l'ensemble de l'application
+  applyGlobalStyles(settings: GameSettings = this.getCurrentSettings()): void {
+    const styleId = 'global-settings-styles';
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+    
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
+    }
+    
+    // Définir les variables CSS globales
+    styleElement.innerHTML = `
+      :root {
+        --app-text-size: ${settings.textSize}px;
+        --app-category-text-size: ${settings.categoryTextSize}px;
+        --app-text-style: ${settings.textStyle};
+        --app-image-size: ${settings.imageSize}px;
+        --app-category-image-size: ${settings.categoryImageSize}px;
+        --app-animation-speed: ${settings.animationSpeed}s;
+
+        --app-contrast: ${settings.contrast}%;
+      }
+      
+      body {
+        background-color: var(--app-background-color);
+      }
+      
+      .game-page {
+        background-color: var(--app-background-color);
+      }
+      
+      h2 {
+        color: var(--app-primary-color);
+        font-size: var(--app-category-text-size);
+        font-weight: ${settings.textStyle === 'bold' ? 'bold' : 'normal'};
+        font-style: ${settings.textStyle === 'italic' ? 'italic' : 'normal'};
+      }
+    `;
   }
 }
