@@ -1,0 +1,39 @@
+.category-section {
+  background-color: rgba(197, 202, 233, 0.65);
+  border-radius: 15px;
+  border: 5px solid #acacac;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+h2 {
+  font-size: clamp(18px, 2.5vw, 24px); /* Taille adaptable */
+  color: #8223CF;
+  margin-bottom: 15px;
+}
+
+.image {
+  height: clamp(80px, 10vw, 150px); /* Adaptatif aux écrans */
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.dropzone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.object-image {
+  height: clamp(70px, 12vw, 125px); /* Responsive */
+  object-fit: contain;
+  cursor: grab;
+  transition: transform 0.2s ease-in-out;
+}
+
+.object-image:hover {
+  transform: scale(1.1);
+}

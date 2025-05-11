@@ -8,7 +8,7 @@ export const MOCK_USERS: User[] = [
     lastName: 'Johnson',
     age: 25,
     particularity: 'Aucune',
-    role: 'Encadrant'
+    role: 'Encadrant(e)'
   },
   {
     id: '2',
@@ -16,7 +16,7 @@ export const MOCK_USERS: User[] = [
     lastName: 'Smith',
     age: 60,
     particularity: 'Agnosie',
-    role: 'Accueilli'
+    role: 'Accueilli(e)'
   },
   {
     id: '3',
@@ -24,6 +24,6 @@ export const MOCK_USERS: User[] = [
     lastName: 'Brown',
     age: 72,
     particularity: 'Oubli de vêtements adéquats aux saisons',
-    role: 'Accueilli'
+    role: 'Accueilli(e)'
   }
 ];

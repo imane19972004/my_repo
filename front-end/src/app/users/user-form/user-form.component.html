@@ -49,8 +49,8 @@
         <label for="role">Rôle</label>
         <select id="role" formControlName="role" class="input-custom" required>
           <option value="">-- Sélectionnez un rôle --</option>
-          <option value="Accueilli">Accueilli</option>
-          <option value="Encadrant">Encadrant</option>
+          <option value="Accueilli">Accueilli(e)</option>
+          <option value="Encadrant">Encadrant(e)</option>
           <option value="Autre">Autre</option>
         </select>
         <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="error">

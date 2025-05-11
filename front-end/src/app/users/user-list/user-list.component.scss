@@ -5,6 +5,19 @@
   justify-content: center;
 }
 
+/* Directive de sélection */
+.directive {
+  font-weight: bold;
+  font-size: 20px;
+  font-family: Poppins, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 2px 4px 4px 4px #F0C94A;
+  border-radius: 10px;
+  padding: 5px;
+}
+
 /* Cartes - Résultats */
 .user-list {
   display: flex;

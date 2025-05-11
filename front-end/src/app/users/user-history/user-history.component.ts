@@ -59,7 +59,7 @@ export class UserHistoryComponent implements OnInit {
     // On trie pour la cohérence temporelle
     histories.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const labels = histories.map(h => new Date(h.date).toLocaleDateString());
+    const labels = histories.map(h => new Date(h.date).toLocaleString());
     const successData = histories.map(h => h.success);
     const failureData = histories.map(h => h.failure);
 
@@ -72,8 +72,8 @@ export class UserHistoryComponent implements OnInit {
       data: {
         labels: labels,
         datasets: [
-          { label: 'Objets bien placés', data: successData, borderColor: 'blue', fill: false, tension: 0.3 },
-          { label: 'Objets mal placés', data: failureData, borderColor: 'red', fill: false, tension: 0.3}
+          { label: 'Objets bien placés', data: successData, borderColor: 'blue', backgroundColor: 'blue', fill: false, tension: 0.3 },
+          { label: 'Objets mal placés', data: failureData, borderColor: 'red', backgroundColor: 'red', fill: false, tension: 0.3}
         ],
       },
       options: {
@@ -83,10 +83,10 @@ export class UserHistoryComponent implements OnInit {
             labels: {
               font: { size: 14, weight:"bold", family:'Poppins' },
               color:"#6a0dad",
-              boxHeight:15,
-              boxWidth:15,
+              boxHeight:10,
+              boxWidth:10,
               useBorderRadius:true,
-              borderRadius:7,
+              borderRadius:5,
             }
           }
         },
@@ -99,7 +99,7 @@ export class UserHistoryComponent implements OnInit {
               color:"#6a0dad"
             },
             type: 'category', // échelle "category" est utilisée
-            ticks: { font : { size: 16, weight:"bold", family:'Poppins', style:"italic" }, color:"#ffc200" }
+            ticks: { font : { size: 12, weight:"bold", family:'Poppins', style:"italic" }, color:"#ffc200" }
           },
           y: {
             beginAtZero: true,

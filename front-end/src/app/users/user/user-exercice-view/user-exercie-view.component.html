@@ -1,0 +1,45 @@
+<div class="exercice-assignment-page">
+    <div class="header-actions">
+      <h1>Exercices pour {{ user?.firstName }} {{ user?.lastName }}</h1>
+      <button class="create-button" routerLink="/create-exercice">Créer un nouvel exercice</button>
+    </div>
+  
+    <!-- Section des exercices attribués -->
+    <div class="section-container">
+      <h2>Exercices attribués</h2>
+      <div class="exercice-list" *ngIf="assignedExercices.length > 0">
+        <div class="exercice-card" *ngFor="let exercice of assignedExercices">
+          <div class="exercice-info">
+            <h3>{{ exercice.name }}</h3>
+            <p>{{ exercice.description }}</p>
+          </div>
+          <div class="exercice-actions">
+            <button class="play-button" (click)="playExercice(exercice)">Jouer</button>
+            <button class="remove-button" (click)="removeExercice(exercice)">Retirer</button>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="assignedExercices.length === 0">
+        <p>Aucun exercice n'est attribué à ce patient</p>
+      </div>
+    </div>
+  
+    <!-- Section pour ajouter des exercices de la liste générale -->
+    <div class="section-container">
+      <h2>Ajouter des exercices de la liste générale</h2>
+      <div class="exercice-list" *ngIf="availableExercices.length > 0">
+        <div class="exercice-card" *ngFor="let exercice of availableExercices">
+          <div class="exercice-info">
+            <h3>{{ exercice.name }}</h3>
+            <p>{{ exercice.description }}</p>
+          </div>
+          <div class="exercice-actions">
+            <button class="add-button" (click)="assignExerciceToUser(exercice)">Ajouter</button>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="availableExercices.length === 0">
+        <p>Aucun exercice disponible</p>
+      </div>
+    </div>
+  </div>

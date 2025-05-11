@@ -1,12 +1,25 @@
 <div class="user-list-page">
   <app-user-form *ngIf="mode === 'manage'"></app-user-form>
 
+  <div class="directive" *ngIf="mode === 'play'">
+    <p><strong> Veuillez appuyer sur un utilisateur pour le sélectionner </strong></p>
+  </div>
+
   <div class="user-list">
     <div class="users" *ngFor="let user of userList">
-      <div class="user" (click)="selectUser(user)"> <!-- on utilise (click) ici -->
+      <!-- on utilise (click) ici pour garder l'info de sur qui on a cliqué -->
+      <div class="user" (click)="selectUser(user)">
+        <!-- N'afficher que les accueillis en mode jeu "play" -->
         <app-user
           [user]="user"
-          (deleteUser)="deleteUser($event)">
+          (deleteUser)="deleteUser($event)"
+          *ngIf="user.role === 'Accueilli(e)' && mode === 'play'" >
+        </app-user>
+        <!-- Sinon, afficher tout le monde -->
+        <app-user
+          [user]="user"
+          (deleteUser)="deleteUser($event)"
+          *ngIf="mode === 'manage'" >
         </app-user>
       </div>
     </div>

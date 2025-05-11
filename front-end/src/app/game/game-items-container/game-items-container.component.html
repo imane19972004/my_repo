@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<div
+  class="left"
+  cdkDropList
+  id="bulk-list"
+  [cdkDropListConnectedTo]="connectedDropListsIds"
+  [cdkDropListData]="itemsInBulk"
+  (cdkDropListDropped)="itemDropped.emit($event)">
+  <img
+    *ngFor="let item of itemsInBulk"
+    cdkDrag
+    [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
+    [alt]="item.name"
+    class="object-image"
+  />
+</div>

@@ -1,140 +1,130 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import { Exercice } from '../../../models/exercice.model';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
+import { UserService } from '../../../services/user.service';
+import { Exercice } from '../../../models/exercice.model';
 import { Item } from '../../../models/item.model';
-import {UserHistory} from "../../../models/user-history.model";
-import {UserService} from "../../../services/user.service";
-
+import { UserHistory } from '../../../models/user-history.model';
+import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
-  styleUrls: ['./game-page.component.scss'],
+  styleUrls: ['./game-page.component.scss']
 })
-
 export class GamePageComponent implements OnInit {
-  exercice: Exercice;
+  exercice: Exercice = { id: '', name: '', theme: '', categories: [], items: [] };
   userID!: string;
-  itemsInBulk: Item[] = [];  // Items non encore placés
-  itemsByCategory: {[category: string]: Item[]} = {};  // Items déjà placés par catégorie
+  itemsInBulk: Item[] = [];
+  itemsByCategory: { [category: string]: Item[] } = {};
+  connectedDropListsIds: string[] = [];
   successMessage: string = '';
   gameCompleted: boolean = false;
+  numberOfFailure: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     private exerciceService: ExerciceService,
-    private userService: UserService,
-  ) {
-     // Initialiser avec un exercice vide
-    this.exercice = {
-      id: '',
-      name: "",
-      theme: '',
-      categories: [],
-      items: []
-
-    };
-  }
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    // Récupérer l'ID de l'exercice depuis les paramètres d'URL
     const exerciceId = this.route.snapshot.params['idExercice'];
     this.userID = this.route.snapshot.params['idUser'];
-    console.log("This user id is: ",this.userID);
-    if (exerciceId) {
-      this.loadExercice(exerciceId);
-      return;
-    } else {
-      console.error('Aucun ID d\'exercice spécifié');
-    }
+    if (exerciceId) this.loadExercice(exerciceId);
   }
 
+  // Récupère l'exercice à partir de l'ID
   loadExercice(id: string): void {
     this.exerciceService.getExerciceById(id).subscribe(exercice => {
       if (exercice) {
         this.exercice = exercice;
         this.initializeGame();
-      } else {
-        console.error('Exercice introuvable');
       }
     });
   }
 
+  // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
-    // Initialiser tous les objets dans le conteneur "en vrac"
     this.itemsInBulk = [...this.exercice.items];
-
-    // Initialiser les conteneurs de catégories vides
     this.itemsByCategory = {};
-    this.exercice.categories.forEach(category => {
-      this.itemsByCategory[category.name] = [];
-    });
-
-    // Mélanger les objets pour plus de fun
+    this.exercice.categories.forEach(c => this.itemsByCategory[c.name] = []);
+    this.connectedDropListsIds = ['bulk-list', ...this.exercice.categories.map(c => `category-${c.name}`)];
     this.shuffleArray(this.itemsInBulk);
-
     this.gameCompleted = false;
     this.successMessage = '';
   }
 
-  // Méthode pour mélanger un tableau
+  // Mélange aléatoirement les items
   shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
-  // Méthode appelée lorsqu'un objet est déplacé
-  onItemMoved(item: Item, targetCategory: string): void {
-    // Retirer l'objet du conteneur "en vrac"
-    this.itemsInBulk = this.itemsInBulk.filter(i => i !== item);
 
-    // Ajouter l'objet à la catégorie cible
-    this.itemsByCategory[targetCategory].push(item);
+  // Gère les déplacements entre les listes
+  drop(event: CdkDragDrop<Item[]>, targetCategory?: string): void {
+    const item = event.previousContainer.data[event.previousIndex];
+    if (event.previousContainer === event.container) return;
 
-    // Vérifier si la réponse est correcte
-    if (item.category === targetCategory) {
-      this.successMessage = 'Bien joué !';
-    } else {
-      this.successMessage = 'Hmm, êtes-vous sûr ?';
+    if (targetCategory) {
+      if (item.category === targetCategory) {
+        if (!this.itemsByCategory[targetCategory].includes(item)) {
+          this.itemsInBulk = this.itemsInBulk.filter(i => i !== item);
+          transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+          this.onItemMoved(item, targetCategory);
+        }
+      } else {
+        // Mauvaise catégorie
+        this.successMessage = 'Ce n\'est pas la bonne catégorie. Réessayez !';
+        this.numberOfFailure++;
+        transferArrayItem(event.previousContainer.data, this.itemsInBulk, event.previousIndex, event.currentIndex);
+        Object.keys(this.itemsByCategory).forEach(cat => {
+          this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(i => i !== item);
+        });
+        setTimeout(() => this.successMessage = '', 2000);
+      }
     }
 
-    // Effacer le message après 2 secondes
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 2000);
+    if (!targetCategory && event.container.id === 'bulk-list') {
+      Object.keys(this.itemsByCategory).forEach(cat => {
+        this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(i => i !== item);
+      });
+      transferArrayItem(event.previousContainer.data, this.itemsInBulk, event.previousIndex, event.currentIndex);
+    }
 
-    // Vérifier si le jeu est terminé
+    this.removeDuplicatesInCategories();
+  }
+
+  // Vérifie et affiche le score si terminé
+  onItemMoved(item: Item, targetCategory: string): void {
+    this.successMessage = item.category === targetCategory ? 'Bien joué !' : 'Hmm, êtes-vous sûr ?';
+    setTimeout(() => this.successMessage = '', 2000);
     this.checkGameCompletion();
   }
 
   checkGameCompletion(): void {
     if (this.itemsInBulk.length === 0) {
-      let correctAnswers = 0;
-      let totalItems = this.exercice.items.length;
+      let correct = 0;
+      const total = this.exercice.items.length;
 
-      Object.keys(this.itemsByCategory).forEach(category => {
-        this.itemsByCategory[category].forEach(item => {
-          if (item.category === category) {
-            correctAnswers++;
-          }
+      Object.keys(this.itemsByCategory).forEach(cat => {
+        this.itemsByCategory[cat].forEach(item => {
+          if (item.category === cat) correct++;
         });
       });
 
-      const score = Math.round((correctAnswers / totalItems) * 100);
+      this.successMessage = `Exercice terminé ! Votre score: ${Math.round((correct / total) * 100)}%`;
       this.gameCompleted = true;
-      this.successMessage = `Exercice terminé ! Votre score: ${score}%`;
-
-      const failures = totalItems - correctAnswers;
 
       const newHistory: UserHistory = {
         userId: this.userID,
         exerciceId: this.exercice.id,
         exerciceName: this.exercice.name,
         date: new Date().toISOString(),
-        success: correctAnswers,
-        failure: failures
+        success: correct,
+        failure: this.numberOfFailure,
       };
 
       this.userService.addUserHistory(newHistory);
@@ -146,7 +136,15 @@ export class GamePageComponent implements OnInit {
     this.initializeGame();
   }
 
-
-
-
+  // Évite les doublons dans les catégories
+  removeDuplicatesInCategories(): void {
+    Object.keys(this.itemsByCategory).forEach(cat => {
+      const seen = new Set<string>();
+      this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(item => {
+        if (seen.has(item.name)) return false;
+        seen.add(item.name);
+        return true;
+      });
+    });
+  }
 }

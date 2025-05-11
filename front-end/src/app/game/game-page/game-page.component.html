@@ -1,17 +1,25 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
-  <div class="left">
-    <img *ngFor="let item of itemsInBulk"
-         [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
-         [alt]="item.name"
-         class="object-image">
+  <!-- Conteneur des objets en vrac -->
+  <app-game-items-container
+    [itemsInBulk]="itemsInBulk"
+    [connectedDropListsIds]="connectedDropListsIds"
+    (itemDropped)="drop($event)">
+  </app-game-items-container>
+
+  <!-- Conteneurs de catégories -->
+  <div class="right">
+    <app-game-category
+      *ngFor="let category of exercice.categories"
+      [category]="category"
+      [items]="itemsByCategory[category.name]"
+      [connectedDropListsIds]="connectedDropListsIds"
+      (itemDropped)="drop($event.event, $event.category)">
+    </app-game-category>
   </div>
 
-  <div class="right">
-    <div *ngFor="let category of exercice.categories" class="category-section">
-      <h2>{{ category.name }}</h2>
-      <img [src]="'assets/resources/objets-et-pieces-de-la-maison/' + category.imagePath"
-           [alt]="category.name"
-           class="image">
-    </div>
+  <div *ngIf="successMessage" class="message">{{ successMessage }}</div>
+
+  <div *ngIf="gameCompleted" class="restart-button-container">
+    <button (click)="resetGame()" class="restart-button">Recommencer</button>
   </div>
 </div>

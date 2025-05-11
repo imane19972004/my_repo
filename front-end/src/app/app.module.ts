@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { BrowserModule } from '@angular/platform-browser';
+//Me
+import { RouterModule } from '@angular/router';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +21,7 @@ import { CreateExerciceComponent } from "./exercice-list/create-exercice/create-
 import { ExerciceListComponent } from "./exercice-list/exercice-list-manager/exercice-list.component";
 import { SettingsComponent } from './settings/settings.component';
 import { SettingsApplierComponent } from './settings/settings-applier/settings-applier.component';
+import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [
@@ -42,7 +46,10 @@ import { SettingsApplierComponent } from './settings/settings-applier/settings-a
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FormsModule,//pour ngModel
+    FormsModule,
+    CdkDropList,
+    CdkDrag,
+//pour ngModel
   ],
   providers: [],
   bootstrap: [AppComponent]

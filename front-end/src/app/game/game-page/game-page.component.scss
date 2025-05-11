@@ -1,49 +1,57 @@
+/* Réinitialisation de base */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* Pour gérer les marges et paddings plus facilement */
+  box-sizing: border-box;
 }
 
+/* Grille principale */
 .game-page {
   background-color: #F0C94A;
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Pour diviser l'écran en deux parties égales */
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   padding: 20px;
   border-radius: 5px;
 }
 
+/* Partie gauche : objets en vrac */
 .left {
   background-color: rgba(197, 202, 233, 0.65);
-  border-radius: 15px; /* Arrondir les coins */
-  border: 5px solid #acacac; /* Contour gris, 5px d'épaisseur */
+  border: 5px solid #acacac;
+  border-radius: 15px;
   padding: 20px;
   display: flex;
-  flex-wrap: wrap; /* Pour que les objets se répartissent sur plusieurs lignes si besoin */
-  justify-content: space-around; /* Espacer les images à l'intérieur */
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
+  width: 100%;
 }
 
+/* Objets draggable */
 .object-image {
   height: 125px;
-  object-fit: contain; /* Garder les proportions des images */
-  transition: transform 0.2s; /* Transition pour un effet au survol */
+  object-fit: contain;
+  cursor: grab;
+  transition: transform 0.2s;
 }
 
 .object-image:hover {
-  transform: scale(1.1); /* Agrandir légèrement l'image au survol */
+  transform: scale(1.1);
 }
 
+/* Partie droite : catégories */
 .right {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 90%;
 }
 
 .right > div {
   background-color: rgba(197, 202, 233, 0.65);
-  border-radius: 15px;
   border: 5px solid #acacac;
+  border-radius: 15px;
   padding: 20px;
   text-align: center;
 }
@@ -54,19 +62,95 @@
   margin-bottom: 15px;
 }
 
+/* Images des catégories */
 .image {
   height: 150px;
   object-fit: contain;
 }
 
-.right-top {
-  background-color: #f4f4f4; /* Light background for the top section */
+/* Zone de dépôt */
+.dropzone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-.right-middle {
-  background-color: #f4f4f4; /* Light background for the middle section */
+/* Message de feedback */
+.message {
+  grid-column: span 2;
+  position: fixed;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  padding: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  border-radius: 8px;
 }
 
-.right-bottom {
-  background-color: #f4f4f4; /* Light background for the bottom section */
+/* Effet lors du drag */
+.cdk-drop-list.cdk-drop-list-dragging {
+  border: 3px dashed #8223CF !important;
+  background-color: rgba(130, 35, 207, 0.1);
+}
+
+/* Bouton "Recommencer" */
+.restart-button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.restart-button {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px 32px;
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #6a0dad, #9b30ff);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(106, 13, 173, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.restart-button:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  background: linear-gradient(135deg, #5c00b3, #8a2be2);
+  box-shadow: 0 10px 25px rgba(106, 13, 173, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-page {
+    grid-template-columns: 1fr;
+  }
+
+  .left, .right {
+    width: 100%;
+  }
+
+  .object-image {
+    height: 90px;
+  }
+
+  .image {
+    height: 120px;
+  }
+
+  .message {
+    font-size: 18px;
+  }
 }

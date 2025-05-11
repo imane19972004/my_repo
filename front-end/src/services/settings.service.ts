@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-// Interface pour les paramètres du jeu
+// Interface simplifiée pour les paramètres du jeu
 export interface GameSettings {
-  difficulty: string;
+  difficulty?: string; // Calculé automatiquement à partir du nombre d'objets
   objectsCount: number;
   textSize: number;
   textStyle: string;
   contrast: number;
-  musicVolume: number;
-  effectsVolume: number;
   helpType: string;
   errorRetries: number;
   gameDuration: number;
@@ -26,8 +24,6 @@ export class SettingsService {
     textSize: 16,
     textStyle: 'normal',
     contrast: 50,
-    musicVolume: 50,
-    effectsVolume: 50,
     helpType: 'text',
     errorRetries: 2,
     gameDuration: 10
@@ -49,6 +45,8 @@ export class SettingsService {
     if (storedSettings) {
       try {
         const parsedSettings = JSON.parse(storedSettings);
+        // S'assurer que la difficulté est correctement définie selon le nombre d'objets
+        parsedSettings.difficulty = this.calculateDifficulty(parsedSettings.objectsCount);
         this.settingsSubject.next(parsedSettings);
       } catch (e) {
         console.error('Erreur lors du chargement des paramètres:', e);
@@ -60,6 +58,8 @@ export class SettingsService {
 
   // Sauvegarde les paramètres
   saveSettings(settings: GameSettings): void {
+    // S'assurer que la difficulté est correctement définie selon le nombre d'objets
+    settings.difficulty = this.calculateDifficulty(settings.objectsCount);
     localStorage.setItem('gameSettings', JSON.stringify(settings));
     this.settingsSubject.next(settings);
   }
@@ -79,6 +79,23 @@ export class SettingsService {
   updateSetting(key: keyof GameSettings, value: any): void {
     const currentSettings = this.getCurrentSettings();
     const newSettings = { ...currentSettings, [key]: value };
+    
+    // Si on met à jour le nombre d'objets, recalculer la difficulté
+    if (key === 'objectsCount') {
+      newSettings.difficulty = this.calculateDifficulty(value);
+    }
+    
     this.saveSettings(newSettings);
+  }
+  
+  // Calcule la difficulté en fonction du nombre d'objets
+  private calculateDifficulty(objectsCount: number): string {
+    if (objectsCount <= 3) {
+      return 'easy';
+    } else if (objectsCount <= 5) {
+      return 'medium';
+    } else {
+      return 'hard';
+    }
   }
 }
