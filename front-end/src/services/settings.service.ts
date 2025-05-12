@@ -1,11 +1,9 @@
-// Vérifiez si votre service de paramètres contient bien toutes les propriétés nécessaires
-// Voici comment le fichier devrait être (ou similaire):
-
-// src/services/settings.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+// Interface pour les paramètres du jeu
 export interface GameSettings {
+  difficulty?: string;//Calculé automatiquement à partir du nombre d'objets
   objectsCount: number;
   textSize: number;
   textStyle: string;
@@ -13,11 +11,6 @@ export interface GameSettings {
   helpType: string;
   errorRetries: number;
   gameDuration: number;
-  imageSize?: number;
-  animationSpeed?: number;
-  difficulty?: string;
-  timeBonus?: number;
-  mistakesAllowed?: number;
 }
 
 @Injectable({
@@ -26,64 +19,83 @@ export interface GameSettings {
 export class SettingsService {
   // Paramètres par défaut
   private defaultSettings: GameSettings = {
+    difficulty: 'medium',
     objectsCount: 4,
     textSize: 16,
     textStyle: 'normal',
     contrast: 50,
     helpType: 'text',
     errorRetries: 2,
-    gameDuration: 10,
-    imageSize: 150,
-    animationSpeed: 0.3,
-    difficulty: 'medium'
+    gameDuration: 10
   };
 
-  // Subject pour observer les changements
+  // BehaviorSubject pour suivre les changements de paramètres
   private settingsSubject = new BehaviorSubject<GameSettings>(this.defaultSettings);
   
-  // Observable pour s'abonner aux changements
-  settings$ = this.settingsSubject.asObservable();
-
+  // Observable que les composants peuvent souscrire
+  public settings$ = this.settingsSubject.asObservable();
+  
   constructor() {
-    // Charger les paramètres depuis le localStorage au démarrage
     this.loadSettings();
   }
 
-  // Obtenir les paramètres actuels
-  getCurrentSettings(): GameSettings {
-    return this.settingsSubject.getValue();
-  }
-
-  // Sauvegarder de nouveaux paramètres
-  saveSettings(settings: GameSettings): void {
-    // Mettre à jour les paramètres dans le BehaviorSubject
-    this.settingsSubject.next(settings);
-    
-    // Sauvegarder dans le localStorage
-    localStorage.setItem('gameSettings', JSON.stringify(settings));
-  }
-
-  // Charger les paramètres depuis le localStorage
+  // Charge les paramètres depuis le localStorage
   private loadSettings(): void {
-    const savedSettings = localStorage.getItem('gameSettings');
-    
-    if (savedSettings) {
+    const storedSettings = localStorage.getItem('gameSettings');
+    if (storedSettings) {
       try {
-        const parsedSettings = JSON.parse(savedSettings);
-        // Fusionner avec les paramètres par défaut pour assurer la présence de toutes les propriétés
-        const mergedSettings = { ...this.defaultSettings, ...parsedSettings };
-        this.settingsSubject.next(mergedSettings);
+        const parsedSettings = JSON.parse(storedSettings);
+        // S'assurer que la difficulté est correctement définie selon le nombre d'objets
+        parsedSettings.difficulty = this.calculateDifficulty(parsedSettings.objectsCount);
+        this.settingsSubject.next(parsedSettings);
       } catch (e) {
         console.error('Erreur lors du chargement des paramètres:', e);
-        // En cas d'erreur, utiliser les paramètres par défaut
-        this.resetSettings();
+        // En cas d'erreur, on utilise les paramètres par défaut
+        this.settingsSubject.next(this.defaultSettings);
       }
     }
   }
 
-  // Réinitialiser les paramètres
+  // Sauvegarde les paramètres
+  saveSettings(settings: GameSettings): void {
+    // S'assurer que la difficulté est correctement définie selon le nombre d'objets
+    settings.difficulty = this.calculateDifficulty(settings.objectsCount);
+    localStorage.setItem('gameSettings', JSON.stringify(settings));
+    this.settingsSubject.next(settings);
+  }
+
+  // Réinitialise les paramètres
   resetSettings(): void {
-    this.settingsSubject.next(this.defaultSettings);
     localStorage.removeItem('gameSettings');
+    this.settingsSubject.next(this.defaultSettings);
+  }
+
+  // Récupère les paramètres actuels (valeur courante)
+  getCurrentSettings(): GameSettings {
+    return this.settingsSubject.value;
+  }
+
+  // Met à jour un paramètre spécifique
+  updateSetting(key: keyof GameSettings, value: any): void {
+    const currentSettings = this.getCurrentSettings();
+    const newSettings = { ...currentSettings, [key]: value };
+    
+    // Si on met à jour le nombre d'objets, recalculer la difficulté
+    if (key === 'objectsCount') {
+      newSettings.difficulty = this.calculateDifficulty(value);
+    }
+    
+    this.saveSettings(newSettings);
+  }
+  
+  // Calcule la difficulté en fonction du nombre d'objets
+  private calculateDifficulty(objectsCount: number): string {
+    if (objectsCount <= 3) {
+      return 'easy';
+    } else if (objectsCount <= 5) {
+      return 'medium';
+    } else {
+      return 'hard';
+    }
   }
 }

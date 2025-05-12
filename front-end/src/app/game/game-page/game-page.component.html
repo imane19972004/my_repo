@@ -17,13 +17,6 @@
     </app-game-category>
   </div>
 
-  <div *ngIf="showHelp" class="help-message">
-  <div class="help-content">
-    <i class="fa fa-lightbulb-o"></i>
-    <p>{{ helpText }}</p>
-  </div>
-</div>
-
   <div *ngIf="successMessage" class="message">{{ successMessage }}</div>
 
   <div *ngIf="gameCompleted" class="restart-button-container">

@@ -14,24 +14,10 @@
   </div>
 
   <div class="settings-content">
-    <!-- Niveau de difficulté (informatif) -->
-    <div class="section difficulty-section">
-      <h3>Niveau de difficulté actuel: <span class="difficulty-label">{{ difficultyLabel }}</span></h3>
-      <p class="difficulty-info">Le niveau de difficulté est déterminé par le nombre d'objets.</p>
-    </div>
-
     <!-- Nombre d'objets -->
     <div class="section">
       <h3>Nombre d'objets</h3>
-      <div class="slider-control">
-        <label>Objets : {{ settings.objectsCount }}</label>
-        <input type="range" min="2" max="8" [(ngModel)]="settings.objectsCount" (change)="onObjectsCountChange()">
-        <div class="difficulty-range">
-          <span class="easy">Facile</span>
-          <span class="medium">Moyen</span>
-          <span class="hard">Difficile</span>
-        </div>
-      </div>
+      <input type="number" min="2" max="8" [(ngModel)]="settings.objectsCount">
     </div>
 
     <!-- Paramètres Visuels -->
@@ -40,12 +26,12 @@
 
       <div class="slider-control">
         <label>Taille du texte : {{ settings.textSize }}px</label>
-        <input type="range" min="12" max="30" [(ngModel)]="settings.textSize" (input)="onSettingChange()">
+        <input type="range" min="12" max="30" [(ngModel)]="settings.textSize">
       </div>
 
       <div class="select-control">
         <label>Style du texte :</label>
-        <select [(ngModel)]="settings.textStyle" (change)="onSettingChange()">
+        <select [(ngModel)]="settings.textStyle">
           <option value="normal">Normal</option>
           <option value="italic">Italique</option>
           <option value="bold">Gras</option>
@@ -54,7 +40,7 @@
 
       <div class="slider-control">
         <label>Contraste : {{ settings.contrast }}%</label>
-        <input type="range" min="0" max="100" [(ngModel)]="settings.contrast" (input)="onSettingChange()">
+        <input type="range" min="0" max="100" [(ngModel)]="settings.contrast">
       </div>
     </div>
 
@@ -63,11 +49,11 @@
       <h3>Paramètres d'Aide</h3>
       <div class="radio-group">
         <label>
-          <input type="radio" name="helpType" value="text" [(ngModel)]="settings.helpType" (change)="onSettingChange()">
+          <input type="radio" name="helpType" value="text" [(ngModel)]="settings.helpType">
           Aide écrite
         </label>
         <label>
-          <input type="radio" name="helpType" value="questions" [(ngModel)]="settings.helpType" (change)="onSettingChange()">
+          <input type="radio" name="helpType" value="questions" [(ngModel)]="settings.helpType">
           Aide par questions
         </label>
       </div>
@@ -79,7 +65,7 @@
 
       <div class="select-control">
         <label>Fréquence de répétition en cas d'erreur :</label>
-        <select [(ngModel)]="settings.errorRetries" (change)="onSettingChange()">
+        <select [(ngModel)]="settings.errorRetries">
           <option value="1">1 fois</option>
           <option value="2">2 fois</option>
           <option value="3">3 fois</option>
@@ -88,13 +74,13 @@
 
       <div class="input-control">
         <label>Durée du jeu (minutes) :</label>
-        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDuration" (change)="onSettingChange()">
+        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDuration">
       </div>
     </div>
 
     <!-- Boutons de contrôle -->
     <div class="settings-actions">
-      <button class="save-btn" (click)="saveSettings()">Fermer</button>
+      <button class="save-btn" (click)="saveSettings()">Enregistrer</button>
       <button class="reset-btn" (click)="resetSettings()">Réinitialiser</button>
     </div>
   </div>

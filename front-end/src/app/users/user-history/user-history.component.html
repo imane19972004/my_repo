@@ -29,7 +29,10 @@
 
   <!-- Affichage du graphique -->
   <div *ngIf="(!loading && userHistory.length > 0) && user?.role === 'Accueilli(e)'" class="graph">
-    <canvas #canvas id="canvas"></canvas>
+    <div *ngFor="let exerciceId of objectKeys(exerciseHistories)">
+      <h3>Évolution pour l’exercice : {{ exerciseHistories[exerciceId][0].exerciceName }}</h3>
+      <canvas #exerciseCanvas></canvas>
+    </div>
   </div>
 
   <!-- Display the latest user history -->
@@ -37,6 +40,15 @@
     <h3> {{ userHistory[userHistory.length - 1].exerciceName }} (Données de la dernière tentative)</h3>
     <p><strong>Nombre d'objets bien placés :</strong> {{ userHistory[userHistory.length - 1].success }}</p>
     <p><strong>Nombre d'erreurs de placement :</strong> {{ userHistory[userHistory.length - 1].failure }}</p>
+  </div>
+
+  <div *ngIf="aggregatedItemFailures && user?.role === 'Accueilli(e)'" class="card">
+    <h3>Nombre d'erreurs par item :</h3>
+    <ul>
+      <li *ngFor="let item of Object.keys(aggregatedItemFailures)">
+        {{ item }} : {{ aggregatedItemFailures[item] }} erreur(s)
+      </li>
+    </ul>
   </div>
 
 </div>
