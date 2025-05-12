@@ -9,7 +9,7 @@
 <!-- Panneau de paramètres qui s'ouvre -->
 <div class="settings-panel" [class.open]="isOpen">
   <div class="settings-header">
-    <h2>Paramètres du Jeu</h2>
+    <h2>Paramètres d'Accessibilité</h2>
     <button class="close-btn" (click)="toggleSettings()">x</button>
   </div>
 
@@ -40,41 +40,28 @@
 
       <div class="slider-control">
         <label>Contraste : {{ settings.contrast }}%</label>
-        <input type="range" min="0" max="100" [(ngModel)]="settings.contrast">
+        <input type="range" min="0" max="200" [(ngModel)]="settings.contrast">
       </div>
-    </div>
-
-    <!-- Paramètres d'Aide -->
-    <div class="section">
-      <h3>Paramètres d'Aide</h3>
-      <div class="radio-group">
+      
+      <div class="checkbox-control">
         <label>
-          <input type="radio" name="helpType" value="text" [(ngModel)]="settings.helpType">
-          Aide écrite
-        </label>
-        <label>
-          <input type="radio" name="helpType" value="questions" [(ngModel)]="settings.helpType">
-          Aide par questions
+          <input type="checkbox" [(ngModel)]="settings.highVisibility">
+          Mode haute visibilité
         </label>
       </div>
     </div>
-
-    <!-- Gestion des Erreurs -->
+    
+    <!-- Temporisation -->
     <div class="section">
-      <h3>Gestion des Erreurs</h3>
-
-      <div class="select-control">
-        <label>Fréquence de répétition en cas d'erreur :</label>
-        <select [(ngModel)]="settings.errorRetries">
-          <option value="1">1 fois</option>
-          <option value="2">2 fois</option>
-          <option value="3">3 fois</option>
-        </select>
+      <h3>Temporisation</h3>
+      <div class="slider-control">
+        <label>Vitesse d'animation : {{ settings.animationSpeed }}x</label>
+        <input type="range" min="0.5" max="2" step="0.1" [(ngModel)]="settings.animationSpeed">
       </div>
-
-      <div class="input-control">
-        <label>Durée du jeu (minutes) :</label>
-        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDuration">
+      
+      <div class="slider-control">
+        <label>Durée des messages : {{ settings.messageDuration }} secondes</label>
+        <input type="range" min="2" max="10" [(ngModel)]="settings.messageDuration">
       </div>
     </div>
 

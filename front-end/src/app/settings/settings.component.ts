@@ -15,10 +15,10 @@ export class SettingsComponent implements OnInit {
     objectsCount: 4,
     textSize: 16,
     textStyle: 'normal',
-    contrast: 50,
-    helpType: 'text',
-    errorRetries: 2,
-    gameDuration: 10
+    contrast: 100,
+    highVisibility: false,
+    animationSpeed: 1,
+    messageDuration: 5
   };
 
   constructor(private settingsService: SettingsService) {}
@@ -58,10 +58,10 @@ export class SettingsComponent implements OnInit {
       objectsCount: 4,
       textSize: 16,
       textStyle: 'normal',
-      contrast: 50,
-      helpType: 'text',
-      errorRetries: 2,
-      gameDuration: 10
+      contrast: 100,
+      highVisibility: false,
+      animationSpeed: 1,
+      messageDuration: 5
     };
   }
   
