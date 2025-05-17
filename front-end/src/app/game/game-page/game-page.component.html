@@ -1,32 +1,44 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
+  <!-- Minuteur -->
+  <div class="timer" [ngClass]="{'warning': remainingTime < 60}">
+    Temps restant: {{ formatTime() }}
+  </div>
+
   <!-- Conteneur des objets en vrac -->
-  <app-game-items-container
-    [itemsInBulk]="itemsInBulk"
-    [connectedDropListsIds]="connectedDropListsIds"
-    (itemDropped)="drop($event)">
-    <div *ngIf="numberOfFailure > 3" class="help">
-      <p *ngFor="let item of itemsInBulk"> {{ item.name }} </p>
+  <app-settings-applier>
+    <app-game-items-container
+      [itemsInBulk]="itemsInBulk"
+      [connectedDropListsIds]="connectedDropListsIds"
+      (itemDropped)="drop($event)">
+      <div *ngIf="numberOfFailure > 3" class="help">
+        <p *ngFor="let item of itemsInBulk"> {{ item.name }} </p>
 
-      <ng-container *ngIf="numberOfFailure > 6">
-        <p *ngFor="let item of itemsInBulk"> {{ item.description }} </p>
-      </ng-container>
-    </div>
-  </app-game-items-container>
-
-
+        <ng-container *ngIf="numberOfFailure > 6">
+          <p *ngFor="let item of itemsInBulk"> {{ item.description }} </p>
+        </ng-container>
+      </div>
+    </app-game-items-container>
+  </app-settings-applier>
 
   <!-- Conteneurs de catégories -->
   <div class="right">
-    <app-game-category
-      *ngFor="let category of exercice.categories"
-      [category]="category"
-      [items]="itemsByCategory[category.name]"
-      [connectedDropListsIds]="connectedDropListsIds"
-      (itemDropped)="drop($event.event, $event.category)">
-    </app-game-category>
+    <app-settings-applier>
+      <app-game-category
+        *ngFor="let category of exercice.categories"
+        [category]="category"
+        [items]="itemsByCategory[category.name]"
+        [connectedDropListsIds]="connectedDropListsIds"
+        (itemDropped)="drop($event.event, $event.category)">
+      </app-game-category>
+    </app-settings-applier>
   </div>
 
-  <div *ngIf="successMessage" class="message" [ngStyle]="{color: messageColor}">{{ successMessage }}</div>
+  <div *ngIf="successMessage" class="message" [ngStyle]="{
+    color: messageColor,
+    fontSize: settings.textSize + 'px',
+    fontWeight: settings.textStyle === 'bold' ? 'bold' : 'normal',
+    fontStyle: settings.textStyle === 'italic' ? 'italic' : 'normal'
+  }">{{ successMessage }}</div>
 
   <div *ngIf="gameCompleted" class="restart-button-container">
     <button (click)="resetGame()" class="restart-button">Recommencer</button>
