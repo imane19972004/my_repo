@@ -7,10 +7,10 @@ export interface GameSettings {
   textSize: number;
   textStyle: string;
   contrast: number;
-  highVisibility?: boolean;
-  animationSpeed?: number;
-  messageDuration?: number;
-  difficulty?: string;
+  highVisibility: boolean;
+  animationSpeed: number;
+  messageDuration: number;
+  gameDurationMinutes: number;
 }
 
 @Injectable({
@@ -34,8 +34,8 @@ export class SettingsService {
       contrast: 100,
       highVisibility: false,
       animationSpeed: 1,
-      messageDuration: 5,
-      difficulty: 'medium'
+      messageDuration: 3,
+      gameDurationMinutes: 10
     };
   }
 

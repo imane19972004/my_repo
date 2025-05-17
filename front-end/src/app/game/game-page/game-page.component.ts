@@ -1,18 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+// game-page.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
 import { UserService } from '../../../services/user.service';
+import { SettingsService, GameSettings } from '../../../services/settings.service';
 import { Exercice } from '../../../models/exercice.model';
 import { Item } from '../../../models/item.model';
 import { UserHistory } from '../../../models/user-history.model';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Subscription, interval } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
   styleUrls: ['./game-page.component.scss']
 })
-export class GamePageComponent implements OnInit {
+export class GamePageComponent implements OnInit, OnDestroy {
   exercice: Exercice = { id: '', name: '', theme: '', categories: [], items: [] };
   userID!: string;
   itemsInBulk: Item[] = [];
@@ -23,17 +27,46 @@ export class GamePageComponent implements OnInit {
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
   itemFailureTracker: { [itemName: string]: number } = {};
+  
+  // Paramètres du jeu
+  settings: GameSettings;
+  
+  // Variables pour le minuteur
+  timerSubscription: Subscription | null = null;
+  remainingTime: number = 0; // en secondes
+  timeoutTriggered: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private exerciceService: ExerciceService,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private settingsService: SettingsService
+  ) {
+    this.settings = this.settingsService.getCurrentSettings();
+  }
 
   ngOnInit(): void {
     const exerciceId = this.route.snapshot.params['idExercice'];
     this.userID = this.route.snapshot.params['idUser'];
+    
+    // S'abonner aux changements de paramètres
+    this.settingsService.settings$.subscribe(settings => {
+      this.settings = settings;
+      
+      // Si le jeu est déjà initialisé, mettre à jour les éléments en fonction du nombre d'objets
+      if (this.exercice.items.length > 0) {
+        this.adjustItemsCount();
+      }
+    });
+    
     if (exerciceId) this.loadExercice(exerciceId);
+  }
+  
+  ngOnDestroy(): void {
+    // Annuler le minuteur si on quitte la page
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 
   // Récupère l'exercice à partir de l'ID
@@ -48,13 +81,94 @@ export class GamePageComponent implements OnInit {
 
   // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
+    // Réinitialiser l'état du jeu
     this.itemsInBulk = [...this.exercice.items];
+    this.adjustItemsCount();
     this.itemsByCategory = {};
     this.exercice.categories.forEach(c => this.itemsByCategory[c.name] = []);
     this.connectedDropListsIds = ['bulk-list', ...this.exercice.categories.map(c => `category-${c.name}`)];
     this.shuffleArray(this.itemsInBulk);
     this.gameCompleted = false;
     this.successMessage = '';
+    this.numberOfFailure = 0;
+    this.itemFailureTracker = {};
+    this.timeoutTriggered = false;
+    
+    // Démarrer le minuteur
+    this.startTimer();
+  }
+  
+  // Ajuster le nombre d'éléments en fonction des paramètres
+  adjustItemsCount(): void {
+    // S'assurer qu'on n'a pas plus d'éléments que le nombre spécifié dans les paramètres
+    if (this.itemsInBulk.length > this.settings.objectsCount) {
+      this.itemsInBulk = this.itemsInBulk.slice(0, this.settings.objectsCount);
+    }
+  }
+  
+  // Démarrer le minuteur de jeu
+  startTimer(): void {
+    // Annuler tout minuteur existant
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    
+    // Convertir les minutes en secondes
+    this.remainingTime = this.settings.gameDurationMinutes * 60;
+    
+    // Créer un nouvel intervalle qui décrémente toutes les secondes
+    this.timerSubscription = interval(1000).subscribe(() => {
+      this.remainingTime--;
+      
+      // Si le temps est écoulé, terminer le jeu
+      if (this.remainingTime <= 0) {
+        this.endGameDueToTimeout();
+        this.timerSubscription?.unsubscribe();
+      }
+    });
+  }
+  
+  // Formater le temps restant en MM:SS
+  formatTime(): string {
+    const minutes = Math.floor(this.remainingTime / 60);
+    const seconds = this.remainingTime % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  
+  // Terminer le jeu en raison du timeout
+  endGameDueToTimeout(): void {
+    if (this.timeoutTriggered) return; // Éviter les appels multiples
+    
+    this.timeoutTriggered = true;
+    this.gameCompleted = true;
+    
+    // Compter le score actuel
+    let correct = 0;
+    const total = this.itemsInBulk.length + Object.values(this.itemsByCategory)
+      .reduce((sum, items) => sum + items.length, 0);
+    
+    Object.keys(this.itemsByCategory).forEach(cat => {
+      this.itemsByCategory[cat].forEach(item => {
+        if (item.category === cat) correct++;
+      });
+    });
+    
+    // Afficher le message de fin
+    this.successMessage = `Temps écoulé ! Votre score: ${Math.round((correct / total) * 100)}%`;
+    this.messageColor = 'orange';
+    
+    // Enregistrer l'historique
+    const newHistory: UserHistory = {
+      userId: this.userID,
+      exerciceId: this.exercice.id,
+      exerciceName: this.exercice.name,
+      date: new Date().toISOString(),
+      success: correct,
+      failure: this.numberOfFailure,
+      itemFailures: this.itemFailureTracker
+    };
+    
+    this.userService.addUserHistory(newHistory);
   }
 
   // Mélange aléatoirement les items
@@ -67,6 +181,9 @@ export class GamePageComponent implements OnInit {
 
   // Gère les déplacements entre les listes
   drop(event: CdkDragDrop<Item[]>, targetCategory?: string): void {
+    // Ne pas permettre les actions si le jeu est terminé
+    if (this.gameCompleted) return;
+    
     const item = event.previousContainer.data[event.previousIndex];
     if (event.previousContainer === event.container) return;
 
@@ -92,7 +209,9 @@ export class GamePageComponent implements OnInit {
         Object.keys(this.itemsByCategory).forEach(cat => {
           this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(i => i !== item);
         });
-        setTimeout(() => this.successMessage = '', 2000);
+        
+        // Afficher le message d'erreur pendant la durée spécifiée dans les paramètres
+        setTimeout(() => this.successMessage = '', this.settings.messageDuration * 1000);
       }
     }
 
@@ -110,7 +229,10 @@ export class GamePageComponent implements OnInit {
   onItemMoved(item: Item, targetCategory: string): void {
     this.successMessage = item.category === targetCategory ? 'Bien joué !' : 'Hmm, êtes-vous sûr ?';
     this.messageColor = 'green';
-    setTimeout(() => this.successMessage = '', 2000);
+    
+    // Afficher le message de succès pendant la durée spécifiée dans les paramètres
+    setTimeout(() => this.successMessage = '', this.settings.messageDuration * 1000);
+    
     this.checkGameCompletion();
   }
 
@@ -127,6 +249,11 @@ export class GamePageComponent implements OnInit {
 
       this.successMessage = `Exercice terminé ! Votre score: ${Math.round((correct / total) * 100)}%`;
       this.gameCompleted = true;
+      
+      // Arrêter le minuteur
+      if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+      }
 
       const newHistory: UserHistory = {
         userId: this.userID,

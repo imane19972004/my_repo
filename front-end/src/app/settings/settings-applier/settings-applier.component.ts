@@ -1,5 +1,6 @@
 // src/app/settings/settings-applier/settings-applier.component.ts
 import { Component, OnInit } from '@angular/core';
+import { SettingsService, GameSettings } from '../../../services/settings.service';
 
 @Component({
   selector: 'app-settings-applier',
@@ -11,25 +12,30 @@ import { Component, OnInit } from '@angular/core';
   styles: []
 })
 export class SettingsApplierComponent implements OnInit {
-  settings: any = {};
+  settings: GameSettings;
 
-  constructor() {}
+  constructor(private settingsService: SettingsService) {
+    this.settings = this.settingsService.getCurrentSettings();
+  }
 
   ngOnInit() {
-    // Charger les paramètres du localStorage
-    const savedSettings = localStorage.getItem('gameSettings');
-    if (savedSettings) {
-      this.settings = JSON.parse(savedSettings);
-    }
+    // S'abonner aux changements de paramètres
+    this.settingsService.settings$.subscribe(settings => {
+      this.settings = settings;
+    });
   }
 
   applySettings() {
     if (!this.settings) return {};
 
     return {
-      fontSize: this.settings.textSize ? `${this.settings.textSize}px` : '16px',
-      fontStyle: this.settings.textStyle || 'normal',
-      filter: this.settings.contrast ? `contrast(${this.settings.contrast}%)` : 'none'
+      fontSize: `${this.settings.textSize}px`,
+      fontWeight: this.settings.textStyle === 'bold' ? 'bold' : 'normal',
+      fontStyle: this.settings.textStyle === 'italic' ? 'italic' : 'normal',
+      filter: `contrast(${this.settings.contrast}%)`,
+      transition: `all ${0.3 / this.settings.animationSpeed}s ease-in-out`,
+      backgroundColor: this.settings.highVisibility ? 'rgba(255, 255, 255, 0.9)' : 'inherit',
+      color: this.settings.highVisibility ? '#000' : 'inherit'
     };
   }
 }
