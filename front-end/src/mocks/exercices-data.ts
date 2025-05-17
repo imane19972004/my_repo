@@ -19,6 +19,7 @@ export const DEFAULT_EXERCISE_DATA = [
       { name: 'Poèle', description: 'Pour faire cuire les aliments', imagePath: 'poele.png', category: 'Cuisine' },
       { name: 'Peigne', description: 'Pour se coiffer', imagePath: 'peigne.png', category: 'Salle de bain' },
       { name: 'Livre', description:'Se cultiver intéllectuellement', imagePath: 'livre.png', category: 'Salon'},
+      { name: 'Réfrigérateur', description:'Ranger la nourriture au frais ', imagePath: 'refrigerateur.png', category: 'Cuisine'},
     ]
   }
 ];

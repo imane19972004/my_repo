@@ -21,7 +21,7 @@
   font-weight: bold;
   font-size: 24px;
   margin-bottom: 30px;
-  color: #6a0dad;
+  color: var(--purple2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +58,7 @@ button {
 }
 
 .btn-add {
-  background-color: #6a0dad;
+  background-color: var(--purple2);
   color: #fff;
   margin-top: 10px;
 }

@@ -4,7 +4,16 @@
     [itemsInBulk]="itemsInBulk"
     [connectedDropListsIds]="connectedDropListsIds"
     (itemDropped)="drop($event)">
+    <div *ngIf="numberOfFailure > 3" class="help">
+      <p *ngFor="let item of itemsInBulk"> {{ item.name }} </p>
+
+      <ng-container *ngIf="numberOfFailure > 6">
+        <p *ngFor="let item of itemsInBulk"> {{ item.description }} </p>
+      </ng-container>
+    </div>
   </app-game-items-container>
+
+
 
   <!-- Conteneurs de catégories -->
   <div class="right">
@@ -17,7 +26,7 @@
     </app-game-category>
   </div>
 
-  <div *ngIf="successMessage" class="message">{{ successMessage }}</div>
+  <div *ngIf="successMessage" class="message" [ngStyle]="{color: messageColor}">{{ successMessage }}</div>
 
   <div *ngIf="gameCompleted" class="restart-button-container">
     <button (click)="resetGame()" class="restart-button">Recommencer</button>

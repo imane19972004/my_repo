@@ -4,20 +4,25 @@
   [id]="'category-' + category.name"
   [cdkDropListConnectedTo]="connectedDropListsIds"
   [cdkDropListData]="items"
-  (cdkDropListDropped)="onDrop($event)">
+  (cdkDropListDropped)="onDrop($event)"
+>
   <h2>{{ category.name }}</h2>
-  <img
-    [src]="'assets/resources/objets-et-pieces-de-la-maison/' + category.imagePath"
-    [alt]="category.name"
-    class="image"
-  />
-  <div class="dropzone">
+
+  <div class="category-content">
     <img
-      *ngFor="let item of items"
-      cdkDrag
-      [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
-      [alt]="item.name"
-      class="object-image"
+      [src]="'assets/resources/objets-et-pieces-de-la-maison/' + category.imagePath"
+      [alt]="category.name"
+      class="image"
     />
+
+    <div class="dropzone">
+      <img
+        *ngFor="let item of items"
+        cdkDrag
+        [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
+        [alt]="item.name"
+        class="object-image"
+      />
+    </div>
   </div>
 </div>

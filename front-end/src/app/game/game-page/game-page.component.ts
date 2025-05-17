@@ -19,6 +19,7 @@ export class GamePageComponent implements OnInit {
   itemsByCategory: { [category: string]: Item[] } = {};
   connectedDropListsIds: string[] = [];
   successMessage: string = '';
+  messageColor: string = '';
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
   itemFailureTracker: { [itemName: string]: number } = {};
@@ -79,6 +80,7 @@ export class GamePageComponent implements OnInit {
       } else {
         // Mauvaise catégorie
         this.successMessage = 'Ce n\'est pas la bonne catégorie. Réessayez !';
+        this.messageColor = 'red';
         this.numberOfFailure++;
         if (!this.itemFailureTracker[item.name]) {
           this.itemFailureTracker[item.name] = 1;
@@ -107,6 +109,7 @@ export class GamePageComponent implements OnInit {
   // Vérifie et affiche le score si terminé
   onItemMoved(item: Item, targetCategory: string): void {
     this.successMessage = item.category === targetCategory ? 'Bien joué !' : 'Hmm, êtes-vous sûr ?';
+    this.messageColor = 'green';
     setTimeout(() => this.successMessage = '', 2000);
     this.checkGameCompletion();
   }

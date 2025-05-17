@@ -9,7 +9,7 @@
   border: 5px solid #acacac;
   border-radius: 15px;
   width: 90%;
-  height: 95%;
+  height: 80vh;
 }
 
 /* Style des objets en vrac */
@@ -46,4 +46,18 @@
     width: 80px;
     height: 80px;
   }
+}
+.object-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+  margin: 5px;
+  text-align: center;
+}
+
+.object-container p {
+  font-size: 14px;
+  color: #ff0000;
+  margin-top: 4px;
 }

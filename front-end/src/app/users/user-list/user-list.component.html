@@ -13,7 +13,7 @@
         <app-user
           [user]="user"
           (deleteUser)="deleteUser($event)"
-          *ngIf="user.role === 'Accueilli(e)' && mode === 'play'" >
+          *ngIf="user?.role?.startsWith('Accueilli') && mode === 'play'" >
         </app-user>
         <!-- Sinon, afficher tout le monde -->
         <app-user

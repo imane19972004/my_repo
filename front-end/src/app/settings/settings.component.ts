@@ -1,6 +1,11 @@
+// 
+
 // settings.component.ts
 import { Component, OnInit } from '@angular/core';
-import { SettingsService, GameSettings } from '../../services/settings.service';
+// Pas besoin d'importer CommonModule et FormsModule ici si c'est fait dans AppModule
+// Si le composant est standalone, on conserve ces imports
+
+type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
 @Component({
   selector: 'app-settings',
@@ -11,43 +16,58 @@ export class SettingsComponent implements OnInit {
   isOpen: boolean = false;
   
   // Configuration par défaut
-  settings: GameSettings = {
+  settings = {
+    difficulty: 'medium' as DifficultyLevel,
     objectsCount: 4,
     textSize: 16,
     textStyle: 'normal',
-    contrast: 100,
-    highVisibility: false,
-    animationSpeed: 1,
-    messageDuration: 5
+    contrast: 50,
+    musicVolume: 50,
+    effectsVolume: 50,
+    helpType: 'text',
+    errorRetries: 2,
+    gameDuration: 10
   };
 
-  constructor(private settingsService: SettingsService) {}
+  // Options pour le nombre d'objets en fonction de la difficulté
+  objectsOptions: Record<DifficultyLevel, number[]> = {
+    easy: [2, 3],
+    medium: [4, 5],
+    hard: [6, 7, 8]
+  };
 
   ngOnInit() {
     // Charger les paramètres sauvegardés au démarrage
-    const currentSettings = this.settingsService.getCurrentSettings();
-    this.settings = {
-      ...this.settings,
-      ...currentSettings
-    };
+    const savedSettings = localStorage.getItem('gameSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        this.settings = {
+          ...this.settings,
+          ...parsed
+        };
+      } catch (e) {
+        console.error('Erreur lors du chargement des paramètres:', e);
+      }
+    }
   }
 
   toggleSettings() {
     this.isOpen = !this.isOpen;
   }
   
+  // Met à jour les options du nombre d'objets quand la difficulté change
+  updateObjectsOptions(difficulty: DifficultyLevel) {
+    // On se contente de changer la difficulté
+    this.settings.difficulty = difficulty;
+    
+    // On met par défaut la première valeur disponible
+    this.settings.objectsCount = this.objectsOptions[difficulty][0];
+  }
+  
   saveSettings() {
-    // Déterminer le niveau de difficulté basé sur le nombre d'objets
-    const calculatedDifficulty = this.calculateDifficulty(this.settings.objectsCount);
-    
-    // Mettre à jour les paramètres
-    const updatedSettings: GameSettings = {
-      ...this.settings,
-      difficulty: calculatedDifficulty
-    };
-    
-    // Sauvegarder dans le service
-    this.settingsService.saveSettings(updatedSettings);
+    // Sauvegarde des paramètres dans le localStorage
+    localStorage.setItem('gameSettings', JSON.stringify(this.settings));
     alert('Paramètres enregistrés !');
     this.toggleSettings(); // Fermer le panneau après sauvegarde
   }
@@ -55,24 +75,16 @@ export class SettingsComponent implements OnInit {
   resetSettings() {
     // Réinitialisation des paramètres
     this.settings = {
+      difficulty: 'medium' as DifficultyLevel,
       objectsCount: 4,
       textSize: 16,
       textStyle: 'normal',
-      contrast: 100,
-      highVisibility: false,
-      animationSpeed: 1,
-      messageDuration: 5
+      contrast: 50,
+      musicVolume: 50,
+      effectsVolume: 50,
+      helpType: 'text',
+      errorRetries: 2,
+      gameDuration: 10
     };
-  }
-  
-  // Calcule la difficulté en fonction du nombre d'objets
-  calculateDifficulty(objectsCount: number): string {
-    if (objectsCount <= 3) {
-      return 'easy';
-    } else if (objectsCount <= 5) {
-      return 'medium';
-    } else {
-      return 'hard';
-    }
   }
 }

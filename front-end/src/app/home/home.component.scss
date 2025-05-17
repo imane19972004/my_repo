@@ -10,22 +10,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #6a0dad;
-  box-shadow: 4px 4px 4px 4px #F0C94A;
+  color: var(--purple2);
+  box-shadow: 4px 4px 4px 4px var(--yellow);
 }
 
 .title {
   font-size: 2rem;
-  color: #6a0dad;
-  box-shadow: 4px 4px 4px #6a0dad;
+  color: var(--purple2);
+  box-shadow: 4px 4px 4px var(--purple2);
   margin-bottom: 10px;
   cursor: default;
 }
 
 .description {
   font-size: 1.2rem;
-  color: #6a0dad;
-  box-shadow: 4px 4px 4px #6a0dad;
+  color: var(--purple2);
+  box-shadow: 4px 4px 4px var(--purple2);
   margin-bottom: 20px;
   cursor: default;
 }
@@ -38,11 +38,11 @@
   text-decoration: none;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
-  background-color: #F0C94A;
-  color: #6a0dad;
+  background-color: var(--yellow);
+  color: var(--purple2);
   margin-top: 20px;
   width: 300px;
-  box-shadow: 4px 4px 4px #6a0dad;
+  box-shadow: 4px 4px 4px var(--purple2);
 }
 
 .btn-primary:hover {
@@ -60,6 +60,6 @@
 .btn-secondary-content {
   text-decoration: none;
   font-size: large;
-  color: #6a0dad;
+  color: var(--purple2);
 }
 

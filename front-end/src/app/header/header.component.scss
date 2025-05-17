@@ -18,17 +18,17 @@
       flex: 1;
       margin-left: 20px;
       cursor: default;
-      
+
       h1 {
         margin: 0;
         font-size: 24px;
-        color: #6a0dad;
+        color: var(--purple2);
       }
 
       p {
         margin: 0;
         font-size: 14px;
-        color: #6a0dad;
+        color: var(--purple2);
       }
     }
 
@@ -41,13 +41,14 @@
       li {
         margin-left: 20px;
         border-radius: 5px;
-        color: #F0C94A;
-        background-color: #6a0dad;
+        color: var(--yellow);
+        background-color: var(--purple2);
         padding: 10px;
 
         a {
           text-decoration: none;
-          color: #F0C94A;
+          color: var(--yellow);
+          font-weight: bold;
         }
       }
 
@@ -60,5 +61,5 @@
     .settings-button {
       margin-left: 15px;
       /* Le composant settings a déjà son propre style */
-    }  
+    }
 }

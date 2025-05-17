@@ -13,7 +13,7 @@
 
   h2 {
     text-align: center;
-    color: #6a0dad;
+    color: var(--purple2);
     font-size: 28px;
     margin-bottom: 25px;
     border-bottom: 2px solid #ddd;
@@ -62,14 +62,14 @@
       margin-bottom: 15px;
 
       h3 {
-        color: #6a0dad;
+        color: var(--purple2);
         margin: 0;
         font-size: 22px;
       }
 
       .theme-badge {
         background-color: #f0e6ff;
-        color: #6a0dad;
+        color: var(--purple2);
         padding: 4px 10px;
         border-radius: 12px;
         font-size: 12px;
@@ -181,7 +181,7 @@
   }
 
   .btn-create {
-    background-color: #6a0dad;
+    background-color: var(--purple2);
     color: white;
     font-size: 16px;
     padding: 12px 20px;

@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 2px 4px 4px 4px #F0C94A;
+  box-shadow: 2px 4px 4px 4px var(--yellow);
   border-radius: 10px;
   padding: 5px;
 }
@@ -57,7 +57,7 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #8223CF;
+  border: 3px solid var(--purple1);
   padding: 5px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease-in-out;
@@ -72,8 +72,8 @@
 .name {
   font-size: 22px;
   font-weight: bold;
-  color: #8223CF;
-  background-color: #F0C94A;
+  color: var(--purple1);
+  background-color: var(--yellow);
   padding: 8px 12px;
   border-radius: 5px;
   display: inline-block;
@@ -87,14 +87,14 @@
 }
 
 .results th, .results td {
-  border: 1px solid #8223CF;
+  border: 1px solid var(--purple1);
   padding: 10px;
   text-align: center;
 }
 
 .results th {
-  background-color: #8223CF;
-  color: #F0C94A;
+  background-color: var(--purple1);
+  color: var(--yellow);
   font-weight: bold;
 }
 
@@ -104,7 +104,7 @@
 
 /* Bouton interactif */
 .btn {
-  background-color: #8223CF;
+  background-color: var(--purple1);
   color: #ffffff;
   border: none;
   padding: 10px 20px;

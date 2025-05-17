@@ -7,12 +7,14 @@
 
 /* Grille principale */
 .game-page {
-  background-color: #F0C94A;
+  background-color: var(--yellow);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   padding: 20px;
   border-radius: 5px;
+  height: 100vh;
+  width: 100vw;
 }
 
 /* Partie gauche : objets en vrac */
@@ -58,7 +60,7 @@
 
 .right h2 {
   font-size: 24px;
-  color: #8223CF;
+  color: var(--purple1);
   margin-bottom: 15px;
 }
 
@@ -81,24 +83,24 @@
 .message {
   grid-column: span 2;
   position: fixed;
-  top: 45%;
-  left: 50%;
+  top: 45vh;
+  left: 50vw;
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50px;
+  height: 80px;
+  width: max-content;
   padding: 12px;
-  font-size: 20px;
+  font-size: 35px;
   font-weight: bold;
-  color: #2e7d32;
   background-color: #e8f5e9;
   border-radius: 8px;
 }
 
 /* Effet lors du drag */
 .cdk-drop-list.cdk-drop-list-dragging {
-  border: 3px dashed #8223CF !important;
+  border: 3px dashed var(--purple1) !important;
   background-color: rgba(130, 35, 207, 0.1);
 }
 
@@ -110,14 +112,14 @@
 
 .restart-button {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50vh;
+  left: 50vw;
   transform: translate(-50%, -50%);
   padding: 16px 32px;
   font-size: clamp(16px, 2.5vw, 22px);
   font-weight: bold;
   color: #fff;
-  background: linear-gradient(135deg, #6a0dad, #9b30ff);
+  background: linear-gradient(135deg, var(--purple2), #9b30ff);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -153,4 +155,18 @@
   .message {
     font-size: 18px;
   }
+}
+
+.game-page {
+  position: absolute;
+  top: 80px; // hauteur de ton header
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--yellow);
 }

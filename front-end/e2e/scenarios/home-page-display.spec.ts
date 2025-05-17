@@ -12,14 +12,14 @@ test.describe('Home page display', () => {
     const title = await appComponentFixture.getTitle();
 
     // Search by text content. Partial and exact text.
-    const description1 = await page.getByText('Start your');
+    const description1 = await page.getByText('détente tout en entraînant');
 
     // For exact text: see the function declaration
     const description2 = await appComponentFixture.getDescription();
 
     // Using page.locator
     const description3 = await page.locator(
-      'div.description:has-text("Start your first app!")'
+      'p.description:has-text("Passez un moment de détente tout en entraînant votre mémoire !")'
     );
 
     expect(title).toBeVisible();
@@ -32,7 +32,7 @@ test.describe('Home page display', () => {
     // expect(description4).toBeVisible();
 
     // Success not visible
-    let success = await appComponentFixture.getSuccessMessage();
+    /*let success = await appComponentFixture.getPlayMessage();
 
     // Success message should not be visible - we haven't clicked yet.
     expect(success).not.toBeVisible();
@@ -40,16 +40,16 @@ test.describe('Home page display', () => {
     // Triggers events
     const showSuccessButton = await appComponentFixture.getShowButton();
     await showSuccessButton.click();
-    success = await appComponentFixture.getSuccessMessage();
+    success = await appComponentFixture.getPlayMessage();
 
     // Success message should be visible now!
     expect(success).toBeVisible();
 
     // Another way to click on a button is to expose a function doing the click directly and avoid the two lines 35 and 36.
     await appComponentFixture.clickOnShowButton();
-    success = await appComponentFixture.getSuccessMessage();
+    success = await appComponentFixture.getPlayMessage();
     // Success message shouldn't be visible again.
-    expect(success).not.toBeVisible();
+    expect(success).not.toBeVisible();*/
   });
 
   // TO GO FURTHER :

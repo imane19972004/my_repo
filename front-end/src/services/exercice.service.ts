@@ -14,6 +14,7 @@ export class ExerciceService {
   private readonly STORAGE_KEY = 'memolink_exercices';
 
   constructor() {
+    this.clearLocalStorage();
     // Chargement initial des exercices
     this.loadExercices();
   }

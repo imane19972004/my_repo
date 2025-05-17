@@ -13,6 +13,24 @@ export class GameItemsContainerComponent implements OnInit {
   @Input() connectedDropListsIds: string[] = [];
   @Output() itemDropped = new EventEmitter<CdkDragDrop<Item[]>>();
 
+  static numberOfFailure: number = 0;
+  numberOfFailure: number = GameItemsContainerComponent.numberOfFailure;
+
   constructor() {}
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.numberOfFailure = GameItemsContainerComponent.numberOfFailure;
+    console.log(this.numberOfFailure);
+  }
+
+  setNumberOfFailure(num: number): void {
+    this.numberOfFailure = num;
+    console.log(this.numberOfFailure);
+  }
+
+  setItemsInBulk(items: Item[]): void {
+    this.itemsInBulk = items;
+    console.log(this.itemsInBulk);
+  }
+
+
 }

@@ -1,7 +1,7 @@
 /* Style de la carte utilisateur */
 .user-card {
   background-color: #ffffff;
-  border: 2px solid #8223CF;
+  border: 2px solid var(--purple1);
   border-radius: 12px;
   text-align: center;
   padding: 20px;
@@ -22,8 +22,8 @@
 
 /* Avatar */
 .user-avatar {
-  background-color: #8223CF;
-  color: #F0C94A;
+  background-color: var(--purple1);
+  color: var(--yellow);
   width: 80px;
   height: 80px;
   display: flex;
@@ -38,8 +38,8 @@
 .user-name {
   font-size: 22px;
   font-weight: bold;
-  color: #8223CF;
-  background-color: #F0C94A;
+  color: var(--purple1);
+  background-color: var(--yellow);
   padding: 8px 12px;
   border-radius: 5px;
   display: inline-block;
@@ -72,8 +72,8 @@
 }
 /* Bouton de visionnage de l'historique */
 .button-voir-historique {
-  background-color: #F0C94A;
-  color: #8223CF;
+  background-color: var(--yellow);
+  color: var(--purple1);
   border: none;
   padding: 10px 10px;
   font-size: 16px;

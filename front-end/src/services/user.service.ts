@@ -45,8 +45,7 @@ export class UserService {
       };
       this.mockUserHistories.push(emptyHistory);
 
-      this.users$.next([...this.mockUsers]);
-      this.retrieveUsers()
+      this.retrieveUsers();
     } else {
       this.http.post<User>(this.userUrl, user, httpOptionsBase).subscribe(() => {
         this.retrieveUsers();
@@ -59,7 +58,6 @@ export class UserService {
     if (this.USE_MOCK) {
       this.mockUsers = this.mockUsers.filter(u => u.id !== user.id);
       this.mockUserHistories = this.mockUserHistories.filter(h => h.userId !== user.id);
-      this.users$.next([...this.mockUsers]);
       this.retrieveUsers();
     } else {
       const urlWithId = `${this.userUrl}/${user.id}`;

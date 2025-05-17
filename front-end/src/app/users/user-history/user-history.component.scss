@@ -11,15 +11,15 @@
 /* Titres */
 h2 {
   font-size: 1.8em;
-  color: #6a0dad;  /* Couleur principale */
-  border-bottom: 2px solid #8223CF; /* Bordure avec un accent */
+  color: var(--purple2);  /* Couleur principale */
+  border-bottom: 2px solid var(--purple1); /* Bordure avec un accent */
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
 
 h3 {
   font-size: 1.4em;
-  color: #6a0dad;  /* Couleur principale */
+  color: var(--purple2);  /* Couleur principale */
   margin-bottom: 10px;
 }
 
@@ -30,13 +30,13 @@ div > p {
   line-height: 1.6;
   margin: 8px;
   border-radius: 5px;
-  box-shadow: 8px 8px 8px #8223CF;
+  box-shadow: 8px 8px 8px var(--purple1);
   font-weight: bold;
   background: #ece110;
 }
 
 strong {
-  color: #8223CF;  /* Accent couleur pour les labels importants */
+  color: var(--purple1);  /* Accent couleur pour les labels importants */
 }
 
 hr {
@@ -47,9 +47,9 @@ hr {
 
 /* Historique de l'utilisateur */
 .card {
-  background-color: #F0C94A;
+  background-color: var(--yellow);
   border-radius: 8px;
-  box-shadow: 4px 4px 4px #6a0dad;
+  box-shadow: 4px 4px 4px var(--purple2);
   padding: 20px;
   margin-bottom: 20px;
   transition: transform 0.2s ease-in-out;
@@ -61,11 +61,11 @@ hr {
 
 .card:hover {
   transform: scale(1.02);
-  background-color: #F0C94A;  /* Couleur d'accent pour le survol */
+  background-color: var(--yellow);  /* Couleur d'accent pour le survol */
 }
 
 .card h3 {
-  color: #8223CF;  /* Couleur d'accent */
+  color: var(--purple1);  /* Couleur d'accent */
 }
 
 .card p {
@@ -74,7 +74,7 @@ hr {
   background: #ece110;
   color: #000;
   border-radius: 5px;
-  box-shadow: 4px 4px 4px 2px #8223CF;
+  box-shadow: 4px 4px 4px 2px var(--purple1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,8 +94,8 @@ hr {
   margin: 10px;
   padding: 8px;
   border-radius: 5px;
-  box-shadow: 2px 4px 4px 2px #6a0dad;
-  color: #6a0dad;
+  box-shadow: 2px 4px 4px 2px var(--purple2);
+  color: var(--purple2);
 }
 
 .card ul li:nth-child(odd) {
@@ -117,7 +117,7 @@ hr {
 
 .loading p {
   font-weight: bold;
-  color: #6a0dad;  /* Couleur principale */
+  color: var(--purple2);  /* Couleur principale */
 }
 
 /* Séparation de sections */

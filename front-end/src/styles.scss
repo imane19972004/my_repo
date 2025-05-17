@@ -1,7 +1,13 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #6a0dad;
+    background-color: var(--purple2);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #fff;
   }
+
+:root {
+  --yellow: #FFD700; //précédent: #F0C94A
+  --purple1: #8223CF;
+  --purple2: #6a0dad;
+}

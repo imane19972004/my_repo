@@ -5,11 +5,20 @@
   [cdkDropListConnectedTo]="connectedDropListsIds"
   [cdkDropListData]="itemsInBulk"
   (cdkDropListDropped)="itemDropped.emit($event)">
-  <img
+
+  <div
     *ngFor="let item of itemsInBulk"
     cdkDrag
-    [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
-    [alt]="item.name"
-    class="object-image"
-  />
+    class="object-container">
+
+    <img
+      [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
+      [alt]="item.name"
+      class="object-image"
+    />
+
+    <p *ngIf="numberOfFailure > 3">{{ item.name }}</p>
+    <p *ngIf="numberOfFailure > 6"><em>{{ item.description }}</em></p>
+  </div>
 </div>
+

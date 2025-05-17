@@ -52,10 +52,12 @@ export class UserHistoryComponent implements OnInit {
         console.log(this.aggregatedItemFailures);
         this.exerciseHistories = {};
         this.userHistory.forEach(history => {
-          if (!this.exerciseHistories[history.exerciceId]) {
-            this.exerciseHistories[history.exerciceId] = [];
+          if (history.exerciceId !== '') {
+            if (!this.exerciseHistories[history.exerciceId]) {
+              this.exerciseHistories[history.exerciceId] = [];
+            }
+            this.exerciseHistories[history.exerciceId].push(history);
           }
-          this.exerciseHistories[history.exerciceId].push(history);
         });
 
         this.loading = false;
@@ -103,7 +105,7 @@ export class UserHistoryComponent implements OnInit {
             legend: {
               labels: {
                 font: {size: 14, weight: "bold", family: 'Poppins'},
-                color: "#6a0dad",
+                color: "var(--purple2)",
                 boxHeight: 10,
                 boxWidth: 10,
                 useBorderRadius: true,
@@ -117,7 +119,7 @@ export class UserHistoryComponent implements OnInit {
                 display: true,
                 text: 'Date de la partie',
                 font: {size: 16, weight: "bold", family: 'Poppins'},
-                color: "#6a0dad"
+                color: "var(--purple2)"
               },
               type: 'category',
               ticks: {font: {size: 12, weight: "bold", family: 'Poppins', style: "italic"}, color: "#ffc200"}
@@ -130,7 +132,7 @@ export class UserHistoryComponent implements OnInit {
                 font: {size: 16, weight: "bold", family: 'Poppins'},
                 color: "#ffc306"
               },
-              ticks: {stepSize: 1, font: {size: 16, weight: "bold", family: 'Poppins'}, color: "#6a0dad"}
+              ticks: {stepSize: 1, font: {size: 16, weight: "bold", family: 'Poppins'}, color: "var(--purple2)"}
             }
           }
         }
