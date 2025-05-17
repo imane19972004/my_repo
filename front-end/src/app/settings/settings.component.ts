@@ -1,44 +1,75 @@
-// settings.component.ts
-import { Component, OnInit } from '@angular/core';
-import { SettingsService, GameSettings } from '../../services/settings.service';
+// src/services/settings.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
-@Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+export interface GameSettings {
+  // Nombre d'objets à afficher
+  objectsCount: number;
+  
+  // Paramètres de durée
+  messageDuration: number;        // Durée d'affichage des messages (en secondes)
+  gameDurationMinutes: number;    // Durée totale du jeu (en minutes)
+  animationSpeed: number;         // Vitesse d'animation (multiplicateur)
+  
+  // Paramètres visuels
+  textSize: number;               // Taille du texte (en px)
+  textStyle: 'normal' | 'bold' | 'italic';  // Style du texte
+  contrast: number;               // Niveau de contraste (en %)
+  highVisibility: boolean;        // Mode haute visibilité
+}
+
+@Injectable({
+  providedIn: 'root'
 })
-export class SettingsComponent implements OnInit {
-  isOpen: boolean = false;
-  settings: GameSettings;
-  
-  // Options pour le nombre d'objets
-  objectsOptions: number[] = [2, 3, 4, 5, 6, 8, 10];
+export class SettingsService {
+  // Paramètres par défaut
+  private defaultSettings: GameSettings = {
+    objectsCount: 5,
+    messageDuration: 3,
+    gameDurationMinutes: 5,
+    animationSpeed: 1,
+    textSize: 16,
+    textStyle: 'normal',
+    contrast: 100,
+    highVisibility: false
+  };
 
-  constructor(private settingsService: SettingsService) {
-    this.settings = this.settingsService.getCurrentSettings();
+  // BehaviorSubject pour notifier les composants des changements
+  private settingsSubject = new BehaviorSubject<GameSettings>(this.loadSettings());
+  
+  // Observable exposé pour les composants
+  public settings$ = this.settingsSubject.asObservable();
+
+  constructor() {}
+
+  // Récupère les paramètres actuels
+  getCurrentSettings(): GameSettings {
+    return this.settingsSubject.getValue();
   }
 
-  ngOnInit() {
-    // Charger les paramètres sauvegardés au démarrage
-    this.settingsService.settings$.subscribe(settings => {
-      this.settings = settings;
-    });
+  // Sauvegarde les paramètres
+  saveSettings(settings: GameSettings): void {
+    localStorage.setItem('gameSettings', JSON.stringify(settings));
+    this.settingsSubject.next(settings);
   }
 
-  toggleSettings() {
-    this.isOpen = !this.isOpen;
+  // Charge les paramètres depuis localStorage ou utilise les défauts
+  private loadSettings(): GameSettings {
+    const savedSettings = localStorage.getItem('gameSettings');
+    if (savedSettings) {
+      try {
+        return { ...this.defaultSettings, ...JSON.parse(savedSettings) };
+      } catch (e) {
+        console.error('Erreur de chargement des paramètres', e);
+        return { ...this.defaultSettings };
+      }
+    }
+    return { ...this.defaultSettings };
   }
-  
-  saveSettings() {
-    // Sauvegarde des paramètres via le service
-    this.settingsService.saveSettings(this.settings);
-    alert('Paramètres enregistrés !');
-    this.toggleSettings(); // Fermer le panneau après sauvegarde
-  }
-  
-  resetSettings() {
-    // Réinitialisation des paramètres via le service
-    this.settingsService.resetSettings();
-    this.settings = this.settingsService.getCurrentSettings();
+
+  // Réinitialise les paramètres
+  resetSettings(): void {
+    localStorage.removeItem('gameSettings');
+    this.settingsSubject.next({ ...this.defaultSettings });
   }
 }
