@@ -1,4 +1,4 @@
-// game-page.component.ts
+// game-page.component.ts - modifié
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
@@ -9,7 +9,6 @@ import { Item } from '../../../models/item.model';
 import { UserHistory } from '../../../models/user-history.model';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Subscription, interval } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-game-page',
@@ -31,7 +30,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
   // Paramètres du jeu
   settings: GameSettings;
   
-  // Variables pour le minuteur
+  // Variables pour le minuteur (maintenant invisible)
   timerSubscription: Subscription | null = null;
   remainingTime: number = 0; // en secondes
   timeoutTriggered: boolean = false;
@@ -94,7 +93,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     this.itemFailureTracker = {};
     this.timeoutTriggered = false;
     
-    // Démarrer le minuteur
+    // Démarrer le minuteur (toujours fonctionnel mais invisible)
     this.startTimer();
   }
   
@@ -106,7 +105,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
   }
   
-  // Démarrer le minuteur de jeu
+  // Démarrer le minuteur de jeu (invisible)
   startTimer(): void {
     // Annuler tout minuteur existant
     if (this.timerSubscription) {
@@ -128,14 +127,14 @@ export class GamePageComponent implements OnInit, OnDestroy {
     });
   }
   
-  // Formater le temps restant en MM:SS
+  // Fonction formatTime gardée pour compatibilité, mais non utilisée dans l'interface
   formatTime(): string {
     const minutes = Math.floor(this.remainingTime / 60);
     const seconds = this.remainingTime % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
   
-  // Terminer le jeu en raison du timeout
+  // Terminer le jeu en raison du timeout avec un message plus doux
   endGameDueToTimeout(): void {
     if (this.timeoutTriggered) return; // Éviter les appels multiples
     
@@ -153,9 +152,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
       });
     });
     
-    // Afficher le message de fin
-    this.successMessage = `Temps écoulé ! Votre score: ${Math.round((correct / total) * 100)}%`;
-    this.messageColor = 'orange';
+    // Afficher le message de fin plus doux
+    this.successMessage = `Temps écoulé ! Vous avez placé correctement ${correct} objets. Bien joué !`;
+    this.messageColor = '#4CAF50'; // Vert plus doux
     
     // Enregistrer l'historique
     const newHistory: UserHistory = {
@@ -247,7 +246,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
       });
 
-      this.successMessage = `Exercice terminé ! Votre score: ${Math.round((correct / total) * 100)}%`;
+      this.successMessage = `Félicitations ! Vous avez terminé l'exercice avec ${Math.round((correct / total) * 100)}% de réussite !`;
       this.gameCompleted = true;
       
       // Arrêter le minuteur

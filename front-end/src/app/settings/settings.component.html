@@ -1,4 +1,4 @@
-<!-- settings.component.html -->
+<!-- Mise à jour du fichier settings.component.html -->
 <!-- Bouton flottant pour ouvrir les paramètres -->
 <div class="settings-toggle" (click)="toggleSettings()">
   <i class="fas fa-cog">
@@ -66,12 +66,7 @@
         <input type="range" min="50" max="150" [(ngModel)]="settings.contrast">
       </div>
       
-      <div class="checkbox-control">
-        <label>
-          <input type="checkbox" [(ngModel)]="settings.highVisibility">
-          Mode haute visibilité
-        </label>
-      </div>
+      <!-- Suppression de l'option "Mode haute visibilité" -->
     </div>
 
     <!-- Boutons de contrôle -->

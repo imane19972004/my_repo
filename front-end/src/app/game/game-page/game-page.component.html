@@ -1,9 +1,6 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
-  <!-- Minuteur -->
-  <div class="timer" [ngClass]="{'warning': remainingTime < 60}">
-    Temps restant: {{ formatTime() }}
-  </div>
-
+  <!-- Suppression du minuteur visible -->
+  
   <!-- Conteneur des objets en vrac -->
   <app-settings-applier>
     <app-game-items-container
