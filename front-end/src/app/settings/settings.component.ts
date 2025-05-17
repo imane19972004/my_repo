@@ -1,5 +1,5 @@
-// settings.component.ts
-import { Component, OnInit } from '@angular/core';
+// settings.component.ts - avec ajustements pour garantir le positionnement
+import { Component, OnInit, Renderer2, ElementRef } from '@angular/core';
 import { SettingsService, GameSettings } from '../../services/settings.service';
 
 @Component({
@@ -14,7 +14,11 @@ export class SettingsComponent implements OnInit {
   // Options pour le nombre d'objets
   objectsOptions: number[] = [2, 3, 4, 5, 6, 8, 10];
 
-  constructor(private settingsService: SettingsService) {
+  constructor(
+    private settingsService: SettingsService,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {
     this.settings = this.settingsService.getCurrentSettings();
   }
 
@@ -23,6 +27,22 @@ export class SettingsComponent implements OnInit {
     this.settingsService.settings$.subscribe(settings => {
       this.settings = settings;
     });
+    
+    // Assurer que le composant est ajouté à la fin du body pour garantir le positionnement
+    this.ensureAppendedToBody();
+  }
+  
+  // Cette méthode garantit que le composant est bien attaché au body
+  private ensureAppendedToBody() {
+    // Obtenir le panneau des paramètres
+    const settingsPanel = this.el.nativeElement.querySelector('.settings-panel');
+    const settingsToggle = this.el.nativeElement.querySelector('.settings-toggle');
+    
+    if (settingsPanel && settingsToggle) {
+      // Déplacer le panneau et le bouton directement dans le body
+      this.renderer.appendChild(document.body, settingsPanel);
+      this.renderer.appendChild(document.body, settingsToggle);
+    }
   }
 
   toggleSettings() {
