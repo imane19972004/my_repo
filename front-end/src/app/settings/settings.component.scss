@@ -1,4 +1,4 @@
-/* settings.component.scss */
+/* settings.component.scss - Modifications pour le panneau */
 
 // Bouton flottant pour ouvrir les paramètres
 .settings-toggle {
@@ -37,20 +37,20 @@
   }
 }
 
-// Panneau de paramètres
+// Panneau de paramètres - MODIFIÉ
 .settings-panel {
   position: fixed;
-  bottom: 80px;  // Positionné plus haut pour être entièrement visible
-  right: 20px;   // Aligné avec le bouton
+  bottom: 20px;     // Placé tout en bas
+  right: 80px;      // Décalé du bouton pour éviter le chevauchement
   width: 350px;
   max-width: 90vw;
-  max-height: 80vh;
+  max-height: 80vh; // Hauteur maximum en % de la vue
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
   border-radius: 15px;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
   z-index: 999;
-  overflow-y: auto;
+  overflow-y: auto; // Permet le défilement si nécessaire
   transition: all 0.4s ease;
   transform: translateX(110%);  // Commence hors écran
   opacity: 0;
@@ -191,19 +191,19 @@ input[type="range"], select, input[type="number"] {
   }
 }
 
-// Assurer que le panneau reste dans l'écran sur mobile
+// Assurer que le panneau reste dans l'écran sur mobile - MODIFIÉ
 @media (max-height: 700px) {
   .settings-panel {
-    max-height: 70vh;
-    bottom: 75px;
+    max-height: 85vh; // Augmenté pour s'adapter aux petits écrans
+    bottom: 20px;     // Maintenu en bas
   }
 }
 
-// Responsive pour écrans plus petits
+// Responsive pour écrans plus petits - MODIFIÉ
 @media (max-width: 480px) {
   .settings-panel {
     right: 10px;
-    width: calc(100% - 20px);
+    width: calc(100% - 70px); // Ajusté pour laisser de l'espace pour le bouton
     max-width: none;
   }
 }
