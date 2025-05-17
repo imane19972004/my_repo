@@ -35,30 +35,31 @@
       border-radius: 50%;
     }
   }
+
+
 }
 
 // Panneau de paramètres
 .settings-panel {
   position: fixed;
-  bottom: 80px;  // Positionné plus haut pour être entièrement visible
-  right: 20px;   // Aligné avec le bouton
-  width: 350px;
+  bottom: 0;
+  right: -400px; // Commence hors écran
+  width: 400px;
   max-width: 90vw;
-  max-height: 80vh;
+  height: 80vh;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
-  border-radius: 15px;
+  border-radius: 15px 15px 0 0;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
   z-index: 999;
   overflow-y: auto;
-  transition: all 0.4s ease;
-  transform: translateX(110%);  // Commence hors écran
-  opacity: 0;
+  transition: right 0.4s ease;
+  display: none;
 
   // Quand le panneau est ouvert
   &.open {
-    transform: translateX(0);
-    opacity: 1;
+    display: block;
+    right: 0;
   }
 }
 
@@ -188,22 +189,5 @@ input[type="range"], select, input[type="number"] {
     &:hover {
       background: #c82333;
     }
-  }
-}
-
-// Assurer que le panneau reste dans l'écran sur mobile
-@media (max-height: 700px) {
-  .settings-panel {
-    max-height: 70vh;
-    bottom: 75px;
-  }
-}
-
-// Responsive pour écrans plus petits
-@media (max-width: 480px) {
-  .settings-panel {
-    right: 10px;
-    width: calc(100% - 20px);
-    max-width: none;
   }
 }
