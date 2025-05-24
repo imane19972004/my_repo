@@ -1,71 +1,118 @@
 <div class="exercice-list">
   <h2>Nos exercices de mémoire</h2>
 
-  <!-- État vide (quand il n'y a pas d'exercices) -->
-  <div *ngIf="exerciceList.length === 0" class="empty-state">
-    <p>Aucun exercice disponible pour le moment</p>
-    <button routerLink="/create-exercice" class="btn-create">
-      <i class="fas fa-plus-circle"></i> Créer votre premier exercice
-    </button>
-  </div>
-
-  <!-- Liste des exercices -->
-  <div *ngIf="exerciceList.length > 0" class="exercice-cards">
-    <div *ngFor="let exercice of exerciceList" class="exercice-card">
-      <div class="card-header">
-        <h3>{{ exercice.name }}</h3>
-        <span class="theme-badge">{{ exercice.theme }}</span>
+  <!-- Mode play: afficher les deux sections -->
+  <div *ngIf="mode === 'play'">
+    <!-- Section exercices privés de l'utilisateur -->
+    <div class="private-section">
+      <h3>Exercices de l'utilisateur</h3>
+      
+      <div *ngIf="userPrivateExercices.length === 0" class="empty-state">
+        <p>Aucun exercice assigné à cet utilisateur</p>
       </div>
 
-      <!-- Description de l'exercice -->
-      <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+      <div *ngIf="userPrivateExercices.length > 0" class="exercice-cards">
+        <div *ngFor="let exercice of userPrivateExercices" class="exercice-card">
+          <!-- Contenu de la carte existant -->
+          <div class="card-header">
+            <h3>{{ exercice.name }}</h3>
+            <span class="theme-badge">{{ exercice.theme }}</span>
+          </div>
 
-      <div class="card-content">
-        <div class="exercice-preview">
-          <!-- Catégories de l'exercice -->
-          <div class="preview-section" *ngIf="exercice.categories.length > 0">
-            <span class="preview-label">Catégories:</span>
-            <div class="tags-container">
-              <span *ngFor="let category of exercice.categories" class="category-tag">
-                {{ category.name }}
-              </span>
+          <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+
+          <div class="card-content">
+            <div class="exercice-preview">
+              <div class="preview-section" *ngIf="exercice.categories.length > 0">
+                <span class="preview-label">Catégories:</span>
+                <div class="tags-container">
+                  <span *ngFor="let category of exercice.categories" class="category-tag">
+                    {{ category.name }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="preview-section" *ngIf="exercice.items.length > 0">
+                <span class="preview-label">Éléments:</span>
+                <div class="tags-container">
+                  <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
+                    {{ item.name }}
+                  </span>
+                  <span *ngIf="exercice.items.length > 5" class="more-items-tag">
+                    +{{ exercice.items.length - 5 }} autres
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Éléments de l'exercice -->
-          <div class="preview-section" *ngIf="exercice.items.length > 0">
-            <span class="preview-label">Éléments:</span>
-            <div class="tags-container">
-              <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
-                {{ item.name }}
-              </span>
-              <span *ngIf="exercice.items.length > 5" class="more-items-tag">
-                +{{ exercice.items.length - 5 }} autres
-              </span>
-            </div>
+          <div class="card-actions">
+            <button class="btn-play" (click)="selectExercice(exercice)">
+              <i class="fas fa-play"></i> Jouer
+            </button>
+            <button class="btn-remove" (click)="removeExerciceFromUser(exercice)">
+              <i class="fas fa-minus"></i> Retirer
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Actions sur l'exercice (selon le mode) -->
-      <div class="card-actions">
-        <!-- Si mode 'play', affiche le bouton "Jouer" -->
-        <button *ngIf="mode === 'play'" class="btn-play" (click)="selectExercice(exercice)">
-          <i class="fas fa-play"></i> Jouer
-        </button>
+    <!-- Section exercices généraux -->
+    <div class="general-section">
+      <h3>Exercices disponibles</h3>
+      
+      <div *ngIf="generalExerciceList.length === 0" class="empty-state">
+        <p>Aucun exercice disponible</p>
+      </div>
 
-        <!-- Si mode 'manage', affiche le bouton "Supprimer" -->
-        <button class="btn-delete" (click)="deleteExercice(exercice)">
-          <i class="fas fa-trash"></i> Supprimer
-        </button>
+      <div *ngIf="generalExerciceList.length > 0" class="exercice-cards">
+        <div *ngFor="let exercice of generalExerciceList" class="exercice-card">
+          <!-- Même contenu de carte -->
+          <div class="card-header">
+            <h3>{{ exercice.name }}</h3>
+            <span class="theme-badge">{{ exercice.theme }}</span>
+          </div>
+
+          <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+
+          <div class="card-content">
+            <div class="exercice-preview">
+              <div class="preview-section" *ngIf="exercice.categories.length > 0">
+                <span class="preview-label">Catégories:</span>
+                <div class="tags-container">
+                  <span *ngFor="let category of exercice.categories" class="category-tag">
+                    {{ category.name }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="preview-section" *ngIf="exercice.items.length > 0">
+                <span class="preview-label">Éléments:</span>
+                <div class="tags-container">
+                  <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
+                    {{ item.name }}
+                  </span>
+                  <span *ngIf="exercice.items.length > 5" class="more-items-tag">
+                    +{{ exercice.items.length - 5 }} autres
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-assign" (click)="assignExerciceToUser(exercice)">
+              <i class="fas fa-plus"></i> Assigner
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Bouton pour créer un nouvel exercice (affiché dans tous les cas sauf quand il n'y a aucun exercice) -->
-  <div class="create-button-container" *ngIf="exerciceList.length > 0">
-    <button routerLink="/create-exercice" class="btn-create">
-      <i class="fas fa-plus-circle"></i> Créer un nouvel exercice
-    </button>
+  <!-- Mode manage: affichage normal existant -->
+  <div *ngIf="mode === 'manage'">
+    <!-- Votre code existant pour le mode manage -->
   </div>
 </div>

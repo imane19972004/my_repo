@@ -238,4 +238,19 @@ isExerciceInUserPrivateList(userId: string, exerciceId: string): Observable<bool
   return this.http.get<boolean>(`${this.apiUrl}/users/${userId}/private-exercices/${exerciceId}/exists`);
 }
 
+/**
+ * Ajoute un exercice à la liste privée d'un utilisateur (interface utilisée dans le composant)
+ */
+assignExerciceToUser(userId: string, exerciceId: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/users/${userId}/private-exercices`, { exerciceId });
+}
+
+/**
+ * Retire un exercice de la liste privée d'un utilisateur (interface utilisée dans le composant)
+ */
+removeExerciceFromUser(userId: string, exerciceId: string): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/users/${userId}/private-exercices/${exerciceId}`);
+}
+
+
 }

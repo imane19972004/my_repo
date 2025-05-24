@@ -15,6 +15,9 @@ export class ExerciceListComponent implements OnInit {
   public mode: 'play' | 'manage' = 'manage'; // Définition du mode
   public playerId: string = ''; // Variable pour stocker l'ID du joueur
 
+  public generalExerciceList: Exercice[] = []; // Liste des exercices généraux
+public userPrivateExercices: Exercice[] = []; // Liste privée de l'utilisateur
+
   constructor(
       private exerciceService: ExerciceService,
       private userService: UserService,
@@ -44,10 +47,16 @@ export class ExerciceListComponent implements OnInit {
   });
   }
 
- private loadExercices(): void {
+private loadExercices(): void {
   if (this.mode === 'play' && this.playerId) {
+    // Charger les exercices privés de l'utilisateur
     this.exerciceService.getUserExercices(this.playerId).subscribe((exercices: Exercice[]) => {
-      this.exerciceList = exercices;
+      this.userPrivateExercices = exercices;
+    });
+    
+    // Charger aussi tous les exercices généraux
+    this.exerciceService.getAllExercices().subscribe((exercices: Exercice[]) => {
+      this.generalExerciceList = exercices;
     });
   } else {
     this.exerciceService.getAllExercices().subscribe((exercices: Exercice[]) => {
@@ -56,6 +65,24 @@ export class ExerciceListComponent implements OnInit {
   }
 }
 
+
+// Assigner un exercice à l'utilisateur
+assignExerciceToUser(exercice: Exercice): void {
+  if (this.playerId) {
+    this.exerciceService.assignExerciceToUser(this.playerId, exercice.id).subscribe(() => {
+      this.loadExercices(); // Recharger les listes
+    });
+  }
+}
+
+// Retirer un exercice de la liste privée
+removeExerciceFromUser(exercice: Exercice): void {
+  if (this.playerId) {
+    this.exerciceService.removeExerciceFromUser(this.playerId, exercice.id).subscribe(() => {
+      this.loadExercices(); // Recharger les listes
+    });
+  }
+}
 
 
  
