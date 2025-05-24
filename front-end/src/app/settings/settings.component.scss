@@ -116,6 +116,7 @@
 // Contrôles
 .radio-group, .select-control, .slider-control, .input-control {
   margin-bottom: 15px;
+ 
 
   label {
     display: block;
@@ -130,7 +131,7 @@
 
 // Inputs et Selects
 input[type="range"], select, input[type="number"] {
-  width: 100%;
+  width: 97%;
   padding: 8px;
   border-radius: 5px;
   border: 1px solid rgba(255, 255, 255, 0.3);

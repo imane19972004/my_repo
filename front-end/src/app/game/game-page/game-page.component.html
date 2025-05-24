@@ -1,6 +1,6 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
-  <!-- Suppression du minuteur visible -->
-  
+  <!-- Conteneur des objets en vrac -->
+ 
   <!-- Conteneur des objets en vrac -->
   <app-settings-applier>
     <app-game-items-container
@@ -20,22 +20,21 @@
   <!-- Conteneurs de catégories -->
   <div class="right">
     <app-settings-applier>
-      <app-game-category
-        *ngFor="let category of exercice.categories"
-        [category]="category"
-        [items]="itemsByCategory[category.name]"
-        [connectedDropListsIds]="connectedDropListsIds"
-        (itemDropped)="drop($event.event, $event.category)">
-      </app-game-category>
+        <app-game-category
+      *ngFor="let category of exercice.categories"
+      [category]="category"
+      [items]="itemsByCategory[category.name]"
+      [connectedDropListsIds]="connectedDropListsIds"
+      (itemDropped)="drop($event.event, $event.category)">
+    </app-game-category>
     </app-settings-applier>
-  </div>
+    </div>
+  
 
-  <div *ngIf="successMessage" class="message" [ngStyle]="{
-    color: messageColor,
+  <div *ngIf="successMessage" class="message" [ngStyle]="{color: messageColor,
     fontSize: settings.textSize + 'px',
     fontWeight: settings.textStyle === 'bold' ? 'bold' : 'normal',
-    fontStyle: settings.textStyle === 'italic' ? 'italic' : 'normal'
-  }">{{ successMessage }}</div>
+    fontStyle: settings.textStyle === 'italic' ? 'italic' : 'normal'}">{{ successMessage }}</div>
 
   <div *ngIf="gameCompleted" class="restart-button-container">
     <button (click)="resetGame()" class="restart-button">Recommencer</button>

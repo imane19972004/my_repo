@@ -2,6 +2,7 @@
     background-color: #f8f9fa;
     padding: 10px 20px;
     border-bottom: 1px solid #ddd;
+    height: 80px;
 
     .header-container {
       display: flex;
@@ -41,13 +42,13 @@
       li {
         margin-left: 20px;
         border-radius: 5px;
-        color: var(--yellow);
+        color: var(--yellow1);
         background-color: var(--purple2);
         padding: 10px;
 
         a {
           text-decoration: none;
-          color: var(--yellow);
+          color: var(--yellow1);
           font-weight: bold;
         }
       }

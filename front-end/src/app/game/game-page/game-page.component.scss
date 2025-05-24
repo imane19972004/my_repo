@@ -1,6 +1,3 @@
-/* game-page.component.scss - Mise à jour */
-/* Suppression des styles du minuteur qui n'est plus affiché */
-
 /* Réinitialisation de base */
 * {
   margin: 0;
@@ -10,13 +7,13 @@
 
 /* Grille principale */
 .game-page {
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   padding: 20px;
   border-radius: 5px;
-  height: 100vh;
+  height: calc(100vh - 80px);
   width: 100vw;
 }
 
@@ -171,10 +168,5 @@
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   padding: 20px;
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
 }
-
-/* Styles des animations modifiables par les paramètres */
-// .object-image {
-//   /* La durée de transition sera contrôlée via le composant SettingsApplier */
-// }

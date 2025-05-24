@@ -1,21 +1,21 @@
-// game-page.component.ts - modifié
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit ,OnDestroy} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciceService } from '../../../services/exercice.service';
 import { UserService } from '../../../services/user.service';
-import { SettingsService, GameSettings } from '../../../services/settings.service';
 import { Exercice } from '../../../models/exercice.model';
 import { Item } from '../../../models/item.model';
 import { UserHistory } from '../../../models/user-history.model';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { SettingsService, GameSettings } from '../../../services/settings.service';
 import { Subscription, interval } from 'rxjs';
+
 
 @Component({
   selector: 'app-game-page',
   templateUrl: './game-page.component.html',
   styleUrls: ['./game-page.component.scss']
 })
-export class GamePageComponent implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit {
   exercice: Exercice = { id: '', name: '', theme: '', categories: [], items: [] };
   userID!: string;
   itemsInBulk: Item[] = [];
@@ -26,7 +26,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
   itemFailureTracker: { [itemName: string]: number } = {};
-  
   // Paramètres du jeu
   settings: GameSettings;
   
@@ -34,20 +33,21 @@ export class GamePageComponent implements OnInit, OnDestroy {
   timerSubscription: Subscription | null = null;
   remainingTime: number = 0; // en secondes
   timeoutTriggered: boolean = false;
+  isPrivateExercice: boolean = false;
+
 
   constructor(
     private route: ActivatedRoute,
     private exerciceService: ExerciceService,
     private userService: UserService,
     private settingsService: SettingsService
-  ) {
-    this.settings = this.settingsService.getCurrentSettings();
-  }
+
+  ) {    this.settings = this.settingsService.getCurrentSettings();
+}
 
   ngOnInit(): void {
     const exerciceId = this.route.snapshot.params['idExercice'];
     this.userID = this.route.snapshot.params['idUser'];
-    
     // S'abonner aux changements de paramètres
     this.settingsService.settings$.subscribe(settings => {
       this.settings = settings;
@@ -57,10 +57,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.adjustItemsCount();
       }
     });
-    
     if (exerciceId) this.loadExercice(exerciceId);
   }
-  
   ngOnDestroy(): void {
     // Annuler le minuteur si on quitte la page
     if (this.timerSubscription) {
@@ -69,18 +67,37 @@ export class GamePageComponent implements OnInit, OnDestroy {
   }
 
   // Récupère l'exercice à partir de l'ID
-  loadExercice(id: string): void {
-    this.exerciceService.getExerciceById(id).subscribe(exercice => {
-      if (exercice) {
-        this.exercice = exercice;
-        this.initializeGame();
-      }
-    });
-  }
+// Modifier la méthode loadExercice() :
+loadExercice(id: string): void {
+  // D'abord essayer de charger depuis les exercices généraux
+  this.exerciceService.getExerciceById(id).subscribe(exercice => {
+    if (exercice) {
+      this.exercice = exercice;
+      this.isPrivateExercice = false;
+      this.initializeGame();
+    } else {
+      // Si pas trouvé dans les généraux, regarder s’il est dans les assignés
+      this.userService.getUserAssignedExercices(this.userID).subscribe(assignedIds => {
+        if (assignedIds.includes(id)) {
+          this.exerciceService.getExerciceById(id).subscribe(privateEx => {
+            if (privateEx) {
+              this.exercice = privateEx;
+              this.isPrivateExercice = true;
+              this.initializeGame();
+            } else {
+              console.error('Exercice assigné mais introuvable');
+            }
+          });
+        } else {
+          console.error('Exercice non trouvé dans les listes générale et privée');
+        }
+      });
+    }
+  });
+}
 
   // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
-    // Réinitialiser l'état du jeu
     this.itemsInBulk = [...this.exercice.items];
     this.adjustItemsCount();
     this.itemsByCategory = {};
@@ -96,7 +113,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     // Démarrer le minuteur (toujours fonctionnel mais invisible)
     this.startTimer();
   }
-  
   // Ajuster le nombre d'éléments en fonction des paramètres
   adjustItemsCount(): void {
     // S'assurer qu'on n'a pas plus d'éléments que le nombre spécifié dans les paramètres
@@ -104,7 +120,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
       this.itemsInBulk = this.itemsInBulk.slice(0, this.settings.objectsCount);
     }
   }
-  
   // Démarrer le minuteur de jeu (invisible)
   startTimer(): void {
     // Annuler tout minuteur existant
@@ -126,14 +141,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
   // Fonction formatTime gardée pour compatibilité, mais non utilisée dans l'interface
   formatTime(): string {
     const minutes = Math.floor(this.remainingTime / 60);
     const seconds = this.remainingTime % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
-  
   // Terminer le jeu en raison du timeout avec un message plus doux
   endGameDueToTimeout(): void {
     if (this.timeoutTriggered) return; // Éviter les appels multiples
@@ -169,6 +182,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     
     this.userService.addUserHistory(newHistory);
   }
+
 
   // Mélange aléatoirement les items
   shuffleArray(array: any[]): void {
@@ -208,8 +222,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         Object.keys(this.itemsByCategory).forEach(cat => {
           this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(i => i !== item);
         });
-        
-        // Afficher le message d'erreur pendant la durée spécifiée dans les paramètres
+       // Afficher le message d'erreur pendant la durée spécifiée dans les paramètres
         setTimeout(() => this.successMessage = '', this.settings.messageDuration * 1000);
       }
     }
@@ -228,11 +241,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
   onItemMoved(item: Item, targetCategory: string): void {
     this.successMessage = item.category === targetCategory ? 'Bien joué !' : 'Hmm, êtes-vous sûr ?';
     this.messageColor = 'green';
-    
-    // Afficher le message de succès pendant la durée spécifiée dans les paramètres
+  // Afficher le message de succès pendant la durée spécifiée dans les paramètres
     setTimeout(() => this.successMessage = '', this.settings.messageDuration * 1000);
-    
-    this.checkGameCompletion();
+      this.checkGameCompletion();
   }
 
   checkGameCompletion(): void {
@@ -246,13 +257,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
       });
 
-      this.successMessage = `Félicitations ! Vous avez terminé l'exercice avec ${Math.round((correct / total) * 100)}% de réussite !`;
+      this.successMessage = `Exercice terminé ! Votre score: ${Math.round((correct / total) * 100)}%`;
       this.gameCompleted = true;
-      
-      // Arrêter le minuteur
-      if (this.timerSubscription) {
-        this.timerSubscription.unsubscribe();
-      }
 
       const newHistory: UserHistory = {
         userId: this.userID,

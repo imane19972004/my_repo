@@ -1,6 +1,7 @@
-// src/app/settings/settings-applier/settings-applier.component.ts
+//Arriver à cconnecter le settings avec le jeux
 import { Component, OnInit } from '@angular/core';
 import { SettingsService, GameSettings } from '../../../services/settings.service';
+
 
 @Component({
   selector: 'app-settings-applier',
@@ -12,11 +13,12 @@ import { SettingsService, GameSettings } from '../../../services/settings.servic
   styles: []
 })
 export class SettingsApplierComponent implements OnInit {
-  settings: GameSettings;
+  settings:  GameSettings;
 
-  constructor(private settingsService: SettingsService) {
+ constructor(private settingsService: SettingsService) {
     this.settings = this.settingsService.getCurrentSettings();
   }
+
 
   ngOnInit() {
     // S'abonner aux changements de paramètres
@@ -25,7 +27,7 @@ export class SettingsApplierComponent implements OnInit {
     });
   }
 
-  applySettings() {
+applySettings() {
     if (!this.settings) return {};
 
     return {

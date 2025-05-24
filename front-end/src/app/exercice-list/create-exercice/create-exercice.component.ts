@@ -1,11 +1,9 @@
-// create-exercice.component.ts
 import { Component } from '@angular/core';
 import { ExerciceService } from '../../../services/exercice.service';
 import { Exercice } from '../../../models/exercice.model';
 import { Category } from '../../../models/category.model';
-import { Item } from '../../../models/item.model';
 import { ViewEncapsulation } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-exercice',
@@ -15,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class CreateExerciceComponent {
   exercice: Exercice = {
-    id: '', // L'ID sera généré par le service
+    id: '',
     name: '',
     theme: '',
     description: '',
@@ -23,12 +21,13 @@ export class CreateExerciceComponent {
     items: []
   };
 
-  // Modèles de noms amusants pour les suggestions
+  currentStep = 1;
+
   themeSuggestions = [
     "Objets et pièces de la maison",
     "Vêtements et parties du corps",
     "Vêtements et saisons",
-    "Monuments et capitales", 
+    "Monuments et capitales",
     "Ingrédients et plats"
   ];
 
@@ -40,11 +39,9 @@ export class CreateExerciceComponent {
     "Préparons un festin !"
   ];
 
-  // Objets temporaires pour le formulaire
   categoryInput: Category = { name: '', description: '', imagePath: '' };
   itemInput: any = { name: '', description: '', imagePath: '', category: '' };
-  
-  // Variables pour les messages
+
   exerciceCreated: boolean = false;
 
   constructor(private exerciceService: ExerciceService) {}
@@ -59,27 +56,24 @@ export class CreateExerciceComponent {
 
   // Fonction pour ajouter une catégorie
   addCategory(): void {
+    if (this.exercice.categories.length >= 3) {
+      alert('Vous ne pouvez pas ajouter plus de 3 catégories.');
+      return;
+    }
     if (this.categoryInput.name && this.categoryInput.description) {
-      // Ajout de la catégorie dans la liste des catégories de l'exercice
       this.exercice.categories.push({ ...this.categoryInput });
-
-      // Réinitialisation du formulaire de catégorie
       this.categoryInput = { name: '', description: '', imagePath: '' };
     } else {
-      console.log('Veuillez remplir tous les champs de la catégorie.');
+      alert('Veuillez remplir tous les champs de la catégorie.');
     }
   }
 
-  // Fonction pour ajouter un objet
   addItem(): void {
     if (this.itemInput.name && this.itemInput.description && this.itemInput.category) {
-      // Ajout de l'objet dans la liste des objets de l'exercice
       this.exercice.items.push({ ...this.itemInput });
-
-      // Réinitialisation du formulaire d'objet
       this.itemInput = { name: '', description: '', imagePath: '', category: '' };
     } else {
-      console.log('Veuillez remplir tous les champs de l\'objet.');
+      alert('Veuillez remplir tous les champs de l\'objet.');
     }
   }
 
@@ -93,14 +87,34 @@ export class CreateExerciceComponent {
     this.exercice.items.splice(index, 1);
   }
 
-  // Soumettre l'exercice (ajouter à la liste globale via le service)
+  nextStep(): void {
+    if (this.currentStep === 1 && this.exercice.categories.length === 0) {
+      alert('Veuillez ajouter au moins une catégorie avant de passer à l’étape suivante.');
+      return;
+    }
+    if (this.currentStep === 2 && this.exercice.items.length === 0) {
+      alert('Veuillez ajouter au moins un objet avant de passer à l’étape suivante.');
+      return;
+    }
+    if (this.currentStep < 3) {
+      this.currentStep++;
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
   onSubmit(): void {
     if (this.exercice.name && this.exercice.theme && this.exercice.categories.length > 0) {
       this.exerciceService.addExercice(this.exercice);
       this.showSuccessMessage();
       this.resetForm();
+      this.currentStep = 1;
     } else {
-      console.log('Le formulaire est incomplet.');
+      alert('Le formulaire est incomplet.');
     }
   }
 
@@ -117,5 +131,33 @@ export class CreateExerciceComponent {
     this.exercice = { id: '', name: '', theme: '', description: '', categories: [], items: [] };
     this.categoryInput = { name: '', description: '', imagePath: '' };
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+  }
+
+  onCategoryImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.uploadImage(file).subscribe(path => {
+        this.categoryInput.imagePath = path;
+      });
+    }
+  }
+
+  onItemImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.uploadImage(file).subscribe((path: string) => {
+        if (path) {
+          this.itemInput.imagePath = path;
+        } else {
+          alert("Échec de chargement de l'image.");
+        }
+      });
+    }
+  }
+
+  uploadImage(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.exerciceService.uploadImage(formData);
   }
 }

@@ -22,12 +22,12 @@ header {
 }
 
 header h1 {
-    color: #8223CF;
+    color: var(--purple1);
 }
 
 header .btn {
-    background-color: #8223CF; /* Couleur de fond des boutons */
-    color: #F0C94A; /* Couleur du texte */
+    background-color: var(--purple1); /* Couleur de fond des boutons */
+    color: var(--yellow1); /* Couleur du texte */
     padding: 10px 20px; /* Padding pour rendre les boutons plus grands */
     font-size: 25px; /* Taille du texte */
     border: none; /* Supprimer la bordure */

@@ -66,3 +66,4 @@ Dockerfile*.bak               # Sauvegarde des fichiers Dockerfile
 # Fichiers de systèmes de gestion de versions (versioning)
 *.gitmodules                  # Modules Git
 /.idea/
+backend/package.json

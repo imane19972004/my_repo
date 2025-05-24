@@ -16,33 +16,53 @@ export class ExerciceListComponent implements OnInit {
   public playerId: string = ''; // Variable pour stocker l'ID du joueur
 
   constructor(
-    private exerciceService: ExerciceService,
-    private userService: UserService,  // Service pour l'utilisateur
-    private router: Router,
-    private route: ActivatedRoute
+      private exerciceService: ExerciceService,
+      private userService: UserService,
+      private router: Router,
+      private route: ActivatedRoute
   ) {
     // Vérification du mode depuis les paramètres de route
-    this.route.url.subscribe(urlSegments => {
-      if (urlSegments.some(seg => seg.path === 'choose-exercice')) {
-        this.mode = 'play'; // Change de mode en 'play' si nécessaire
-      }
+  this.route.url.subscribe(urlSegments => {
+    if (urlSegments.some(seg => seg.path === 'choose-exercice')) {
+      this.mode = 'play';
+    }
+  });
+
+  // Récupérer l'ID du joueur à partir du service utilisateur
+  this.playerId = this.route.snapshot.params['idUser'];
+  console.log("This player id: ", this.playerId);
+
+  // Charger les exercices selon le mode
+  this.loadExercices();
+  }
+
+
+   ngOnInit(): void {
+     this.route.params.subscribe(params => {
+    this.playerId = params['idUser'] || '';
+    this.loadExercices();
+  });
+  }
+
+ private loadExercices(): void {
+  if (this.mode === 'play' && this.playerId) {
+    this.exerciceService.getUserExercices(this.playerId).subscribe((exercices: Exercice[]) => {
+      this.exerciceList = exercices;
     });
-
-    // Récupérer l'ID du joueur à partir du service utilisateur
-    this.playerId = this.route.snapshot.params['idUser'];
-    console.log("This player id: ",this.playerId);
-
-    // Souscription à la liste des exercices pour mettre à jour le tableau dans le composant
-    this.exerciceService.getExercices().subscribe((exercices: Exercice[]) => {
+  } else {
+    this.exerciceService.getAllExercices().subscribe((exercices: Exercice[]) => {
       this.exerciceList = exercices;
     });
   }
+}
 
-  ngOnInit(): void {}
+
+
+ 
 
   // Méthode pour supprimer un exercice
   deleteExercice(exercice: Exercice): void {
-    this.exerciceService.deleteExercice(exercice.id);
+    this.exerciceService.deleteExercice(exercice);
   }
 
   // Méthode pour sélectionner un exercice
@@ -61,13 +81,7 @@ export class ExerciceListComponent implements OnInit {
       }
     } else {
       console.log('Player ID is not defined');
-      // Redirection si l'ID du joueur est indéfini, rediriger vers la page d'erreur ou autre action appropriée
       this.router.navigate(['/user-list']);
     }
-  }
-
-  // Méthode pour la navigation vers la création d'un exercice
-  navigateToCreateExercice(): void {
-    this.router.navigate(['/create-exercice']);
   }
 }

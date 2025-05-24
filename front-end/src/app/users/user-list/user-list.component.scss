@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 2px 4px 4px 4px var(--yellow);
+  box-shadow: 2px 4px 4px 4px var(--yellow1);
   border-radius: 10px;
   padding: 5px;
 }
@@ -73,7 +73,7 @@
   font-size: 22px;
   font-weight: bold;
   color: var(--purple1);
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   padding: 8px 12px;
   border-radius: 5px;
   display: inline-block;
@@ -94,7 +94,7 @@
 
 .results th {
   background-color: var(--purple1);
-  color: var(--yellow);
+  color: var(--yellow1);
   font-weight: bold;
 }
 

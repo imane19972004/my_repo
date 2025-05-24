@@ -47,7 +47,7 @@ hr {
 
 /* Historique de l'utilisateur */
 .card {
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   border-radius: 8px;
   box-shadow: 4px 4px 4px var(--purple2);
   padding: 20px;
@@ -61,7 +61,7 @@ hr {
 
 .card:hover {
   transform: scale(1.02);
-  background-color: var(--yellow);  /* Couleur d'accent pour le survol */
+  background-color: var(--yellow1);  /* Couleur d'accent pour le survol */
 }
 
 .card h3 {

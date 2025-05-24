@@ -11,7 +11,7 @@
   justify-content: center;
   align-items: center;
   color: var(--purple2);
-  box-shadow: 4px 4px 4px 4px var(--yellow);
+  box-shadow: 4px 4px 4px 4px var(--yellow1);
 }
 
 .title {
@@ -38,7 +38,7 @@
   text-decoration: none;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   color: var(--purple2);
   margin-top: 20px;
   width: 300px;
@@ -46,13 +46,13 @@
 }
 
 .btn-primary:hover {
-  background-color: #ecfd00;
+  background-color: var(--yellow2);
   scale: 1.1;
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background-color: #ecfd00;
+  background-color: var(--yellow2);
   scale: 1.1;
   cursor: pointer;
 }

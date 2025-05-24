@@ -23,7 +23,7 @@
 /* Avatar */
 .user-avatar {
   background-color: var(--purple1);
-  color: var(--yellow);
+  color: var(--yellow1);
   width: 80px;
   height: 80px;
   display: flex;
@@ -39,7 +39,7 @@
   font-size: 22px;
   font-weight: bold;
   color: var(--purple1);
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   padding: 8px 12px;
   border-radius: 5px;
   display: inline-block;
@@ -72,7 +72,7 @@
 }
 /* Bouton de visionnage de l'historique */
 .button-voir-historique {
-  background-color: var(--yellow);
+  background-color: var(--yellow1);
   color: var(--purple1);
   border: none;
   padding: 10px 10px;
