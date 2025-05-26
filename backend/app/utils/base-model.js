@@ -19,6 +19,7 @@ module.exports = class BaseModel {
   load() {
     try {
       this.items = JSON.parse(fs.readFileSync(this.filePath, 'utf8'))
+      console.log(this.items)
     } catch (err) {
       if (err.message === 'Unexpected end of JSON input') logger.log(`Warning : ${this.filePath} has wrong JSON format`)
     }
@@ -40,6 +41,13 @@ module.exports = class BaseModel {
     if (typeof id === 'string') id = parseInt(id, 10)
     const item = this.items.find((i) => i.id === id)
     if (!item) throw new NotFoundError(`Cannot get ${this.name} id=${id} : not found`)
+    return item
+  }
+
+  getExerciceById(id) {
+    const item = this.items.find((i) => i.id === id)
+    if (!item) throw new NotFoundError(`Cannot get ${this.name} id=${id} : not found`)
+    console.log(item.id)
     return item
   }
 

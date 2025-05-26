@@ -1,0 +1,69 @@
+# Fichiers macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Dossiers et fichiers de VSCode
+.vscode/
+
+# Fichiers générés par des éditeurs
+.idea/                        # Fichiers de JetBrains (IntelliJ, WebStorm, PhpStorm, etc.)
+*.sublime-workspace            # Fichiers de configuration Sublime Text
+*.sublime-project              # Fichiers de projet Sublime Text
+
+# Fichiers temporaires
+*.swp                         # Fichiers de swap de Vim
+*.bak                         # Fichiers de sauvegarde
+*.tmp                         # Fichiers temporaires
+*~                            # Fichiers de sauvegarde temporaires (par exemple Emacs)
+
+# Fichiers spécifiques à Node.js
+node_modules/                 # Dossier des dépendances Node.js
+npm-debug.log                 # Fichier de log NPM
+yarn-error.log                # Fichier de log Yarn
+
+# Fichiers spécifiques à Python
+__pycache__/                  # Cache Python
+*.pyc                         # Fichiers de bytecode Python
+*.pyo                         # Fichiers de sortie optimisés Python
+*.pyd                         # Fichiers d'extension Python
+env/                          # Environnement virtuel Python
+venv/                         # Dossier venv
+*.env                         # Fichiers d'environnement
+
+# Fichiers spécifiques à Ruby
+*.gem                         # Fichiers de gem Ruby
+*.rbc                         # Fichiers Ruby compilés
+.bundle/                      # Dossier contenant les gems
+.ruby-version                 # Version de Ruby spécifique (peut être ignoré selon projet)
+*.log                         # Fichiers de log
+
+# Fichiers spécifiques à Java
+*.class                       # Fichiers compilés Java
+*.jar                         # Fichiers JAR (Java ARchive)
+*.war                         # Fichiers WAR (Web Application Archive)
+*.ear                         # Fichiers EAR (Enterprise ARchive)
+*.iml                         # Fichiers de configuration IntelliJ IDEA
+
+# Fichiers spécifiques à C/C++
+*.o                           # Fichiers objets C/C++
+*.a                           # Fichiers d'archive statiques
+*.so                          # Fichiers de bibliothèques partagées
+
+# Fichiers de configuration
+*.env                         # Variables d'environnement (telles que .env.local, .env.production, etc.)
+*.local                       # Fichiers de configuration locaux
+
+# Fichiers temporaires de compilation
+*.out                         # Fichiers de sortie de compilation
+*.log                         # Fichiers de log généraux
+*.pid                         # Fichiers de PID (process ID)
+
+# Fichiers générés par Docker
+docker-compose.override.yml   # Configuration spécifique à l'environnement dans Docker Compose
+Dockerfile*.bak               # Sauvegarde des fichiers Dockerfile
+
+# Fichiers de systèmes de gestion de versions (versioning)
+*.gitmodules                  # Modules Git
+/.idea/
+backend/package.json

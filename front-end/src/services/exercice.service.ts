@@ -1,13 +1,12 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {Exercice} from '../models/exercice.model';
 import {DEFAULT_EXERCISE_DATA} from "../mocks/exercices-data";
 import {HttpClient} from "@angular/common/http";
 import {User} from "../models/user.model";
 import {httpOptionsBase, serverUrl} from "../configs/server.config";
 import {catchError} from "rxjs/operators";
-import { map } from 'rxjs/operators';
-import { UserService } from './user.service';
+import { map } from 'rxjs/operators'; // Add this at the top of the filecl
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +22,14 @@ export class ExerciceService {
   private readonly STORAGE_KEY = 'memolink_exercices';
   private USE_LOCAL_STORAGE = false;
 
-  constructor(private http: HttpClient, private userService: UserService) {
+  constructor(private  http: HttpClient) {
+    // Chargement initial des exercices
     this.loadExercices();
   }
 
   /**
-   * Charge les exercices depuis le serveur ou localStorage
+   * Charge les exercices depuis le localStorage.
+   * Si absent ou invalide, initialise avec les exercices par défaut.
    */
   private loadExercices(): void {
     if (this.USE_LOCAL_STORAGE) {
@@ -54,6 +55,7 @@ export class ExerciceService {
         });
     }
   }
+
 
   /**
    * Initialise avec les exercices par défaut.
@@ -87,10 +89,11 @@ export class ExerciceService {
   }
 
   /**
-   * Ajoute un nouvel exercice
+   * Ajoute un nouvel exercice en générant automatiquement son ID.
    */
   addExercice(exercice: Exercice): void {
     const currentExercices = this.exercices$.value;
+    // Assigner un ID unique exo-{n}
     exercice.id = `exo-${currentExercices.length + 1}`;
     if (this.USE_LOCAL_STORAGE) {
       const updatedExercices = [...currentExercices, exercice];
@@ -120,12 +123,16 @@ export class ExerciceService {
   }
 
   /**
-   * Supprime un exercice
+   * Supprime un exercice par son ID et réattribue tous les IDs.
    */
   deleteExercice(exercice: Exercice): void {
     if (this.USE_LOCAL_STORAGE) {
       const currentExercices = this.exercices$.value;
+
+      // Filtrer l'exercice à supprimer
       let updatedExercices = currentExercices.filter(exo => exo.id !== exercice.id);
+
+      // Réassigner les IDs proprement
       updatedExercices = updatedExercices.map((exercice, index) => ({
         ...exercice,
         id: `exo-${index + 1}`
@@ -140,9 +147,7 @@ export class ExerciceService {
     }
   }
 
-  /**
-   * Sélectionner un exercice
-   */
+  // Sélectionner un exercice
   setSelectedExercice(id: string): void {
     if (this.USE_LOCAL_STORAGE) {
       const exercices = this.exercices$.value;
@@ -155,9 +160,6 @@ export class ExerciceService {
     }
   }
 
-  /**
-   * Upload d'image
-   */
   uploadImage(formData: FormData): Observable<string> {
     return this.http.post<{ imagePath: string }>(
       `${this.exercicesUrl}/uploads`,
@@ -167,70 +169,9 @@ export class ExerciceService {
         console.error('Erreur d\'upload:', err);
         return of({ imagePath: '' });
       }),
+      // Extraire juste le chemin de retour
       map(res => res.imagePath)
     );
   }
 
-  // ======================= MÉTHODES POUR LA GESTION DES EXERCICES UTILISATEUR =======================
-
-  /**
-   * Obtenir tous les exercices disponibles
-   */
-  getAllExercices(): Observable<Exercice[]> {
-    return this.exercices$;
-  }
-
-  /**
-   * Obtenir les exercices assignés à un utilisateur (liste privée)
-   */
-  getUserExercices(userId: string): Observable<Exercice[]> {
-    return combineLatest([
-      this.exercices$,
-      this.userService.getUserAssignedExercices(userId)
-    ]).pipe(
-      map(([exercices, assignedIds]) => 
-        exercices.filter(ex => assignedIds.includes(ex.id))
-      )
-    );
-  }
-
-  /**
-   * Obtenir les exercices disponibles (non assignés à un utilisateur)
-   */
-  getAvailableExercicesForUser(userId: string): Observable<Exercice[]> {
-    return combineLatest([
-      this.exercices$,
-      this.userService.getUserAssignedExercices(userId)
-    ]).pipe(
-      map(([exercices, assignedIds]) => 
-        exercices.filter(ex => !assignedIds.includes(ex.id))
-      )
-    );
-  }
-
-  /**
-   * CORRIGER : Assigner un exercice à la liste privée d'un utilisateur
-   */
-  assignExerciceToUser(userId: string, exerciceId: string): Observable<any> {
-    console.log('AssignExerciceToUser appelé avec:', { userId, exerciceId });
-    
-    // Utiliser le UserService pour assigner l'exercice
-    this.userService.assignExerciceToUser(userId, exerciceId);
-    
-    // Retourner un observable réussi pour la cohérence
-    return of({ success: true });
-  }
-
-  /**
-   * CORRIGER : Retirer un exercice de la liste privée d'un utilisateur
-   */
-  removeExerciceFromUser(userId: string, exerciceId: string): Observable<any> {
-    console.log('RemoveExerciceFromUser appelé avec:', { userId, exerciceId });
-    
-    // Utiliser le UserService pour retirer l'exercice
-    this.userService.removeExerciceFromUser(userId, exerciceId);
-    
-    // Retourner un observable réussi pour la cohérence
-    return of({ success: true });
-  }
 }

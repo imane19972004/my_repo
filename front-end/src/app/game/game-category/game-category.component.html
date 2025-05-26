@@ -10,7 +10,7 @@
 
   <div class="category-content">
     <img
-      [src]="'assets/resources/objets-et-pieces-de-la-maison/' + category.imagePath"
+      [src]="category.imagePath"
       [alt]="category.name"
       class="image"
     />
@@ -19,7 +19,7 @@
       <img
         *ngFor="let item of items"
         cdkDrag
-        [src]="'assets/resources/objets-et-pieces-de-la-maison/' + item.imagePath"
+        [src]="item.imagePath"
         [alt]="item.name"
         class="object-image"
       />

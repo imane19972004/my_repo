@@ -3,7 +3,7 @@ import { UserHistory } from '../models/user-history.model';
 export const MOCK_USER_HISTORY: UserHistory[] = [
   {
     userId: '1',
-    exerciceId: 'exo-1',
+    exerciceId: '1',
     date: '2025-04-25T10:30:00Z',
     exerciceName: 'Rangeons notre maison !',
     success: 6,
@@ -11,7 +11,7 @@ export const MOCK_USER_HISTORY: UserHistory[] = [
   },
   {
     userId: '2',
-    exerciceId: 'exo-1',
+    exerciceId: '1',
     date: '2025-04-28T14:15:00Z',
     exerciceName: 'Rangeons notre maison !',
     success: 5,
@@ -19,7 +19,7 @@ export const MOCK_USER_HISTORY: UserHistory[] = [
   },
   {
     userId: '3',
-    exerciceId: 'exo-1',
+    exerciceId: '1',
     date: '2025-04-27T16:45:00Z',
     exerciceName: 'Rangeons notre maison !',
     success: 3,

@@ -1,0 +1,59 @@
+/* Réinitialisation de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Corps de la page */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #D9D9D9;
+    height: max-content;
+}
+
+/* Conteneur principal */
+div {
+    text-align: center;
+    background-color: #D9D9D9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Titres */
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Paragraphes */
+p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* Emphase */
+em {
+    font-style: normal;
+    font-weight: bold;
+    color: var(--yellow1);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    background-color: var(--purple1);
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0;
+    color: var(--yellow1);
+}

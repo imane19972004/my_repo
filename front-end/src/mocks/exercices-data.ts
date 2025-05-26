@@ -2,7 +2,7 @@
 
 export const DEFAULT_EXERCISE_DATA = [
   {
-    id: 'exo-1',
+    id: '1',
     name: 'Rangeons notre maison !',
     theme: 'Objets et pièces de la maison',
     description: 'Placez chaque objet dans la pièce où il appartient.',

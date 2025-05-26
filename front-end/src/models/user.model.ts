@@ -5,5 +5,4 @@ export interface User {
   age?: number;
   particularity?: string;
   role: string;
-  assignedExercices?: string[];
 }

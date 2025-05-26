@@ -33,7 +33,6 @@ export class GamePageComponent implements OnInit {
   timerSubscription: Subscription | null = null;
   remainingTime: number = 0; // en secondes
   timeoutTriggered: boolean = false;
-  isPrivateExercice: boolean = false;
 
 
   constructor(
@@ -67,34 +66,14 @@ export class GamePageComponent implements OnInit {
   }
 
   // Récupère l'exercice à partir de l'ID
-// Modifier la méthode loadExercice() :
-loadExercice(id: string): void {
-  // D'abord essayer de charger depuis les exercices généraux
-  this.exerciceService.getExerciceById(id).subscribe(exercice => {
-    if (exercice) {
-      this.exercice = exercice;
-      this.isPrivateExercice = false;
-      this.initializeGame();
-    } else {
-      // Si pas trouvé dans les généraux, regarder s’il est dans les assignés
-      this.userService.getUserAssignedExercices(this.userID).subscribe(assignedIds => {
-        if (assignedIds.includes(id)) {
-          this.exerciceService.getExerciceById(id).subscribe(privateEx => {
-            if (privateEx) {
-              this.exercice = privateEx;
-              this.isPrivateExercice = true;
-              this.initializeGame();
-            } else {
-              console.error('Exercice assigné mais introuvable');
-            }
-          });
-        } else {
-          console.error('Exercice non trouvé dans les listes générale et privée');
-        }
-      });
-    }
-  });
-}
+  loadExercice(id: string): void {
+    this.exerciceService.getExerciceById(id).subscribe((exercice: Exercice | undefined) => {
+  if (exercice) {
+    this.exercice = exercice;
+    this.initializeGame();
+  }
+})
+  }
 
   // Initialise les listes et connecte les zones de drop
   initializeGame(): void {

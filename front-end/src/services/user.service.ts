@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model';
 import { UserHistory } from '../models/user-history.model';
-import { Exercice } from '../models/exercice.model';
 import { MOCK_USERS } from '../mocks/mock-users-data';
 import { MOCK_USER_HISTORY } from '../mocks/mock-users-history-data';
 import { serverUrl, httpOptionsBase } from '../configs/server.config';
@@ -16,7 +15,9 @@ export class UserService {
 
   private serverUrlLoc = serverUrl;
   private userUrl = `${this.serverUrlLoc}/users`;
+  private userHistoryUrl = `${this.serverUrlLoc}/users`; // Corrected base for user history
 
+  // à désactiver pour tester le back-end coté users
   private USE_MOCK = false;
 
   public users$: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
@@ -29,11 +30,7 @@ export class UserService {
     this.retrieveUsers();
   }
 
-  // ---------------------- USERS ----------------------
-
-  /**
-   * Ajouter un utilisateur
-   */
+  // Ajoute un nouvel utilisateur
   addUser(user: User): void {
     if (this.USE_MOCK) {
       user.id = Math.floor(Math.random() * 100000).toString();
@@ -55,9 +52,7 @@ export class UserService {
     }
   }
 
-  /**
-   * Supprimer un utilisateur
-   */
+  // Supprime un utilisateur et son historique
   deleteUser(user: User): void {
     if (this.USE_MOCK) {
       this.mockUsers = this.mockUsers.filter(u => u.id !== user.id);
@@ -70,9 +65,7 @@ export class UserService {
     }
   }
 
-  /**
-   * Récupérer tous les utilisateurs
-   */
+  // Récupère tous les utilisateurs
   retrieveUsers(): void {
     if (this.USE_MOCK) {
       this.users$.next([...this.mockUsers]);
@@ -83,9 +76,7 @@ export class UserService {
     }
   }
 
-  /**
-   * Sélectionner un utilisateur
-   */
+  // Définit un utilisateur sélectionné
   setSelectedUser(user: User): void {
     if (this.USE_MOCK) {
       const foundUser = this.mockUsers.find(u => u.id === user.id);
@@ -99,9 +90,7 @@ export class UserService {
     }
   }
 
-  /**
-   * Obtenir un utilisateur par son ID
-   */
+  // Récupère un utilisateur par son ID
   getUserById(userId: string): Observable<User | undefined> {
     if (this.USE_MOCK) {
       const user = this.mockUsers.find(u => u.id === userId);
@@ -112,146 +101,27 @@ export class UserService {
     }
   }
 
-  // ---------------------- HISTORY ----------------------
-
-  /**
-   * Obtenir l'historique d'un utilisateur par son ID
-   */
+  // Récupère l'historique d’un utilisateur
   getUserHistoryById(userId: string): Observable<UserHistory[]> {
     if (this.USE_MOCK) {
       const history = this.mockUserHistories.filter(h => h.userId === userId);
       return of(history);
     } else {
-      const urlWithId = `${this.userUrl}/${userId}/history`;
+      const urlWithId = `${this.userHistoryUrl}/${userId}/history`;
       return this.http.get<UserHistory[]>(urlWithId, httpOptionsBase)
         .pipe(catchError(err => { console.error(err); return of([]); }));
     }
   }
 
-  /**
-   * Ajouter une entrée dans l'historique d'un utilisateur
-   */
+  // Ajoute une entrée à l'historique
   addUserHistory(newEntry: UserHistory): void {
     if (this.USE_MOCK) {
       this.mockUserHistories.push(newEntry);
     } else {
-      const url = `${this.userUrl}/${newEntry.userId}/history`;
+      const url = `${this.userHistoryUrl}/${newEntry.userId}/history`;
       this.http.post<UserHistory>(url, newEntry, httpOptionsBase)
         .pipe(catchError(err => { console.error(err); return of(); }))
         .subscribe();
     }
-  }
-
-  // ---------------------- ASSIGNED EXERCICES ----------------------
-
-  /**
-   * Assigner un exercice à un utilisateur (l'ajouter à sa liste privée)
-   */
-  assignExerciceToUser(userId: string, exerciceId: string): void {
-    console.log('UserService.assignExerciceToUser appelé:', { userId, exerciceId });
-    
-    const users = this.users$.value;
-    const userIndex = users.findIndex(u => u.id === userId);
-
-    if (userIndex !== -1) {
-      // Initialiser le tableau si nécessaire
-      if (!users[userIndex].assignedExercices) {
-        users[userIndex].assignedExercices = [];
-      }
-
-      // Ajouter l'exercice s'il n'y est pas déjà
-      if (!users[userIndex].assignedExercices!.includes(exerciceId)) {
-        users[userIndex].assignedExercices!.push(exerciceId);
-        
-        // Mettre à jour le BehaviorSubject pour notifier les observables
-        this.users$.next([...users]);
-        
-        console.log('Exercice assigné avec succès. Liste mise à jour:', users[userIndex].assignedExercices);
-      } else {
-        console.log('Exercice déjà assigné à cet utilisateur');
-      }
-    } else {
-      console.error('Utilisateur non trouvé:', userId);
-    }
-  }
-
-  /**
-   * Retirer un exercice de la liste privée d'un utilisateur
-   */
-  removeExerciceFromUser(userId: string, exerciceId: string): void {
-    console.log('UserService.removeExerciceFromUser appelé:', { userId, exerciceId });
-    
-    const users = this.users$.value;
-    const userIndex = users.findIndex(u => u.id === userId);
-
-    if (userIndex !== -1 && users[userIndex].assignedExercices) {
-      users[userIndex].assignedExercices = users[userIndex].assignedExercices!.filter(
-        id => id !== exerciceId
-      );
-      
-      // Mettre à jour le BehaviorSubject pour notifier les observables
-      this.users$.next([...users]);
-      
-      console.log('Exercice retiré avec succès. Liste mise à jour:', users[userIndex].assignedExercices);
-    } else {
-      console.error('Utilisateur non trouvé ou pas d\'exercices assignés:', userId);
-    }
-  }
-
-  /**
-   * Obtenir la liste des exercices assignés à un utilisateur
-   */
-  getUserAssignedExercices(userId: string): Observable<string[]> {
-    return this.users$.pipe(
-      map(users => {
-        const user = users.find(u => u.id === userId);
-        const assignedExercices = user?.assignedExercices || [];
-        console.log('getUserAssignedExercices pour', userId, ':', assignedExercices);
-        return assignedExercices;
-      })
-    );
-  }
-
-  // ---------------------- PRIVATE EXERCICES (API) ----------------------
-  // Ces méthodes sont pour une future intégration avec une API backend
-
-  /**
-   * Obtenir les exercices privés d'un utilisateur via API
-   */
-  getUserPrivateExercices(userId: string): Observable<Exercice[]> {
-    return this.http.get<Exercice[]>(`${this.userUrl}/${userId}/private-exercices`, httpOptionsBase)
-      .pipe(catchError(err => { console.error(err); return of([]); }));
-  }
-
-  /**
-   * Ajouter un exercice à la liste privée via API
-   */
-  addExerciceToPrivateList(userId: string, exerciceId: string): Observable<any> {
-    return this.http.post(`${this.userUrl}/${userId}/private-exercices`, { exerciceId }, httpOptionsBase)
-      .pipe(catchError(err => { console.error(err); return of(); }));
-  }
-
-  /**
-   * Retirer un exercice de la liste privée via API
-   */
-  removeExerciceFromPrivateList(userId: string, exerciceId: string): Observable<any> {
-    return this.http.delete(`${this.userUrl}/${userId}/private-exercices/${exerciceId}`, httpOptionsBase)
-      .pipe(catchError(err => { console.error(err); return of(); }));
-  }
-
-  /**
-   * Vérifier si un exercice est dans la liste privée via API
-   */
-  isExerciceInPrivateList(userId: string, exerciceId: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.userUrl}/${userId}/private-exercices/${exerciceId}/exists`, httpOptionsBase)
-      .pipe(catchError(err => { console.error(err); return of(false); }));
-  }
-
-  /**
-   * Mettre à jour les exercices privés d'un utilisateur via API
-   */
-  updateUserPrivateExercices(userId: string, exerciceIds: string[]): Observable<any> {
-    return this.http.put(`${this.userUrl}/${userId}/private-exercices`, { exerciceIds }, httpOptionsBase)
-      .pipe(catchError(err => { console.error(err); return of(); }));
   }
 }

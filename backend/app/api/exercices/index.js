@@ -6,10 +6,10 @@ const manageAllErrors = require('../../utils/routes/error-management')
 
 const router = new Router()
 
-// Config multer (upload d'images)
+// Config multer pour upload d'images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../uploads')) // dossier à exposer publiquement
+    cb(null, path.join(__dirname, '../../uploads'))
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
@@ -34,7 +34,8 @@ router.get('/', (req, res) => {
 // GET un exercice par ID
 router.get('/:idExercice', (req, res) => {
   try {
-    const exercice = Exercice.getById(req.params.idExercice)
+    const exercice = Exercice.getExerciceById(req.params.idExercice)
+    console.log('Résultat trouvé :', exercice)
     res.status(200).json(exercice)
   } catch (err) {
     manageAllErrors(res, err)
