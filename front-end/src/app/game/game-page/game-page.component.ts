@@ -26,6 +26,10 @@ export class GamePageComponent implements OnInit {
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
   itemFailureTracker: { [itemName: string]: number } = {};
+  
+  // AJOUT: Garder une copie de tous les items originaux de l'exercice
+  private allOriginalItems: Item[] = [];
+  
   // Paramètres du jeu
   settings: GameSettings;
   
@@ -52,12 +56,13 @@ export class GamePageComponent implements OnInit {
       this.settings = settings;
       
       // Si le jeu est déjà initialisé, mettre à jour les éléments en fonction du nombre d'objets
-      if (this.exercice.items.length > 0) {
+      if (this.allOriginalItems.length > 0) {
         this.adjustItemsCount();
       }
     });
     if (exerciceId) this.loadExercice(exerciceId);
   }
+  
   ngOnDestroy(): void {
     // Annuler le minuteur si on quitte la page
     if (this.timerSubscription) {
@@ -70,6 +75,8 @@ export class GamePageComponent implements OnInit {
     this.exerciceService.getExerciceById(id).subscribe((exercice: Exercice | undefined) => {
   if (exercice) {
     this.exercice = exercice;
+    // MODIFICATION: Sauvegarder tous les items originaux
+    this.allOriginalItems = [...this.exercice.items];
     this.initializeGame();
   }
 })
@@ -77,7 +84,8 @@ export class GamePageComponent implements OnInit {
 
   // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
-    this.itemsInBulk = [...this.exercice.items];
+    // MODIFICATION: Utiliser tous les items originaux puis ajuster
+    this.itemsInBulk = [...this.allOriginalItems];
     this.adjustItemsCount();
     this.itemsByCategory = {};
     this.exercice.categories.forEach(c => this.itemsByCategory[c.name] = []);
@@ -92,13 +100,72 @@ export class GamePageComponent implements OnInit {
     // Démarrer le minuteur (toujours fonctionnel mais invisible)
     this.startTimer();
   }
-  // Ajuster le nombre d'éléments en fonction des paramètres
+  
+  // MODIFICATION MAJEURE: Ajuster le nombre d'éléments en fonction des paramètres
   adjustItemsCount(): void {
-    // S'assurer qu'on n'a pas plus d'éléments que le nombre spécifié dans les paramètres
-    if (this.itemsInBulk.length > this.settings.objectsCount) {
-      this.itemsInBulk = this.itemsInBulk.slice(0, this.settings.objectsCount);
+    const targetCount = this.settings.objectsCount;
+    const currentTotalItems = this.itemsInBulk.length + 
+      Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
+    
+    if (targetCount < currentTotalItems) {
+      // Réduire le nombre d'objets
+      this.reduceItemsCount(targetCount);
+    } else if (targetCount > currentTotalItems) {
+      // Augmenter le nombre d'objets
+      this.increaseItemsCount(targetCount);
     }
   }
+  
+  // NOUVELLE MÉTHODE: Réduire le nombre d'objets
+  private reduceItemsCount(targetCount: number): void {
+    const currentTotal = this.itemsInBulk.length + 
+      Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
+    const itemsToRemove = currentTotal - targetCount;
+    
+    let removedCount = 0;
+    
+    // D'abord, retirer des objets du bulk
+    while (removedCount < itemsToRemove && this.itemsInBulk.length > 0) {
+      this.itemsInBulk.pop();
+      removedCount++;
+    }
+    
+    // Si on doit encore retirer des objets, les retirer des catégories
+    if (removedCount < itemsToRemove) {
+      for (const categoryName of Object.keys(this.itemsByCategory)) {
+        while (removedCount < itemsToRemove && this.itemsByCategory[categoryName].length > 0) {
+          this.itemsByCategory[categoryName].pop();
+          removedCount++;
+        }
+        if (removedCount >= itemsToRemove) break;
+      }
+    }
+  }
+  
+  // NOUVELLE MÉTHODE: Augmenter le nombre d'objets
+  private increaseItemsCount(targetCount: number): void {
+    const currentTotal = this.itemsInBulk.length + 
+      Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
+    const itemsToAdd = targetCount - currentTotal;
+    
+    // Obtenir les items déjà utilisés
+    const usedItems = new Set([
+      ...this.itemsInBulk.map(item => item.name),
+      ...Object.values(this.itemsByCategory).flat().map(item => item.name)
+    ]);
+    
+    // Trouver les items disponibles qui ne sont pas encore utilisés
+    const availableItems = this.allOriginalItems.filter(item => !usedItems.has(item.name));
+    
+    // Ajouter les nouveaux items au bulk
+    for (let i = 0; i < itemsToAdd && i < availableItems.length; i++) {
+      this.itemsInBulk.push(availableItems[i]);
+    }
+    
+    // Mélanger les nouveaux items dans le bulk
+    this.shuffleArray(this.itemsInBulk);
+  }
+  
   // Démarrer le minuteur de jeu (invisible)
   startTimer(): void {
     // Annuler tout minuteur existant
@@ -120,12 +187,14 @@ export class GamePageComponent implements OnInit {
       }
     });
   }
+  
   // Fonction formatTime gardée pour compatibilité, mais non utilisée dans l'interface
   formatTime(): string {
     const minutes = Math.floor(this.remainingTime / 60);
     const seconds = this.remainingTime % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
+  
   // Terminer le jeu en raison du timeout avec un message plus doux
   endGameDueToTimeout(): void {
     if (this.timeoutTriggered) return; // Éviter les appels multiples
@@ -228,7 +297,8 @@ export class GamePageComponent implements OnInit {
   checkGameCompletion(): void {
     if (this.itemsInBulk.length === 0) {
       let correct = 0;
-      const total = this.exercice.items.length;
+      const total = this.itemsInBulk.length + Object.values(this.itemsByCategory)
+        .reduce((sum, items) => sum + items.length, 0);
 
       Object.keys(this.itemsByCategory).forEach(cat => {
         this.itemsByCategory[cat].forEach(item => {

@@ -1,4 +1,4 @@
-// settings.component.ts - avec ajustements pour garantir le positionnement
+// settings.component.ts - avec sauvegarde automatique
 import { Component, OnInit, Renderer2, ElementRef } from '@angular/core';
 import { SettingsService, GameSettings } from '../../services/settings.service';
 
@@ -12,8 +12,8 @@ export class SettingsComponent implements OnInit {
   settings: GameSettings;
   
   // Options pour le nombre d'objets
-  objectsOptions: number[] = [2, 3, 4, 5, 6, 8, 10];
-
+// Options pour le nombre d'objets (de 2 à 12)
+  objectsOptions: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   constructor(
     private settingsService: SettingsService,
     private renderer: Renderer2,
@@ -49,11 +49,10 @@ export class SettingsComponent implements OnInit {
     this.isOpen = !this.isOpen;
   }
   
-  saveSettings() {
-    // Sauvegarde des paramètres via le service
+  // NOUVELLE MÉTHODE: Appelée automatiquement à chaque changement
+  onSettingChange() {
+    // Sauvegarde automatique des paramètres
     this.settingsService.saveSettings(this.settings);
-    alert('Paramètres enregistrés !');
-    this.toggleSettings(); // Fermer le panneau après sauvegarde
   }
   
   resetSettings() {

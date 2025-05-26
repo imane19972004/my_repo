@@ -17,7 +17,7 @@
     <!-- Nombre d'objets -->
     <div class="section">
       <h3>Nombre d'objets</h3>
-      <select [(ngModel)]="settings.objectsCount">
+      <select [(ngModel)]="settings.objectsCount" (ngModelChange)="onSettingChange()">
         <option *ngFor="let option of objectsOptions" [value]="option">
           {{ option }} objets
         </option>
@@ -29,17 +29,17 @@
       <h3>Paramètres de durée</h3>
       <div class="input-control">
         <label>Durée du jeu (minutes) :</label>
-        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDurationMinutes">
+        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDurationMinutes" (ngModelChange)="onSettingChange()">
       </div>
       
       <div class="slider-control">
         <label>Durée des messages : {{ settings.messageDuration }} secondes</label>
-        <input type="range" min="1" max="10" step="0.5" [(ngModel)]="settings.messageDuration">
+        <input type="range" min="1" max="10" step="0.5" [(ngModel)]="settings.messageDuration" (ngModelChange)="onSettingChange()">
       </div>
 
       <div class="slider-control">
         <label>Vitesse d'animation : {{ settings.animationSpeed }}</label>
-        <input type="range" min="0.5" max="2" step="0.1" [(ngModel)]="settings.animationSpeed">
+        <input type="range" min="0.5" max="2" step="0.1" [(ngModel)]="settings.animationSpeed" (ngModelChange)="onSettingChange()">
       </div>
     </div>
 
@@ -49,12 +49,12 @@
 
       <div class="slider-control">
         <label>Taille du texte : {{ settings.textSize }}px</label>
-        <input type="range" min="12" max="30" [(ngModel)]="settings.textSize">
+        <input type="range" min="12" max="30" [(ngModel)]="settings.textSize" (ngModelChange)="onSettingChange()">
       </div>
 
       <div class="select-control">
         <label>Style du texte :</label>
-        <select [(ngModel)]="settings.textStyle">
+        <select [(ngModel)]="settings.textStyle" (ngModelChange)="onSettingChange()">
           <option value="normal">Normal</option>
           <option value="italic">Italique</option>
           <option value="bold">Gras</option>
@@ -63,15 +63,12 @@
 
       <div class="slider-control">
         <label>Contraste : {{ settings.contrast }}%</label>
-        <input type="range" min="50" max="150" [(ngModel)]="settings.contrast">
+        <input type="range" min="50" max="150" [(ngModel)]="settings.contrast" (ngModelChange)="onSettingChange()">
       </div>
-      
-      <!-- Suppression de l'option "Mode haute visibilité" -->
     </div>
 
-    <!-- Boutons de contrôle -->
+    <!-- Bouton de réinitialisation uniquement -->
     <div class="settings-actions">
-      <button class="save-btn" (click)="saveSettings()">Enregistrer</button>
       <button class="reset-btn" (click)="resetSettings()">Réinitialiser</button>
     </div>
   </div>
