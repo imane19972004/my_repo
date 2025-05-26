@@ -66,16 +66,33 @@ export class CreateExerciceComponent {
     } else {
       alert('Veuillez remplir tous les champs de la catégorie.');
     }
+    if (this.exercice.categories.length > 3) {
+  alert('Vous ne pouvez pas ajouter plus de 3 catégories.');
+  return;
+}
+
   }
 
   addItem(): void {
-    if (this.itemInput.name && this.itemInput.description && this.itemInput.category) {
-      this.exercice.items.push({ ...this.itemInput });
-      this.itemInput = { name: '', description: '', imagePath: '', category: '' };
-    } else {
-      alert('Veuillez remplir tous les champs de l\'objet.');
-    }
+  if (!this.itemInput.name || !this.itemInput.description || !this.itemInput.category) {
+    alert('Veuillez remplir tous les champs de l\'objet.');
+    return;
   }
+
+  // Vérifier si cette catégorie a déjà 4 items
+  const itemsInCategory = this.exercice.items.filter(
+    item => item.category === this.itemInput.category
+  );
+
+  if (itemsInCategory.length >= 4) {
+    alert(`La catégorie "${this.itemInput.category}" ne peut contenir que 4 objets au maximum.`);
+    return;
+  }
+
+  this.exercice.items.push({ ...this.itemInput });
+  this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+}
+
 
   // Supprimer une catégorie
   removeCategory(index: number): void {

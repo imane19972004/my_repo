@@ -35,7 +35,7 @@
             <div class="btn-add-picture"><input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" /></div>
           </div>
 
-          <button type="button" class="btn-add" (click)="addCategory()" [disabled]="exercice.categories.length >= 3">
+          <button type="button" class="btn-add" (click)="addCategory()" [disabled]="exercice.categories.length > 3">
             <i class="fas fa-plus"></i> Ajouter cette catégorie
           </button>
 
