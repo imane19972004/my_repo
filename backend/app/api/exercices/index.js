@@ -3,6 +3,7 @@ const multer = require('multer')
 const path = require('path')
 const { Exercice } = require('../../models')
 const manageAllErrors = require('../../utils/routes/error-management')
+const logger = require('../../utils/logger.js')
 
 const router = new Router()
 
@@ -35,14 +36,14 @@ router.get('/', (req, res) => {
 router.get('/:idExercice', (req, res) => {
   try {
     const exercice = Exercice.getExerciceById(req.params.idExercice)
-    console.log('Résultat trouvé :', exercice)
+    logger.info('Résultat trouvé :', exercice)
     res.status(200).json(exercice)
   } catch (err) {
     manageAllErrors(res, err)
   }
 })
 
-// POST un nouvel exercice
+// envoie un nouvel exercice
 router.post('/', (req, res) => {
   try {
     const exercice = Exercice.create({ ...req.body })
@@ -73,7 +74,7 @@ router.delete('/:idExercice', (req, res) => {
   }
 })
 
-// POST /upload (envoie une image et retourne le chemin)
+// envoie une image et retourne le chemin
 router.post('/uploads', upload.single('image'), (req, res) => {
   try {
     res.status(201).json({ imagePath: `/uploads/${req.file.filename}` })

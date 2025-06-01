@@ -1,72 +1,89 @@
 /* Conteneur du formulaire */
 .user-form-card {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 2px solid var(--purple1);
-  border-radius: 12px;
-  text-align: center;
-  padding: 25px;
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Style du formulaire */
-.user-form {
+  border-radius: 16px;
+  padding: 30px 25px;
   width: 100%;
+  max-width: 400px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin: auto;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  gap: 20px;
 }
 
-/* Groupe de champs */
+/* Titre d'étape */
+.step-indicator {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--purple1);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Formulaire */
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Groupe de champ */
 .form-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  width: 100%;
   align-items: center;
-  width: 100%;
 }
 
-/* Libellé */
+/* Libellés */
 .form-group label {
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 14px;
+  align-self: center;
   color: var(--purple1);
-  margin-bottom: 5px;
 }
 
-/* Champs de saisie */
-.input-custom {
+/* Champs */
+.input-custom,
+input[type="file"],
+select {
   width: 100%;
-  padding: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
   border: 2px solid var(--purple1);
-  border-radius: 5px;
-  font-size: 16px;
-  transition: border 0.3s ease-in-out;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: border 0.3s, box-shadow 0.3s;
+  align-self: center;
 }
 
-.input-custom:focus {
+.input-custom:focus,
+select:focus,
+input[type="file"]:focus {
   border-color: var(--yellow1);
   outline: none;
-  box-shadow: 0 0 5px rgba(240, 201, 74, 0.5);
+  box-shadow: 0 0 6px rgba(240, 201, 74, 0.5);
 }
 
-/* Bouton de soumission */
+/* Boutons */
 .button-submit {
   background-color: var(--purple1);
-  color: #ffffff;
+  color: #fff;
   border: none;
-  padding: 12px 18px;
-  font-size: 16px;
-  border-radius: 5px;
+  padding: 12px 20px;
+  font-size: 15px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .button-submit i {
@@ -78,30 +95,47 @@
   transform: scale(1.05);
 }
 
-/* Message d'erreur champ requis */
+/* Message erreur */
 .error {
-  color: #d9534f;
-  font-size: 0.85em;
-  margin-top: -10px;
-  margin-bottom: 10px;
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 3px;
   text-align: left;
 }
 
-/* Message de succès */
+/* Message succès */
 .success-message {
-  margin-top: 15px;
-  padding: 10px;
+  padding: 12px;
   background-color: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
-  border-radius: 6px;
-  font-size: 0.95em;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
 }
 
-.step-indicator {
-  font-weight: bold;
-  color: var(--purple1);
-  margin-bottom: 15px;
-  font-size: 16px;
-  text-align: center;
+/* Responsive */
+@media (max-width: 480px) {
+  .user-form-card {
+    padding: 20px 15px;
+  }
+
+  .button-submit {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
+input[type="file"] {
+  width: 100%; /* ne prend pas toute la largeur */
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid var(--purple1);
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+input[type="file"]:focus {
+  border-color: var(--yellow1);
+  outline: none;
+  box-shadow: 0 0 6px rgba(240, 201, 74, 0.5);
 }

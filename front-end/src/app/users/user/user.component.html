@@ -1,6 +1,10 @@
-<div class="user-card" (click)="selectUser()">
+<div class="user-card">
   <div class="user-avatar">
-    <i class="fas fa-user"></i>
+    <img *ngIf="user?.photoUrl; else defaultIcon" [src]="backendUrl+user?.photoUrl" alt="Avatar" class="avatar-img" />
+    <ng-template #defaultIcon>
+      <img src="assets/defaultIcon.jpg" alt="Default Icon" class="avatar-img">
+      <i class="fas fa-user"></i>
+    </ng-template>
   </div>
 
   <h2 class="user-name">

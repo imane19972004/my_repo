@@ -20,24 +20,10 @@ export class CreateExerciceComponent {
     categories: [],
     items: []
   };
-
+  
+  customTheme: string = '';
   currentStep = 1;
 
-  themeSuggestions = [
-    "Objets et pièces de la maison",
-    "Vêtements et parties du corps",
-    "Vêtements et saisons",
-    "Monuments et capitales",
-    "Ingrédients et plats"
-  ];
-
-  nameSuggestions = [
-    "Rangeons notre maison !",
-    "À chacun son vêtement !",
-    "Habillons-nous selon la saison !",
-    "Voyage autour du monde !",
-    "Préparons un festin !"
-  ];
 
   categoryInput: Category = { name: '', description: '', imagePath: '' };
   itemInput: any = { name: '', description: '', imagePath: '', category: '' };
@@ -46,15 +32,9 @@ export class CreateExerciceComponent {
 
   constructor(private exerciceService: ExerciceService) {}
 
-  // Suggère un nom amusant en fonction du thème sélectionné
-  suggestName(): void {
-    const index = this.themeSuggestions.indexOf(this.exercice.theme);
-    if (index !== -1) {
-      this.exercice.name = this.nameSuggestions[index];
-    }
-  }
+  
 
-  // Fonction pour ajouter une catégorie
+   // Fonction pour ajouter une catégorie
   addCategory(): void {
     if (this.exercice.categories.length >= 3) {
       alert('Vous ne pouvez pas ajouter plus de 3 catégories.');
@@ -124,6 +104,20 @@ export class CreateExerciceComponent {
     }
   }
 
+  //   onThemeChange(): void {
+  //   if (this.exercice.theme !== 'autre') {
+  //     const index = this.themeSuggestions.indexOf(this.exercice.theme);
+  //     this.exercice.name = this.nameSuggestions[index] || '';
+  //     this.customTheme = '';
+  //   } else {
+  //     this.exercice.name = '';
+  //   }
+  // }
+
+  getFinalTheme(): string {
+    return this.exercice.theme === 'autre' ? this.customTheme.trim() : this.exercice.theme;
+  }
+
   onSubmit(): void {
     if (this.exercice.name && this.exercice.theme && this.exercice.categories.length > 0) {
       this.exerciceService.addExercice(this.exercice);
@@ -145,7 +139,15 @@ export class CreateExerciceComponent {
 
   // Réinitialiser le formulaire
   resetForm(): void {
-    this.exercice = { id: '', name: '', theme: '', description: '', categories: [], items: [] };
+    this.exercice = {
+      id: '',
+      name: '',
+      theme: '',
+      description: '',
+      categories: [],
+      items: []
+    };
+    this.customTheme = '';
     this.categoryInput = { name: '', description: '', imagePath: '' };
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
   }

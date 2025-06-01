@@ -3,7 +3,7 @@
 
   <div *ngIf="user">
     <p><strong>Nom :</strong> {{ user.firstName }} {{ user.lastName }}</p>
-    <p><strong>Âge :</strong> {{ user.age }}</p>
+    <p><strong>Âge :</strong> {{ user.age }} ans</p>
     <p><strong>Particularité :</strong> {{ user.particularity }}</p>
     <p><strong>Rôle :</strong> {{ user.role }}</p>
   </div>
@@ -12,43 +12,48 @@
 
   <h2>Historique de l'utilisateur</h2>
 
-  <!-- Pas d'historique pour les encadrants -->
-  <div  *ngIf="user?.role?.startsWith('Encadrant')" class="no-history-supervisors">
+  <div *ngIf="user?.role?.startsWith('Encadrant')">
     <p>Pas d'historique pour les encadrants.</p>
   </div>
 
-  <!-- Loading state -->
   <div *ngIf="loading && user?.role?.startsWith('Accueilli')">
-    <p>Loading user history...</p>
+    <p>Chargement de l'historique...</p>
   </div>
 
-  <!-- No history message -->
-  <div *ngIf="!loading && userHistory.length === 0">
-    <p>No history found for this user.</p>
+  <div *ngIf="!loading && filteredExerciseHistories.length === 0">
+    <p>Aucun exercice joué pour cet utilisateur.</p>
   </div>
 
-  <!-- Affichage du graphique -->
-  <div *ngIf="(!loading && userHistory.length > 0) && user?.role?.startsWith('Accueilli')" class="graph">
-    <div *ngFor="let exerciceId of objectKeys(exerciseHistories)">
-      <h3>Évolution pour l’exercice : {{ exerciseHistories[exerciceId][0].exerciceName }}</h3>
-      <canvas #exerciseCanvas></canvas>
+  <div *ngFor="let exerciceId of objectKeys(groupedHistory)" class="exercise-block">
+    <h3>{{ groupedHistory[exerciceId][0].exerciceName }}</h3>
+
+    <!-- Graphique global exercice -->
+    <canvas #exerciseCanvas></canvas>
+
+    <!-- Dernière tentative -->
+    <div class="card">
+      <p><strong>Dernière tentative :</strong></p>
+      <p>Objets bien placés : {{ getLatestAttempt(exerciceId).success }}</p>
+      <p>Nombre de mauvais placements : {{ getLatestAttempt(exerciceId).failure }}</p>
+    </div>
+
+    <!-- Erreurs par objet pour la dernière tentative -->
+    <div class="card" *ngIf="getLatestAttempt(exerciceId).itemFailures">
+      <h4><strong>Erreurs par objet</strong> (dernière tentative) :</h4>
+      <ul>
+        <p>Sélectionnez un objet pour voir son historique</p>
+        <li *ngFor="let item of getAllItemNames(exerciceId)">
+          <button (click)="showItemGraph(exerciceId, item, $event)">
+            {{ item }} : {{ getLatestItemFailureCount(exerciceId, item) }} erreur(s)
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Graphique spécifique à un objet -->
+    <div *ngIf="selectedItem && selectedExerciseId === exerciceId">
+      <h4>Historique pour l'objet : {{ selectedItem }}</h4>
+      <canvas #itemCanvas></canvas>
     </div>
   </div>
-
-  <!-- Display the latest user history -->
-  <div *ngIf="(userHistory.length > 0) && user?.role?.startsWith('Accueilli')" class="card">
-    <h3> {{ userHistory[userHistory.length - 1].exerciceName }} (Données de la dernière tentative)</h3>
-    <p><strong>Nombre d'objets bien placés :</strong> {{ userHistory[userHistory.length - 1].success }}</p>
-    <p><strong>Nombre d'erreurs de placement :</strong> {{ userHistory[userHistory.length - 1].failure }}</p>
-  </div>
-
-  <div *ngIf="aggregatedItemFailures && user?.role?.startsWith('Accueilli')" class="card">
-    <h3>Nombre d'erreurs par item :</h3>
-    <ul>
-      <li *ngFor="let item of Object.keys(aggregatedItemFailures)">
-        {{ item }} : {{ aggregatedItemFailures[item] }} erreur(s)
-      </li>
-    </ul>
-  </div>
-
 </div>

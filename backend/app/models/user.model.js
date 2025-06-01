@@ -7,4 +7,5 @@ module.exports = new BaseModel('User', {
   age: Joi.number(),
   particularity: Joi.string(),
   role: Joi.string().required(),
+  photoUrl: Joi.string(),
 })

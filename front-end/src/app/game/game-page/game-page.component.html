@@ -1,6 +1,6 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
   <!-- Conteneur des objets en vrac -->
- 
+
   <!-- Conteneur des objets en vrac -->
   <app-settings-applier>
     <app-game-items-container
@@ -29,14 +29,13 @@
     </app-game-category>
     </app-settings-applier>
     </div>
-  
+
 
   <div *ngIf="successMessage" class="message" [ngStyle]="{color: messageColor,
-    fontSize: settings.textSize + 'px',
     fontWeight: settings.textStyle === 'bold' ? 'bold' : 'normal',
     fontStyle: settings.textStyle === 'italic' ? 'italic' : 'normal'}">{{ successMessage }}</div>
 
   <div *ngIf="gameCompleted" class="restart-button-container">
-    <button (click)="resetGame()" class="restart-button">Recommencer</button>
+    <button (click)="quitGame()" class="restart-button">QUITTER LE JEU</button>
   </div>
 </div>

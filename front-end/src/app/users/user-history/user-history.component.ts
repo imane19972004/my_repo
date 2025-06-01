@@ -1,10 +1,9 @@
-import {Component, OnInit, ViewChild, ElementRef, QueryList, ViewChildren} from '@angular/core';
+import { Component, OnInit, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../services/user.service';
-import { UserHistory } from '../../../models/user-history.model';
 import { User } from '../../../models/user.model';
+import { UserHistory } from '../../../models/user-history.model';
 import { Chart, registerables } from 'chart.js';
-import {ExerciceService} from "../../../services/exercice.service"; // Pour les graphiques
 
 @Component({
   selector: 'app-user-history',
@@ -12,133 +11,173 @@ import {ExerciceService} from "../../../services/exercice.service"; // Pour les 
   styleUrls: ['./user-history.component.scss']
 })
 export class UserHistoryComponent implements OnInit {
-
-  userHistory: UserHistory[] = [];
-  userId: string | null = null;
-  loading: boolean = true;
   user: User | null = null;
-  @ViewChildren('exerciseCanvas') canvasRefs!: QueryList<ElementRef<HTMLCanvasElement>>;
-  chart: Chart | null = null;
-  aggregatedItemFailures: { [itemName: string]: number } = {};
-  exerciseHistories: { [exerciseId: string]: UserHistory[] } = {};
-  objectKeys = Object.keys;
+  userId: string | null = null;
+  userHistory: UserHistory[] = [];
+  groupedHistory: { [exerciceId: string]: UserHistory[] } = {};
+  loading: boolean = true;
 
-  constructor(private userService: UserService, private route: ActivatedRoute, private exerciceService: ExerciceService) {
-    // Enregistrement des éléments nécessaires de Chart.js
+  @ViewChildren('exerciseCanvas') exerciseCanvases!: QueryList<ElementRef<HTMLCanvasElement>>;
+  @ViewChildren('itemCanvas') itemCanvases!: QueryList<ElementRef<HTMLCanvasElement>>;
+
+  selectedItem: string | null = null;
+  selectedExerciseId: string | null = null;
+
+  constructor(private route: ActivatedRoute, private userService: UserService) {
     Chart.register(...registerables);
   }
 
+  objectKeys = Object.keys;
+  itemChart: Chart | null = null;
+
   ngOnInit(): void {
     this.userId = this.route.snapshot.paramMap.get('id');
-    if (this.userId) {
-      // Récupérer l'utilisateur
-      this.userService.getUserById(this.userId).subscribe((user) => {
-        this.user = user ?? null;
-      });
+    if (!this.userId) return;
 
-      // Récupérer son historique
-      this.userService.getUserHistoryById(this.userId).subscribe(history => {
-        this.userHistory = history;
-        this.aggregatedItemFailures = {};
+    this.userService.getUserById(this.userId).subscribe(user => this.user = user ?? null);
 
-        history.forEach(h => {
-          if (h.itemFailures) {
-            Object.entries(h.itemFailures).forEach(([itemName, count]) => {
-              this.aggregatedItemFailures[itemName] =
-                (this.aggregatedItemFailures[itemName] || 0) + count;
-            });
-          }
-        });
-        console.log(this.aggregatedItemFailures);
-        this.exerciseHistories = {};
-        this.userHistory.forEach(history => {
-          if (history.exerciceId !== '') {
-            if (!this.exerciseHistories[history.exerciceId]) {
-              this.exerciseHistories[history.exerciceId] = [];
-            }
-            this.exerciseHistories[history.exerciceId].push(history);
-          }
-        });
+    this.userService.getUserHistoryById(this.userId).subscribe(history => {
+      this.userHistory = history;
 
-        this.loading = false;
-        setTimeout(() => this.renderChart(history), 0);
-      });
-    }
+      // Group by exercise
+      this.groupedHistory = {};
+      for (let entry of history) {
+        if (!this.groupedHistory[entry.exerciceId]) {
+          this.groupedHistory[entry.exerciceId] = [];
+        }
+        this.groupedHistory[entry.exerciceId].push(entry);
+      }
 
+      this.loading = false;
 
+      setTimeout(() => this.renderExerciseCharts(), 0);
+    });
   }
 
-  renderChart(histories: UserHistory[]) {
-    if (!this.canvasRefs || this.canvasRefs.length === 0) return;
+  get filteredExerciseHistories(): UserHistory[] {
+    return this.userHistory.filter(h => h.exerciceId && h.exerciceName);
+  }
 
-    const exerciseIds = Object.keys(this.exerciseHistories);
+  getLatestAttempt(exerciceId: string): UserHistory {
+    return [...this.groupedHistory[exerciceId]].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+  }
 
-    this.canvasRefs.forEach((canvasRef, index) => {
-      const exerciseId = exerciseIds[index];
-      const histories = this.exerciseHistories[exerciseId];
+  getAllItemNames(exerciceId: string): string[] {
+    const allItems = new Set<string>();
 
-      // Tri chronologique
-      histories.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    for (const entry of this.groupedHistory[exerciceId]) {
+      if (entry.itemFailures) {
+        Object.keys(entry.itemFailures).forEach(item => allItems.add(item));
+      }
+    }
 
-      const labels = histories.map(h => new Date(h.date).toLocaleString());
-      const successData = histories.map(h => h.success);
-      const failureData = histories.map(h => h.failure);
+    return Array.from(allItems);
+  }
+
+  getLatestItemFailureCount(exerciceId: string, itemName: string): number {
+    const latest = this.getLatestAttempt(exerciceId);
+    return latest.itemFailures?.[itemName] ?? 0;
+  }
+
+  renderExerciseCharts() {
+    if (!this.exerciseCanvases) return;
+
+    this.exerciseCanvases.forEach((canvasRef, index) => {
+      const exerciceId = this.objectKeys(this.groupedHistory)[index];
+      const history = this.groupedHistory[exerciceId].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       const ctx = canvasRef.nativeElement.getContext('2d');
       if (!ctx) return;
-      if (this.chart) {
-        this.chart.destroy();
-      }
 
-      this.chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels: history.map(h => new Date(h.date).toLocaleDateString()),
           datasets: [
-            { label: 'Objets bien placés', data: successData, borderColor: 'blue', backgroundColor: 'blue', fill: false, tension: 0.3},
-            { label: 'Objets mal placés', data: failureData, borderColor: 'red', backgroundColor: 'red', fill: false, tension: 0.3}
-          ],
+            {
+              label: 'Objets bien placés',
+              data: history.map(h => h.success),
+              borderColor: 'green',
+              fill: false,
+              backgroundColor: 'green',
+              tension: 0.3
+            },
+            {
+              label: 'Nombre de mauvais placements',
+              data: history.map(h => h.failure),
+              borderColor: 'red',
+              fill: false,
+              backgroundColor: 'red',
+              tension: 0.3
+            }
+          ]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: {
-              labels: {
-                font: {size: 14, weight: "bold", family: 'Poppins'},
-                color: "var(--purple2)",
-                boxHeight: 10,
-                boxWidth: 10,
-                useBorderRadius: true,
-                borderRadius: 5,
-              }
-            }
-          },
+          plugins: {legend: { display: true, labels: {boxWidth: 16, boxHeight: 16, useBorderRadius: true, borderRadius: 8}}},
           scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Date de la partie',
-                font: {size: 16, weight: "bold", family: 'Poppins'},
-                color: "var(--purple2)"
-              },
-              type: 'category',
-              ticks: {font: {size: 12, weight: "bold", family: 'Poppins', style: "italic"}, color: "#ffc200"}
-            },
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Nombre d’objets placés',
-                font: {size: 16, weight: "bold", family: 'Poppins'},
-                color: "#ffc306"
-              },
-              ticks: {stepSize: 1, font: {size: 16, weight: "bold", family: 'Poppins'}, color: "var(--purple2)"}
-            }
+            x: { title: { display: true, text: 'Date de la partie' }},
+            y: { title: { display: true, text: 'Nombre d’objets placés' }, beginAtZero: true }
           }
         }
       });
     });
   }
 
-  protected readonly Object = Object;
+  showItemGraph(exerciceId: string, itemName: string, event: Event) {
+    event.preventDefault();
+    this.selectedItem = itemName;
+    this.selectedExerciseId = exerciceId;
+
+    setTimeout(() => this.renderItemChart(), 0);
+  }
+
+  renderItemChart() {
+    if (this.itemChart) {
+      this.itemChart.destroy();
+      this.itemChart = null;
+    }
+
+    const canvas = this.itemCanvases.find((_, i) => this.objectKeys(this.groupedHistory)[i] === this.selectedExerciseId)?.nativeElement;
+    if (!canvas || !this.selectedExerciseId || !this.selectedItem) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const history = this.groupedHistory[this.selectedExerciseId]
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const labels = history.map(h => new Date(h.date).toLocaleDateString());
+    const errorData = history.map(h => h.itemFailures?.[this.selectedItem!] ?? 0);
+
+    this.itemChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ label: `Évolution des erreurs pour ${this.selectedItem}`, data: errorData,
+          borderColor: 'orange', fill: false, backgroundColor: 'orange', tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {boxWidth: 20, boxHeight: 20, useBorderRadius: true, borderRadius: 10}
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Date' } },
+          y: { title: { display: true, text: 'Nombre d’erreurs' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.itemChart) {
+      this.itemChart.destroy();
+      this.itemChart = null;
+    }
+  }
 }

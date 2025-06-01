@@ -32,7 +32,9 @@ export class UserListComponent implements OnInit {
   ngOnInit() {}
 
   deleteUser(user: User) {
-    this.userService.deleteUser(user);
+    if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
+      this.userService.deleteUser(user);
+    }
   }
 
   goToUserHistory(userId: string) {

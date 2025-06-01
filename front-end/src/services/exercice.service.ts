@@ -92,10 +92,9 @@ export class ExerciceService {
    * Ajoute un nouvel exercice en générant automatiquement son ID.
    */
   addExercice(exercice: Exercice): void {
-    const currentExercices = this.exercices$.value;
-    // Assigner un ID unique exo-{n}
-    exercice.id = `exo-${currentExercices.length + 1}`;
     if (this.USE_LOCAL_STORAGE) {
+      const currentExercices = this.exercices$.value;
+      exercice.id = `exo-${currentExercices.length + 1}`;
       const updatedExercices = [...currentExercices, exercice];
       this.exercices$.next(updatedExercices);
       this.saveExercices(updatedExercices);

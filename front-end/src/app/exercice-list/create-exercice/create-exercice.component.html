@@ -1,3 +1,4 @@
+<!-- create-exercice.component.html -->
 <div class="form-wrapper">
   <div class="form-card">
     <h2>
@@ -8,12 +9,22 @@
     <form (ngSubmit)="onSubmit()">
       <!-- Étape 1 : Catégories -->
       <div *ngIf="currentStep === 1">
-        <div class="form-group">
-          <label for="theme">Thème de l'exercice</label>
-          <select id="theme" name="theme" [(ngModel)]="exercice.theme" (change)="suggestName()" required>
-            <option value="">-- Sélectionner un thème --</option>
-            <option *ngFor="let theme of themeSuggestions" [value]="theme">{{ theme }}</option>
-          </select>
+              <div class="form-group">
+        <label for="theme">Thème de l'exercice</label>
+        <input
+          type="text"
+          id="theme"
+          name="theme"
+          [(ngModel)]="exercice.theme"
+          placeholder="Ex : Objets et pièces de la maison"
+          required
+        />
+      </div>
+
+
+        <div *ngIf="exercice.theme === 'autre'" class="form-group">
+          <label for="customTheme">Votre thème personnalisé</label>
+          <input type="text" id="customTheme" name="customTheme" [(ngModel)]="customTheme" placeholder="Entrez un thème..." required />
         </div>
 
         <div class="form-group">
@@ -88,23 +99,13 @@
         </div>
       </div>
 
-      <!-- Étape 3 : Validation -->
+       <!-- Étape 3 : Validation -->
       <div *ngIf="currentStep === 3">
         <h3>Validation finale</h3>
-
         <p><strong>Nom :</strong> {{ exercice.name }}</p>
-        <p><strong>Thème :</strong> {{ exercice.theme }}</p>
+        <p><strong>Thème :</strong> {{ exercice.theme === 'autre' ? customTheme : exercice.theme }}</p>
         <p><strong>Description :</strong> {{ exercice.description }}</p>
-
-        <h4>Catégories</h4>
-        <ul>
-          <li *ngFor="let cat of exercice.categories">{{ cat.name }} - {{ cat.description }}</li>
-        </ul>
-
-        <h4>Objets</h4>
-        <ul>
-          <li *ngFor="let item of exercice.items">{{ item.name }} - {{ item.description }} (Catégorie: {{ item.category }})</li>
-        </ul>
+        <!-- reste identique -->
       </div>
 
       <!-- Navigation -->
@@ -112,7 +113,7 @@
         <button type="button" (click)="prevStep()" [disabled]="currentStep === 1">Précédent</button>
         <button type="button" (click)="nextStep()" *ngIf="currentStep < 3">Suivant</button>
         <button type="submit" *ngIf="currentStep === 3"
-                [disabled]="!exercice.name || !exercice.theme || exercice.categories.length === 0">
+                [disabled]="!exercice.name || !getFinalTheme() || exercice.categories.length === 0">
           Créer l'exercice
         </button>
       </div>

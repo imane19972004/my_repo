@@ -17,6 +17,8 @@ export class UserComponent implements OnInit {
   @Output()
   goToUser: EventEmitter<User> = new EventEmitter<User>();
 
+  backendUrl = 'http://localhost:9428';
+
   constructor(private router: Router) { }
 
   ngOnInit(): void {
@@ -29,12 +31,6 @@ export class UserComponent implements OnInit {
   goToUserHistory() {
     if (this.user) {
       this.router.navigate([`/users/${this.user.id}/history`]);  // Navigate to user history page
-    }
-  }
-
-  selectUser() {
-    if (this.user) {
-      this.goToUser.emit(this.user);  // On émet l'utilisateur choisi
     }
   }
 

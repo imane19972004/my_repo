@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model';
 import { UserHistory } from '../models/user-history.model';
@@ -31,12 +31,13 @@ export class UserService {
   }
 
   // Ajoute un nouvel utilisateur
-  addUser(user: User): void {
+  addUser(user: User | FormData): void {
     if (this.USE_MOCK) {
-      user.id = Math.floor(Math.random() * 100000).toString();
-      this.mockUsers.push(user);
+      const newUser: User = user as User;
+      newUser.id = Math.floor(Math.random() * 100000).toString();
+      this.mockUsers.push(newUser);
       const emptyHistory: UserHistory = {
-        userId: user.id,
+        userId: newUser.id,
         exerciceId: '',
         date: '',
         exerciceName: '',
@@ -46,9 +47,14 @@ export class UserService {
       this.mockUserHistories.push(emptyHistory);
       this.retrieveUsers();
     } else {
-      this.http.post<User>(this.userUrl, user, httpOptionsBase)
-        .pipe(catchError(err => { console.error(err); return of(); }))
-        .subscribe(() => this.retrieveUsers());
+      // Si c'est un FormData, on ne met pas les httpOptionsBase (car ils définissent Content-Type: application/json)
+      const request = user instanceof FormData
+        ? this.http.post<User>(this.userUrl, user)
+        : this.http.post<User>(this.userUrl, user, httpOptionsBase);
+
+      request.pipe( catchError(err => {
+        console.error('Erreur HTTP lors de la création d\'utilisateur :', JSON.stringify(err, null, 2));return of();
+        })).subscribe(() => this.retrieveUsers());
     }
   }
 

@@ -12,6 +12,8 @@ import { User } from '../../../models/user.model';
 export class UserFormComponent implements OnInit {
   public userForm: FormGroup;
   public userCreated: boolean = false;
+  step = 1; // Étape initiale
+  selectedFile?: File;
 
   constructor(public formBuilder: FormBuilder, public userService: UserService) {
     this.userForm = this.formBuilder.group({
@@ -27,20 +29,34 @@ export class UserFormComponent implements OnInit {
 
   addUser() {
     if (this.userForm.valid) {
-      const userToCreate: User = this.userForm.getRawValue() as User;
-      this.userService.addUser(userToCreate);
+      const formData = new FormData();
+      const formValues = this.userForm.getRawValue();
 
-      this.userForm.reset(); // Vider le formulaire
+      for (const key in formValues) {
+        const value = formValues[key];
+        if (value !== null && value !== undefined && value !== '') {
+          formData.append(key, String(value));
+        }
+      }
+
+      if (this.selectedFile) {
+        formData.append('photo', this.selectedFile);
+      }
+
+      this.userService.addUser(formData);
+
+      this.userForm.reset();
+      this.selectedFile = undefined;
       this.userCreated = true;
+      this.step = 1;
 
-      // Message de confirmation pendant 1 seconde
       setTimeout(() => {
         this.userCreated = false;
-      }, 1000);
+      }, 2000);
+    } else {
+      this.userForm.markAllAsTouched(); //Les erreurs si soumission invalide
     }
   }
-
-  step = 1; // Étape initiale
 
   nextStep() {
     if (this.userForm.get('firstName')?.valid && this.userForm.get('lastName')?.valid) {
@@ -53,6 +69,13 @@ export class UserFormComponent implements OnInit {
 
   previousStep() {
     this.step = 1;
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
   }
 
 }
