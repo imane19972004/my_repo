@@ -1,0 +1,122 @@
+<div class="personal-exercice-list">
+  <div class="header-section">
+    <h2>
+      <i class="fas fa-user-cog"></i>
+      Exercices personnalisés de {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+    </h2>
+    <div class="header-actions">
+      <a [routerLink]="['/', userId, 'assign-exercices']" class="btn-assign-from-general">
+        <i class="fas fa-plus-square"></i> Assigner depuis la liste générale
+      </a>
+      <a [routerLink]="['/', userId, 'create-personal-exercice']" class="btn-create-personal">
+        <i class="fas fa-plus-circle"></i> Créer un exercice personnalisé
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="personalExercices.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="fas fa-user-plus"></i>
+    </div>
+    <h3>Aucun exercice personnalisé</h3>
+    <p>Cet utilisateur n'a pas encore d'exercices personnalisés.</p>
+    <p>Vous pouvez :</p>
+    <div class="empty-actions">
+      <a [routerLink]="['/', userId, 'assign-exercices']" class="btn-assign-empty">
+        <i class="fas fa-download"></i> Assigner des exercices existants
+      </a>
+      <a [routerLink]="['/', userId, 'create-personal-exercice']" class="btn-create-empty">
+        <i class="fas fa-plus"></i> Créer un nouvel exercice
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="personalExercices.length > 0" class="exercice-cards">
+    <div *ngFor="let exercice of personalExercices" class="exercice-card">
+      <div class="origin-badge" [ngClass]="{
+        'badge-assigned': exercice.isFromGeneral,
+        'badge-custom': !exercice.isFromGeneral
+      }">
+        <i class="fas" [ngClass]="{
+          'fa-share-square': exercice.isFromGeneral,
+          'fa-user-edit': !exercice.isFromGeneral
+        }"></i>
+        {{ exercice.isFromGeneral ? 'Assigné' : 'Personnalisé' }}
+      </div>
+
+      <div class="card-header">
+        <h3>{{ exercice.name }}</h3>
+        <span class="theme-badge">{{ exercice.theme }}</span>
+      </div>
+
+      <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+
+      <div class="modification-info" *ngIf="exercice.modifiedAt">
+        <small>
+          <i class="fas fa-clock"></i>
+          Modifié le {{ exercice.modifiedAt | date:'dd/MM/yyyy à HH:mm' }}
+        </small>
+      </div>
+
+      <div class="card-content">
+        <div class="exercice-preview">
+          <div class="preview-section" *ngIf="exercice.categories.length > 0">
+            <span class="preview-label">
+              <i class="fas fa-tags"></i> Catégories:
+            </span>
+            <div class="tags-container">
+              <span *ngFor="let category of exercice.categories" class="category-tag">
+                <img *ngIf="category.imagePath" [src]="category.imagePath" alt="{{ category.name }}" class="category-image">
+                {{ category.name }}
+              </span>
+            </div>
+          </div>
+
+          <div class="preview-section" *ngIf="exercice.items.length > 0">
+            <span class="preview-label">
+              <i class="fas fa-puzzle-piece"></i> Éléments:
+            </span>
+            <div class="tags-container">
+              <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
+                <img *ngIf="item.imagePath" [src]="item.imagePath" alt="{{ item.name }}" class="item-image">
+                {{ item.name }}
+              </span>
+              <span *ngIf="exercice.items.length > 5" class="more-items-tag">
+                <i class="fas fa-ellipsis-h"></i>
+                +{{ exercice.items.length - 5 }} autres
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-play" (click)="playExercice(exercice)">
+          <i class="fas fa-play"></i> Jouer
+        </button>
+        <button class="btn-edit" (click)="editExercice(exercice)">
+          <i class="fas fa-edit"></i> Personnaliser
+        </button>
+        <button class="btn-duplicate" (click)="duplicateExercice(exercice)">
+          <i class="fas fa-copy"></i> Dupliquer
+        </button>
+        <button class="btn-delete" (click)="deleteExercice(exercice)">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+
+      <div *ngIf="exercice.isFromGeneral && exercice.originalExerciceId" class="assignment-info">
+        <small>
+          <i class="fas fa-info-circle"></i>
+          Basé sur l'exercice général "{{ getOriginalExerciceName(exercice.originalExerciceId) }}"
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div class="global-actions" *ngIf="personalExercices.length > 0">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i> Retour à la liste des utilisateurs
+    </button>
+  </div>
+</div>
