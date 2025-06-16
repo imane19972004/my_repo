@@ -3,7 +3,6 @@
     <img *ngIf="user?.photoUrl; else defaultIcon" [src]="backendUrl+user?.photoUrl" alt="Avatar" class="avatar-img" />
     <ng-template #defaultIcon>
       <img src="assets/defaultIcon.jpg" alt="Default Icon" class="avatar-img">
-      <i class="fas fa-user"></i>
     </ng-template>
   </div>
 
@@ -11,8 +10,10 @@
     {{ user?.firstName }} {{ user?.lastName }}
   </h2>
 
-  <button class="button-delete" (click)="delete()">
+  <button *ngIf="mode=='manage'" class="button-delete" (click)="delete()">
     <i class="fas fa-trash-alt"></i> Supprimer
   </button>
-  <button (click)="goToUserHistory()" class="button-voir-historique">Voir historique</button>
+  <button (click)="goToUserHistory()" class="button-voir-historique" style="width: max-content">
+    <strong>HISTORIQUE DE {{ user?.firstName?.toLocaleUpperCase() || 'L\'ACCUEILLI' }}</strong>
+  </button>
 </div>

@@ -1,0 +1,58 @@
+<div class="exercice-list-by-user">
+  <div class="btn-retours">
+    <button (click)="navigateBackToUserList()">⬅️ Choisir un autre accueilli</button>
+    <button (click)="navigateToCreateExercice()">➕ Créer un exercice</button>
+  </div>
+  <h2>Exercices assignés à {{ userName }}</h2>
+
+  <div class="exercice-cards">
+    <div *ngFor="let exercice of userExerciseList.userExerciceList" class="exercice-card">
+      <div class="card-header">
+        <h3>{{ exercice.name }}</h3>
+        <span class="theme-badge">{{ exercice.theme }}</span>
+      </div>
+
+      <p *ngIf="exercice.description" class="exercice-description">{{ exercice.description }}</p>
+
+      <div class="exercice-preview">
+        <div class="preview-section" *ngIf="exercice.categories?.length">
+          <span class="preview-label">Catégories:</span>
+          <div class="tags-container">
+          <span *ngFor="let category of exercice.categories" class="category-tag">
+            {{ category.name }}
+          </span>
+          </div>
+        </div>
+
+        <div class="preview-section" *ngIf="exercice.items?.length">
+          <span class="preview-label">Éléments:</span>
+          <div class="tags-container">
+          <span *ngFor="let item of exercice.items | slice:0:5" class="item-tag">
+            {{ item.name }}
+          </span>
+            <span *ngIf="exercice.items.length > 5" class="more-items-tag">
+            +{{ exercice.items.length - 5 }} autres
+          </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-play" (click)="playExercice(exercice)">
+          <i class="fas fa-play"></i> Jouer
+        </button>
+        <button class="btn-delete" (click)="removeExercice(exercice.id)">
+          <i class="fas fa-trash"></i> Retirer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <h3>Attribuer un nouvel exercice</h3>
+  <ul>
+    <li *ngFor="let ex of allExercises" style="gap: 20px">
+      <strong>{{ ex.name }}</strong>
+      <button (click)="assignExercice(ex)" [disabled]="isExerciceAssigned(ex) || isAssigning">Attribuer</button>
+    </li>
+  </ul>
+</div>

@@ -1,5 +1,6 @@
 <!-- create-exercice.component.html -->
 <div class="form-wrapper">
+  <app-top-nav-bar [showBackToUsers]="true" class="top-nav-bar-creation"></app-top-nav-bar>
   <div class="form-card">
     <h2>
       <i class="fas fa-plus-circle"></i>
@@ -43,10 +44,14 @@
           <div class="category-form">
             <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie (ex: Cuisine)" />
             <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" />
-            <div class="btn-add-picture"><input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" /></div>
+            <div class="btn-add-picture">
+              <input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" />
+              <div *ngIf="categoryInput.imagePath" class="image-ok">✅ Image ajoutée</div>
+            </div>
           </div>
 
-          <button type="button" class="btn-add" (click)="addCategory()" [disabled]="exercice.categories.length > 3">
+          <button type="button" class="btn-add" (click)="addCategory()"
+                  [disabled]="!categoryInput.name || !categoryInput.description || !categoryInput.imagePath || exercice.categories.length >= 3">
             <i class="fas fa-plus"></i> Ajouter cette catégorie
           </button>
 
@@ -55,8 +60,8 @@
             <ul>
               <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
                 <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
-                <button type="button" class="btn-remove" (click)="removeCategory(i)">
-                  <i class="fas fa-trash"></i>
+                <button class="btn-remove" (click)="removeCategory(i)">
+                      <i class="fas fa-trash-alt"></i> Supprimer
                 </button>
               </li>
             </ul>
@@ -81,8 +86,9 @@
             </select>
           </div>
 
-          <button type="button" class="btn-add" (click)="addItem()">
-            <i class="fas fa-plus"></i> Ajouter cet objet
+          <button type="button" class="btn-add" (click)="addItem()"
+                  [disabled]=" !itemInput.name|| !itemInput.description.trim() || !itemInput.imagePath || !itemInput.category ">
+            Ajouter cet objet
           </button>
 
           <div *ngIf="exercice.items.length > 0" class="added-section">
@@ -90,8 +96,8 @@
             <ul>
               <li *ngFor="let item of exercice.items; let i = index" class="item-list">
                 <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} (Catégorie: {{ item.category }})</span>
-                <button type="button" class="btn-remove" (click)="removeItem(i)">
-                  <i class="fas fa-trash"></i>
+                    <button class="btn-remove" (click)="removeItem(i)">
+                      <i class="fas fa-trash-alt"></i> Supprimer
                 </button>
               </li>
             </ul>
@@ -111,7 +117,10 @@
       <!-- Navigation -->
       <div class="navigation-buttons">
         <button type="button" (click)="prevStep()" [disabled]="currentStep === 1">Précédent</button>
-        <button type="button" (click)="nextStep()" *ngIf="currentStep < 3">Suivant</button>
+        <button type="button" (click)="nextStep()" *ngIf="currentStep < 3"
+          [disabled]="(currentStep === 1 && exercice.categories.length === 0) || (currentStep === 2 && exercice.items.length === 0)">
+          Suivant
+        </button>
         <button type="submit" *ngIf="currentStep === 3"
                 [disabled]="!exercice.name || !getFinalTheme() || exercice.categories.length === 0">
           Créer l'exercice
@@ -123,4 +132,5 @@
       L'exercice a été créé avec succès !
     </div>
   </div>
+  <app-top-nav-bar [showBackToExercices]="true" class="top-nav-bar-creation"></app-top-nav-bar>
 </div>

@@ -4,12 +4,11 @@ const path = require('path')
 const multer = require('multer')
 const { User } = require('../../models')
 const UserHistoryRouter = require('./user-history')
+const UserExerciceListRouter = require('./user-exercice-list')
 const manageAllErrors = require('../../utils/routes/error-management')
 const logger = require('../../utils/logger.js')
 
 const router = new Router()
-router.use('/:idUser/history', UserHistoryRouter)
-
 // Récupérer tous les utilisateurs
 router.get('/', (req, res) => {
   try {
@@ -79,5 +78,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
   }
 })
 
+router.use('/:idUser/history', UserHistoryRouter)
+router.use('/:idUser/exercices', UserExerciceListRouter)
 
 module.exports = router

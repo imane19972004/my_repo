@@ -11,26 +11,19 @@ import { Item } from '../../../models/item.model';
 export class GameItemsContainerComponent implements OnInit {
   @Input() itemsInBulk: Item[] = [];
   @Input() connectedDropListsIds: string[] = [];
+  @Input() numberOfFailure: number = 0;
   @Output() itemDropped = new EventEmitter<CdkDragDrop<Item[]>>();
-
-  static numberOfFailure: number = 0;
-  numberOfFailure: number = GameItemsContainerComponent.numberOfFailure;
+  @Input() failedItemName!: string | null;
+  @Input() itemFailureTracker!: { [p: string]: number };
 
   constructor() {}
   ngOnInit(): void {
-    this.numberOfFailure = GameItemsContainerComponent.numberOfFailure;
     console.log(this.numberOfFailure);
   }
 
-  setNumberOfFailure(num: number): void {
-    this.numberOfFailure = num;
-    console.log(this.numberOfFailure);
-  }
 
-  setItemsInBulk(items: Item[]): void {
-    this.itemsInBulk = items;
-    console.log(this.itemsInBulk);
+  getFails(item: Item): number {
+    return this.itemFailureTracker[item.name] ?? 0;
   }
-
 
 }

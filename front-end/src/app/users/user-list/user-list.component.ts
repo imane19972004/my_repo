@@ -52,4 +52,8 @@ export class UserListComponent implements OnInit {
       this.goToUserHistory(user.id);
     }
   }
+
+  goToCreateUser() {
+    this.router.navigate(['/create-user']);
+  }
 }

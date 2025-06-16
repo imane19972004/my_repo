@@ -1,19 +1,31 @@
-<div class="home-container">
-  <h1 class="title">{{ title }}</h1>
-  <p class="description">Passez un moment de détente tout en entraînant votre mémoire !</p>
+<div style="display: flex; flex-direction: column; background: #9002ff; height: 80vh; margin: 50px;
+  justify-content: center; align-items: center; border-radius: 15px">
+  <div class="home-container">
+    <h1 class="title">{{ title }}</h1>
+    <p class="description">Passez un moment de détente tout en entraînant votre mémoire !</p>
 
-  <button class="btn-primary" [routerLink]="['/choose-user']">JOUER</button>
+    <button class="btn-primary" [routerLink]="['/choose-user']"><strong>JOUER</strong></button>
 
-  <div class="success-message" *ngIf="showSuccess">
-    <span class="message">🎉 Wow! Vous avez réussi ! 🎉</span>
+    <div class="success-message" *ngIf="showSuccess">
+      <span class="message">🎉 Wow! Vous avez réussi ! 🎉</span>
+    </div>
+
+    <button class="btn-secondary" [routerLink]="['/exercice-list-manager']">
+      <a class="btn-secondary-content"><strong>Gérer les exercices</strong></a>
+    </button>
+
+    <button class="btn-secondary" [routerLink]="['/user-list']">
+      <a class="btn-secondary-content"><strong>Liste des utilisateurs</strong></a>
+    </button>
+
   </div>
 
-  <button class="btn-secondary" [routerLink]="['/exercice-list-manager']">
-    <a class="btn-secondary-content">Gérer les exercices</a>
-  </button>
-
-  <button class="btn-secondary" [routerLink]="['/user-list']">
-    <a class="btn-secondary-content">Liste des utilisateurs</a>
-  </button>
-
+  <div style="width: max-content; display: flex; flex-direction: row; gap: 50px; margin: 20px">
+    <button class="btn-secondary" [routerLink]="['/create-user']">
+      <a class="btn-secondary-content"><strong>Créer un utilisateur</strong></a>
+    </button>
+    <button class="btn-secondary" [routerLink]="['/create-exercice']">
+      <a class="btn-secondary-content"><strong>Créer un exercice</strong></a>
+    </button>
+  </div>
 </div>

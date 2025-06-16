@@ -15,6 +15,40 @@
   border-radius: 5px;
   height: calc(100vh - 80px);
   width: 100vw;
+  position: relative; // Pour le positionnement du timer
+}
+
+/* Timer affiché en haut à droite */
+.timer-display {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+
+  .timer-container {
+    background: linear-gradient(135deg, var(--purple2), #9b30ff);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+    font-weight: bold;
+    font-size: 16px;
+    min-width: 120px;
+    justify-content: center;
+
+    i {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .timer-text {
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+  }
 }
 
 /* Partie gauche : objets en vrac */
@@ -108,18 +142,18 @@
 .restart-button-container {
   text-align: center;
   margin-top: 20px;
-}
-
-.restart-button {
   position: fixed;
   top: 50vh;
-  left: 50vw;
+  left: 40vw;
+}
+
+.restart-button, .quit-button {
   transform: translate(-50%, -50%);
   padding: 16px 32px;
   font-size: clamp(16px, 2.5vw, 22px);
   font-weight: bold;
   color: #fff;
-  background: linear-gradient(135deg, var(--purple2), #9b30ff);
+  background: linear-gradient(135deg, #12ff00, #009802);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -128,10 +162,20 @@
   z-index: 1000;
 }
 
+.quit-button {
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ff0000, #970000);
+}
 .restart-button:hover {
   transform: translate(-50%, -50%) scale(1.05);
-  background: linear-gradient(135deg, #5c00b3, #8a2be2);
-  box-shadow: 0 10px 25px rgba(106, 13, 173, 0.4);
+  background: linear-gradient(135deg, #00aa02, #00ff0d);
+  box-shadow: 0 10px 25px rgb(0, 94, 3);
+}
+
+.quit-button:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  background: linear-gradient(135deg, #970000, #ff0000);
+  box-shadow: 0 10px 25px rgba(117, 0, 0, 0.94);
 }
 
 /* Responsive */
@@ -154,6 +198,17 @@
 
   .message {
     font-size: 18px;
+  }
+
+  .timer-display {
+    top: 10px;
+    right: 10px;
+
+    .timer-container {
+      padding: 8px 15px;
+      font-size: 14px;
+      min-width: 100px;
+    }
   }
 }
 

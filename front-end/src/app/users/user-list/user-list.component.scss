@@ -26,7 +26,8 @@
   flex-wrap: wrap;
   gap: 20px;
   width: 100%;
-  padding: 20px;
+  padding: 0;
+  margin-top: 15px;
 }
 
 .card:hover {
@@ -130,4 +131,14 @@ a {
 
 .user.clickable:hover {
   box-shadow: 10px 10px 10px 10px var(--yellow1);
+}
+
+.header-actions {
+  width: 500px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 2px 4px 4px 6px var(--yellow1);
+  padding: 20px 0;
 }

@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -13,9 +12,9 @@ export interface GameSettings {
   textStyle: string;
   contrast: number;
   highVisibility: boolean;
-  animationSpeed: number;
   messageDuration: number;
   gameDurationMinutes: number;
+  showTimer: boolean; // Nouveau paramètre pour afficher/masquer le timer
 }
 
 @Injectable({
@@ -27,8 +26,7 @@ export class SettingsService {
   public settings$ = this.settingsSubject.asObservable();
 
   private serverUrl = serverUrl;
- private settingsUrl = `${this.serverUrl}/settings`; 
-
+  private settingsUrl = `${this.serverUrl}/settings`; 
 
   constructor() {
     // Charger les paramètres depuis le localStorage au démarrage
@@ -42,9 +40,9 @@ export class SettingsService {
       textStyle: 'normal',
       contrast: 100,
       highVisibility: false,
-      animationSpeed: 1,
       messageDuration: 3,
-      gameDurationMinutes: 10
+      gameDurationMinutes: 10,
+      showTimer: true // Par défaut, le timer est affiché
     };
   }
 

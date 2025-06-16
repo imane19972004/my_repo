@@ -26,7 +26,6 @@ export class GamePageComponent implements OnInit {
   gameCompleted: boolean = false;
   numberOfFailure: number = 0;
   itemFailureTracker: { [itemName: string]: number } = {};
-  // Paramètres du jeu
   settings: GameSettings;
 
   private allOriginalItems: Item[] = [];
@@ -36,6 +35,7 @@ export class GamePageComponent implements OnInit {
   remainingTime: number = 0; // en secondes
   timeoutTriggered: boolean = false;
 
+  failedItemName: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,11 +48,9 @@ export class GamePageComponent implements OnInit {
   ngOnInit(): void {
     const exerciceId = this.route.snapshot.params['idExercice'];
     this.userID = this.route.snapshot.params['idUser'];
-    // S'abonner aux changements de paramètres
     this.settingsService.settings$.subscribe(settings => {
       this.settings = settings;
 
-      // Si le jeu est déjà initialisé, mettre à jour les éléments en fonction du nombre d'objets
       if (this.exercice.items.length > 0) {
         this.adjustItemsCount();
       }
@@ -60,24 +58,21 @@ export class GamePageComponent implements OnInit {
     if (exerciceId) this.loadExercice(exerciceId);
   }
   ngOnDestroy(): void {
-    // Annuler le minuteur si on quitte la page
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
     }
   }
 
-  // Récupère l'exercice à partir de l'ID
   loadExercice(id: string): void {
     this.exerciceService.getExerciceById(id).subscribe((exercice: Exercice | undefined) => {
-  if (exercice) {
-    this.exercice = exercice;
-    this.allOriginalItems = [...this.exercice.items];
-    this.initializeGame();
-  }
-})
+      if (exercice) {
+        this.exercice = exercice;
+        this.allOriginalItems = [...this.exercice.items];
+        this.initializeGame();
+      }
+    })
   }
 
-  // Initialise les listes et connecte les zones de drop
   initializeGame(): void {
     this.allOriginalItems = [...this.exercice.items];
     this.itemsInBulk = [...this.allOriginalItems];
@@ -92,11 +87,11 @@ export class GamePageComponent implements OnInit {
     this.itemFailureTracker = {};
     this.timeoutTriggered = false;
 
-    // Démarrer le minuteur (toujours fonctionnel mais invisible)
+    // Démarrer le minuteur (toujours fonctionnel, mais invisible)
     this.startTimer();
   }
-  // Ajuster le nombre d'éléments en fonction des paramètres
-   adjustItemsCount(): void {
+
+  adjustItemsCount(): void {
     const targetCount = this.settings.objectsCount;
     const currentTotalItems = this.itemsInBulk.length +
       Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
@@ -109,20 +104,16 @@ export class GamePageComponent implements OnInit {
       this.increaseItemsCount(targetCount);
     }
   }
-    private reduceItemsCount(targetCount: number): void {
-    const currentTotal = this.itemsInBulk.length +
-      Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
+  private reduceItemsCount(targetCount: number): void {
+    const currentTotal = this.itemsInBulk.length + Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
     const itemsToRemove = currentTotal - targetCount;
-
     let removedCount = 0;
 
-    // D'abord, retirer des objets du bulk
     while (removedCount < itemsToRemove && this.itemsInBulk.length > 0) {
       this.itemsInBulk.pop();
       removedCount++;
     }
 
-    // Si on doit encore retirer des objets, les retirer des catégories
     if (removedCount < itemsToRemove) {
       for (const categoryName of Object.keys(this.itemsByCategory)) {
         while (removedCount < itemsToRemove && this.itemsByCategory[categoryName].length > 0) {
@@ -138,35 +129,27 @@ export class GamePageComponent implements OnInit {
       Object.values(this.itemsByCategory).reduce((sum, items) => sum + items.length, 0);
     const itemsToAdd = targetCount - currentTotal;
 
-    // Obtenir les items déjà utilisés
     const usedItems = new Set([
       ...this.itemsInBulk.map(item => item.name),
       ...Object.values(this.itemsByCategory).flat().map(item => item.name)
     ]);
 
-    // Trouver les items disponibles qui ne sont pas encore utilisés
     const availableItems = this.allOriginalItems.filter(item => !usedItems.has(item.name));
 
-    // Ajouter les nouveaux items au bulk
     for (let i = 0; i < itemsToAdd && i < availableItems.length; i++) {
       this.itemsInBulk.push(availableItems[i]);
     }
 
-    // Mélanger les nouveaux items dans le bulk
     this.shuffleArray(this.itemsInBulk);
   }
 
-  // Démarrer le minuteur de jeu (invisible)
-  startTimer(): void {
-    // Annuler tout minuteur existant
+  startTimer(): void { // Démarrer le minuteur de jeu (invisible)
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
     }
 
-    // Convertir les minutes en secondes
     this.remainingTime = this.settings.gameDurationMinutes * 60;
 
-    // Créer un nouvel intervalle qui décrémente toutes les secondes
     this.timerSubscription = interval(1000).subscribe(() => {
       this.remainingTime--;
 
@@ -177,23 +160,20 @@ export class GamePageComponent implements OnInit {
       }
     });
   }
-  // Fonction formatTime gardée pour compatibilité, mais non utilisée dans l'interface
+
   formatTime(): string {
     const minutes = Math.floor(this.remainingTime / 60);
     const seconds = this.remainingTime % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
-  // Terminer le jeu en raison du timeout avec un message plus doux
+
   endGameDueToTimeout(): void {
     if (this.timeoutTriggered) return; // Éviter les appels multiples
 
     this.timeoutTriggered = true;
     this.gameCompleted = true;
 
-    // Compter le score actuel
     let correct = 0;
-    const total = this.itemsInBulk.length + Object.values(this.itemsByCategory)
-      .reduce((sum, items) => sum + items.length, 0);
 
     Object.keys(this.itemsByCategory).forEach(cat => {
       this.itemsByCategory[cat].forEach(item => {
@@ -201,11 +181,9 @@ export class GamePageComponent implements OnInit {
       });
     });
 
-    // Afficher le message de fin plus doux
     this.successMessage = `Temps écoulé ! Vous avez placé correctement ${correct} objets. Bien joué !`;
     this.messageColor = '#4CAF50'; // Vert plus doux
 
-    // Enregistrer l'historique
     const newHistory: UserHistory = {
       userId: this.userID,
       exerciceId: this.exercice.id,
@@ -230,7 +208,6 @@ export class GamePageComponent implements OnInit {
 
   // Gère les déplacements entre les listes
   drop(event: CdkDragDrop<Item[]>, targetCategory?: string): void {
-    // Ne pas permettre les actions si le jeu est terminé
     if (this.gameCompleted) return;
 
     const item = event.previousContainer.data[event.previousIndex];
@@ -244,21 +221,21 @@ export class GamePageComponent implements OnInit {
           this.onItemMoved(item, targetCategory);
         }
       } else {
-        // Mauvaise catégorie
         this.successMessage = 'Ce n\'est pas la bonne catégorie. Réessayez !';
-        this.messageColor = 'red';
+        this.messageColor = 'green';
         this.numberOfFailure++;
         if (!this.itemFailureTracker[item.name]) {
           this.itemFailureTracker[item.name] = 1;
+          this.failedItemName = item.name;
         } else {
           this.itemFailureTracker[item.name]++;
+          this.failedItemName = item.name;
         }
 
         transferArrayItem(event.previousContainer.data, this.itemsInBulk, event.previousIndex, event.currentIndex);
         Object.keys(this.itemsByCategory).forEach(cat => {
           this.itemsByCategory[cat] = this.itemsByCategory[cat].filter(i => i !== item);
         });
-       // Afficher le message d'erreur pendant la durée spécifiée dans les paramètres
         const time = !this.gameCompleted ? this.settings.messageDuration * 1000 : 5000;
         setTimeout(() => this.successMessage = '', time);
       }
@@ -278,7 +255,6 @@ export class GamePageComponent implements OnInit {
   onItemMoved(item: Item, targetCategory: string): void {
     this.successMessage = item.category === targetCategory ? 'Bien joué !' : 'Hmm, êtes-vous sûr ?';
     this.messageColor = 'green';
-  // Afficher le message de succès pendant la durée spécifiée dans les paramètres
     setTimeout(() => this.successMessage = '', this.settings.messageDuration * 1000);
       this.checkGameCompletion();
   }
@@ -315,14 +291,39 @@ export class GamePageComponent implements OnInit {
     }
   }
 
-  // quitter le jeu
   quitGame(): void {
     if (confirm("Êtes-vous sûr de vouloir quitter l'exercice ?")) {
       this.router.navigate(['/']);
     }
   }
 
-  // Évite les doublons dans les catégories
+  restartGame(): void {
+    this.successMessage = '';
+    this.messageColor = '';
+
+    this.numberOfFailure = 0;
+    this.itemFailureTracker = {};
+    this.failedItemName = null;
+
+    this.gameCompleted = false;
+    this.timeoutTriggered = false;
+
+    this.allOriginalItems = [...this.exercice.items];
+
+    this.itemsByCategory = {};
+    this.exercice.categories.forEach(c => this.itemsByCategory[c.name] = []);
+
+    // Arrête le timer si actif
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
+
+    // Relance le jeu comme au départ
+    this.initializeGame();
+  }
+
+
   removeDuplicatesInCategories(): void {
     Object.keys(this.itemsByCategory).forEach(cat => {
       const seen = new Set<string>();

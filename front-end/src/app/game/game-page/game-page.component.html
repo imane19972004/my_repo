@@ -1,11 +1,21 @@
 <div class="game-page" *ngIf="exercice && exercice.categories && itemsInBulk">
-  <!-- Conteneur des objets en vrac -->
+
+  <!-- Timer conditionnel affiché en haut à droite -->
+  <div *ngIf="settings.showTimer" class="timer-display">
+    <div class="timer-container">
+      <i class="fas fa-clock"></i>
+      <span class="timer-text">{{ formatTime() }}</span>
+    </div>
+  </div>
 
   <!-- Conteneur des objets en vrac -->
   <app-settings-applier>
     <app-game-items-container
       [itemsInBulk]="itemsInBulk"
       [connectedDropListsIds]="connectedDropListsIds"
+      [numberOfFailure]="numberOfFailure"
+      [failedItemName]="failedItemName"
+      [itemFailureTracker]="itemFailureTracker"
       (itemDropped)="drop($event)">
       <div *ngIf="numberOfFailure > 3" class="help">
         <p *ngFor="let item of itemsInBulk"> {{ item.name }} </p>
@@ -35,7 +45,8 @@
     fontWeight: settings.textStyle === 'bold' ? 'bold' : 'normal',
     fontStyle: settings.textStyle === 'italic' ? 'italic' : 'normal'}">{{ successMessage }}</div>
 
-  <div *ngIf="gameCompleted" class="restart-button-container">
-    <button (click)="quitGame()" class="restart-button">QUITTER LE JEU</button>
+  <div *ngIf="gameCompleted" class="restart-button-container" style="display: flex; flex-direction: row; width: max-content; gap: 60px; justify-content: center; align-items: center">
+    <button (click)="restartGame()" class="restart-button">RECOMMENCER</button>
+    <button (click)="quitGame()" class="quit-button">QUITTER LE JEU</button>
   </div>
 </div>

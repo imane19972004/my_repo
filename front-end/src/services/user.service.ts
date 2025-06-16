@@ -31,30 +31,23 @@ export class UserService {
   }
 
   // Ajoute un nouvel utilisateur
-  addUser(user: User | FormData): void {
+  addUser(user: User | FormData): Observable<User | undefined> {
     if (this.USE_MOCK) {
       const newUser: User = user as User;
       newUser.id = Math.floor(Math.random() * 100000).toString();
       this.mockUsers.push(newUser);
-      const emptyHistory: UserHistory = {
-        userId: newUser.id,
-        exerciceId: '',
-        date: '',
-        exerciceName: '',
-        success: 0,
-        failure: 0
-      };
-      this.mockUserHistories.push(emptyHistory);
       this.retrieveUsers();
+      return of(newUser);
     } else {
-      // Si c'est un FormData, on ne met pas les httpOptionsBase (car ils définissent Content-Type: application/json)
       const request = user instanceof FormData
         ? this.http.post<User>(this.userUrl, user)
         : this.http.post<User>(this.userUrl, user, httpOptionsBase);
 
-      request.pipe( catchError(err => {
-        console.error('Erreur HTTP lors de la création d\'utilisateur :', JSON.stringify(err, null, 2));return of();
-        })).subscribe(() => this.retrieveUsers());
+      return request.pipe(
+        map((createdUser: User) => { this.retrieveUsers(); return createdUser; }),
+        catchError(err => {
+          console.error("Erreur HTTP lors de la création d'utilisateur :", err); return of(undefined); })
+      );
     }
   }
 

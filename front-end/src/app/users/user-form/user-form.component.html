@@ -1,73 +1,90 @@
-<div class="user-form-card">
-  <form [formGroup]="userForm" (ngSubmit)="addUser()" class="user-form">
+<div style="display: flex; flex-direction: column; justify-content: center; align-content: center;
+ align-items: center; background: #b06dec; border-radius: 15px; margin: 60px 80px; padding: 20px 0 50px 20px">
+  <app-top-nav-bar [showBackToHome]="true" [showBackToUsers]="true" [showCreateExercice]="true" class="top-nav-bar"></app-top-nav-bar>
 
-    <!-- étape actuelle -->
-    <div class="step-indicator">Étape {{ step }} / 2</div>
+  <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;
+  border-radius: 18px; width: max-content; background: none; gap: 100px">
+    <div class="user-form-card">
+      <form [formGroup]="userForm" (ngSubmit)="addUser()" class="user-form">
 
-    <!-- Prénom & Nom -->
-    <ng-container *ngIf="step === 1">
-      <div class="form-group">
-        <label for="firstName">Prénom</label>
-        <input id="firstName" type="text" formControlName="firstName" class="input-custom" autocomplete="given-name" required />
-        <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
-          Le prénom est requis.
-        </div>
-      </div>
+        <!-- étape actuelle -->
+        <div class="step-indicator">Étape {{ step }} / 2</div>
 
-      <div class="form-group">
-        <label for="lastName">Nom</label>
-        <input id="lastName" type="text" formControlName="lastName" class="input-custom" autocomplete="family-name" required />
-        <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched" class="error">
-          Le nom est requis.
-        </div>
-      </div>
+        <!-- Prénom & Nom -->
+        <ng-container *ngIf="step === 1">
+          <div class="form-group">
+            <label for="firstName">Prénom</label>
+            <input id="firstName" type="text" formControlName="firstName" class="input-custom" autocomplete="given-name" required />
+            <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error">
+              Le prénom est requis.
+            </div>
+          </div>
 
-      <!-- Ajout de la photo de profil -->
-      <div class="form-group">
-        <label for="photo">Photo de profil</label>
-        <input type="file" id="photo" (change)="onFileSelected($event)" accept="image/*" />
-      </div>
+          <div class="form-group">
+            <label for="lastName">Nom</label>
+            <input id="lastName" type="text" formControlName="lastName" class="input-custom" autocomplete="family-name" required />
+            <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched" class="error">
+              Le nom est requis.
+            </div>
+          </div>
+
+          <!-- Ajout de la photo de profil -->
+          <div class="form-group">
+            <label for="photo">Photo de profil</label>
+            <input type="file" id="photo" (change)="onFileSelected($event)" accept="image/*" />
+
+            <div *ngIf="photoPreview" class="photo-preview-container">
+              <img [src]="photoPreview" alt="Aperçu de la photo" class="photo-preview"/>
+              <span class="photo-success">✅ Photo ajoutée</span>
+            </div>
+          </div>
 
 
-      <button type="button" (click)="nextStep()" class="button-submit">Suivant</button>
-    </ng-container>
+          <button type="button" (click)="nextStep()" class="button-submit">Suivant</button>
+        </ng-container>
 
-    <!-- Étape 2 : autres champs -->
-    <ng-container *ngIf="step === 2">
-      <div class="form-group">
-        <label for="age">Âge</label>
-        <input id="age" type="number" formControlName="age" class="input-custom" autocomplete="off" />
-      </div>
+        <!-- Étape 2 : autres champs -->
+        <ng-container *ngIf="step === 2">
+          <div class="form-group">
+            <label for="age">Âge</label>
+            <input id="age" type="number" formControlName="age" class="input-custom" autocomplete="off" />
+          </div>
 
-      <div class="form-group">
-        <label for="particularity">Particularité</label>
-        <input id="particularity" type="text" formControlName="particularity" class="input-custom" autocomplete="off"/>
-      </div>
+          <div class="form-group">
+            <label for="particularity">Particularité</label>
+            <input id="particularity" type="text" formControlName="particularity" class="input-custom" autocomplete="off"/>
+          </div>
 
-      <div class="form-group">
-        <label for="role">Rôle</label>
-        <select id="role" formControlName="role" class="input-custom" required>
-          <option value="">-- Sélectionnez un rôle --</option>
-          <option value="Accueilli">Accueilli(e)</option>
-          <option value="Encadrant">Encadrant(e)</option>
-          <option value="Autre">Autre</option>
-        </select>
-        <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="error">
-          Le rôle est requis.
-        </div>
-      </div>
+          <div class="form-group">
+            <label for="role">Rôle</label>
+            <select id="role" formControlName="role" class="input-custom" required>
+              <option value="">-- Sélectionnez un rôle --</option>
+              <option value="Accueilli">Accueilli(e)</option>
+              <option value="Encadrant">Encadrant(e)</option>
+              <option value="Autre">Autre</option>
+            </select>
+            <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="error">
+              Le rôle est requis.
+            </div>
+          </div>
 
-      <div class="form-group" style="flex-direction: row; justify-content: space-between;">
-        <button type="button" (click)="previousStep()" class="button-submit" style="background-color: grey;">Retour</button>
-        <button type="submit" [disabled]="userForm.invalid" class="button-submit">
-          <i class="fas fa-user-plus"></i> Créer l'utilisateur
-        </button>
-      </div>
+          <div class="form-group" style="flex-direction: row; justify-content: space-between;">
+            <button type="button" (click)="previousStep()" class="button-submit" style="background-color: grey;">Retour</button>
+            <button type="submit" [disabled]="userForm.invalid" class="button-submit">
+              <i class="fas fa-user-plus"></i> Créer l'utilisateur
+            </button>
+          </div>
 
-      <div *ngIf="userCreated" class="success-message">
-        ✅ Utilisateur créé avec succès !
-      </div>
-    </ng-container>
+          <div *ngIf="userCreated" class="success-message">
+            ✅ Utilisateur créé avec succès !
+          </div>
+        </ng-container>
 
-  </form>
+      </form>
+    </div>
+    <div *ngIf="lastCreatedUser" class="last-user-section">
+      <h3>✅ Utilisateur créé avec succès !</h3>
+      <app-user [user]="lastCreatedUser"></app-user>
+    </div>
+  </div>
 </div>

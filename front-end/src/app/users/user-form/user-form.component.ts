@@ -12,6 +12,8 @@ import { User } from '../../../models/user.model';
 export class UserFormComponent implements OnInit {
   public userForm: FormGroup;
   public userCreated: boolean = false;
+  public lastCreatedUser?: User;
+  public photoPreview: string | null = null;
   step = 1; // Étape initiale
   selectedFile?: File;
 
@@ -19,7 +21,7 @@ export class UserFormComponent implements OnInit {
     this.userForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      age: [null],
+      age: [null, [Validators.required, Validators.min(1), Validators.max(150)]],
       particularity: [''],
       role: ['', Validators.required],
     });
@@ -43,16 +45,18 @@ export class UserFormComponent implements OnInit {
         formData.append('photo', this.selectedFile);
       }
 
-      this.userService.addUser(formData);
+      this.userService.addUser(formData).subscribe(newUser => {
+        this.lastCreatedUser = newUser;
+        this.userCreated = true;
+        this.userForm.reset();
+        this.selectedFile = undefined;
+        this.photoPreview = null;
 
-      this.userForm.reset();
-      this.selectedFile = undefined;
-      this.userCreated = true;
-      this.step = 1;
+        // on repasse à l’étape 1 au cas où l’on créerait encore un autre utilisateur
+        this.step = 1;
 
-      setTimeout(() => {
-        this.userCreated = false;
-      }, 2000);
+        setTimeout(() => (this.userCreated = false), 2000);
+      });
     } else {
       this.userForm.markAllAsTouched(); //Les erreurs si soumission invalide
     }
@@ -74,6 +78,13 @@ export class UserFormComponent implements OnInit {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoPreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+
       this.selectedFile = input.files[0];
     }
   }

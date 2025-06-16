@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { ExerciceService } from '../../../services/exercice.service';
 import { Exercice } from '../../../models/exercice.model';
 import { Category } from '../../../models/category.model';
-import { ViewEncapsulation } from '@angular/core';
 import { Observable } from 'rxjs';
+import {Item} from "../../../models/item.model";
 
 @Component({
   selector: 'app-create-exercice',
@@ -20,82 +20,108 @@ export class CreateExerciceComponent {
     categories: [],
     items: []
   };
-  
+
   customTheme: string = '';
   currentStep = 1;
 
-
   categoryInput: Category = { name: '', description: '', imagePath: '' };
-  itemInput: any = { name: '', description: '', imagePath: '', category: '' };
+  itemInput: Item = { name: '', description: '', imagePath: '', category: '' };
 
   exerciceCreated: boolean = false;
 
+  categoryAddedMessage: string = '';
+  itemAddedMessage: string = '';
+
   constructor(private exerciceService: ExerciceService) {}
 
-  
-
-   // Fonction pour ajouter une catégorie
   addCategory(): void {
     if (this.exercice.categories.length >= 3) {
       alert('Vous ne pouvez pas ajouter plus de 3 catégories.');
       return;
     }
+    if (!this.categoryInput.imagePath?.trim()) {
+      alert('Veuillez mettre l\'image de la catégorie !');
+      return;
+    }
     if (this.categoryInput.name && this.categoryInput.description) {
       this.exercice.categories.push({ ...this.categoryInput });
       this.categoryInput = { name: '', description: '', imagePath: '' };
+      this.categoryAddedMessage = '✅ Catégorie ajoutée avec succès !';
+      setTimeout(() => this.categoryAddedMessage = '', 3000);
     } else {
-      alert('Veuillez remplir tous les champs de la catégorie.');
+      alert('Veuillez remplir tous les champs de la catégorie !');
     }
-    if (this.exercice.categories.length > 3) {
-  alert('Vous ne pouvez pas ajouter plus de 3 catégories.');
-  return;
-}
-
   }
 
   addItem(): void {
-  if (!this.itemInput.name || !this.itemInput.description || !this.itemInput.category) {
-    alert('Veuillez remplir tous les champs de l\'objet.');
-    return;
+    if (!this.itemInput.name || !this.itemInput.description || !this.itemInput.category) {
+      alert('Veuillez remplir tous les champs de l\'objet.');
+      return;
+    }
+
+    if (!this.itemInput.description.trim()) {
+      alert('La description de l\'objet est obligatoire.');
+      return;
+    }
+
+    if (!this.itemInput.imagePath?.trim()) {
+      alert('Veuillez ajouter la photo de l\'objet que vous êtes entrain de créer!');
+      return;
+    }
+    const itemsInCategory = this.exercice.items.filter(item => item.category === this.itemInput.category);
+
+    if (itemsInCategory.length >= 4) {
+      alert(`La catégorie "${this.itemInput.category}" ne peut contenir que 4 objets au maximum.`);
+      return;
+    }
+
+    this.exercice.items.push({ ...this.itemInput });
+    this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+    this.itemAddedMessage = '✅ Objet ajouté avec succès !';
+    setTimeout(() => this.itemAddedMessage = '', 3000);
   }
 
-  // Vérifier si cette catégorie a déjà 4 items
-  const itemsInCategory = this.exercice.items.filter(
-    item => item.category === this.itemInput.category
-  );
 
-  if (itemsInCategory.length >= 4) {
-    alert(`La catégorie "${this.itemInput.category}" ne peut contenir que 4 objets au maximum.`);
-    return;
-  }
-
-  this.exercice.items.push({ ...this.itemInput });
-  this.itemInput = { name: '', description: '', imagePath: '', category: '' };
-}
-
-
-  // Supprimer une catégorie
   removeCategory(index: number): void {
-    this.exercice.categories.splice(index, 1);
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+      const removed = this.exercice.categories.splice(index, 1)[0];
+
+      this.exercice.items = this.exercice.items.filter(
+        item => item.category !== removed.name
+      );
+
+      if (this.exercice.categories.length === 0) {
+        this.currentStep = 1;
+      }
+    }
   }
 
-  // Supprimer un objet
+
   removeItem(index: number): void {
-    this.exercice.items.splice(index, 1);
+    if (confirm("Êtes-vous sûr de vouloir supprimer cet objet ?")) {
+      this.exercice.items.splice(index, 1);
+    }
   }
 
   nextStep(): void {
     if (this.currentStep === 1 && this.exercice.categories.length === 0) {
-      alert('Veuillez ajouter au moins une catégorie avant de passer à l’étape suivante.');
+      alert('Ajoutez au moins une catégorie.');
       return;
     }
-    if (this.currentStep === 2 && this.exercice.items.length === 0) {
-      alert('Veuillez ajouter au moins un objet avant de passer à l’étape suivante.');
-      return;
+    if (this.currentStep === 2) {
+      if (this.exercice.items.length === 0) {
+        alert('Ajoutez au moins un objet.');
+        return;
+      }
+      // Vérifier qu’au moins un objet par catégorie
+      const emptyCats = this.exercice.categories
+        .filter(cat => !this.exercice.items.some(it => it.category === cat.name));
+      if (emptyCats.length) {
+        alert('Chaque catégorie doit contenir au moins un objet.');
+        return;
+      }
     }
-    if (this.currentStep < 3) {
-      this.currentStep++;
-    }
+    if (this.currentStep < 3) this.currentStep++;
   }
 
   prevStep(): void {
@@ -104,32 +130,36 @@ export class CreateExerciceComponent {
     }
   }
 
-  //   onThemeChange(): void {
-  //   if (this.exercice.theme !== 'autre') {
-  //     const index = this.themeSuggestions.indexOf(this.exercice.theme);
-  //     this.exercice.name = this.nameSuggestions[index] || '';
-  //     this.customTheme = '';
-  //   } else {
-  //     this.exercice.name = '';
-  //   }
-  // }
-
   getFinalTheme(): string {
     return this.exercice.theme === 'autre' ? this.customTheme.trim() : this.exercice.theme;
   }
 
   onSubmit(): void {
-    if (this.exercice.name && this.exercice.theme && this.exercice.categories.length > 0) {
-      this.exerciceService.addExercice(this.exercice);
-      this.showSuccessMessage();
-      this.resetForm();
-      this.currentStep = 1;
-    } else {
-      alert('Le formulaire est incomplet.');
+    if (!this.exercice.name || !this.getFinalTheme()) {
+      alert('Nom et thème requis.');
+      return;
     }
+    if (this.exercice.categories.length === 0) {
+      alert('Ajoutez au moins une catégorie.');
+      return;
+    }
+    if (this.exercice.items.length === 0) {
+      alert('Ajoutez au moins un objet.');
+      return;
+    }
+    const emptyCats = this.exercice.categories
+      .filter(cat => !this.exercice.items.some(it => it.category === cat.name));
+    if (emptyCats.length) {
+      alert('Toutes les catégories doivent avoir au moins un objet.');
+      return;
+    }
+
+    this.exerciceService.addExercice(this.exercice);
+    this.showSuccessMessage();
+    this.resetForm();
+    this.currentStep = 1;
   }
 
-  // Afficher un message de succès
   showSuccessMessage(): void {
     this.exerciceCreated = true;
     setTimeout(() => {
@@ -137,7 +167,6 @@ export class CreateExerciceComponent {
     }, 3000);
   }
 
-  // Réinitialiser le formulaire
   resetForm(): void {
     this.exercice = {
       id: '',
@@ -150,6 +179,8 @@ export class CreateExerciceComponent {
     this.customTheme = '';
     this.categoryInput = { name: '', description: '', imagePath: '' };
     this.itemInput = { name: '', description: '', imagePath: '', category: '' };
+    this.categoryAddedMessage = '';
+    this.itemAddedMessage = '';
   }
 
   onCategoryImageSelected(event: Event): void {

@@ -1,0 +1,195 @@
+<div class="form-wrapper">
+  <app-top-nav-bar [showBackToExercices]="true" [showBackToHome]="true" class="top-nav-bar-creation"></app-top-nav-bar>
+  <div class="form-card">
+    <h2>
+      <i class="fas fa-edit"></i>
+      Modifier l'exercice
+    </h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Étape 1 : Catégories -->
+      <div *ngIf="currentStep === 1">
+        <div class="info-exo" style="display: flex; flex-direction: column">
+          <p style="display: flex; flex-direction: row; gap: 10px">Thème de l'exercice :<strong>{{ exercice.theme }}</strong></p>
+          <p style="display: flex; flex-direction: row; gap: 10px">Nom de l’exercice :<strong>{{ exercice.name }}</strong></p>
+          <p style="display: flex; flex-direction: row; gap: 10px">Description :<strong>{{ exercice.description }}</strong></p>
+        </div>
+
+        <!-- Liste des catégories -->
+        <div *ngIf="exercice.categories.length > 0" class="added-section">
+          <h4>Catégories existantes :</h4>
+          <ul>
+            <li *ngFor="let category of exercice.categories; let i = index" class="categories">
+              <div class="category-info" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 100%">
+                <p><strong>{{ category.name }}</strong> - {{ category.description }}</p>
+                <button class="btn-edit" type="button" (click)="startEditingCategory(i)" title="Modifier la catégorie">
+                  <i class="fas fa-edit"></i> Modifier
+                </button>
+                <button class="btn-remove" type="button" (click)="removeCategory(i)" title="Supprimer la catégorie">
+                  <i class="fas fa-trash-alt"></i> Supprimer
+                </button>
+              </div>
+
+              <!-- Formulaire de modification visible seulement pour la catégorie en édition -->
+              <div *ngIf="isEditingCategory && editingCategoryIndex === i" class="category-form-edit">
+                <input type="text" name="categoryName" [(ngModel)]="categoryInput.name"
+                  placeholder="Nom de la catégorie" required/>
+                <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description"
+                  placeholder="Description" required/>
+                <div class="btn-add-picture">
+                  <input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" />
+                  <div *ngIf="categoryInput.imagePath" class="image-ok">✅ Image ajoutée</div>
+                </div>
+
+                <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between">
+                  <button type="button" class="btn-modify" (click)="updateCategory()">
+                    <i class="fas fa-edit"></i> Valider les modifications
+                  </button>
+                  <button type="button" class="btn-cancel" (click)="cancelEditCategory()">
+                    Annuler les modifications
+                  </button>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Formulaire ajout catégorie (visible seulement si on n’est pas en édition) -->
+        <div *ngIf="!isEditingCategory && exercice.categories.length < 3" style="width: 100%">
+          <label>Ajouter une catégorie</label>
+          <div class="category-form">
+            <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie" required/>
+            <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description" required/>
+            <div class="btn-add-picture">
+              <input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" />
+              <div *ngIf="categoryInput.imagePath" class="image-ok">✅ Image ajoutée</div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-add" (click)="addCategory()"
+                  [disabled]="!categoryInput.name || !categoryInput.description || !categoryInput.imagePath || exercice.categories.length >= 3">
+            <i class="fas fa-plus"></i> Ajouter cette catégorie
+          </button>
+        </div>
+
+        <button (click)="nextStep()" type="button" class="btn-next-step">
+          SUIVANT &rarr;
+        </button>
+      </div>
+
+      <!-- Étape 2 : Items -->
+      <div *ngIf="currentStep === 2">
+        <h3>Objets existants :</h3>
+
+        <ul>
+          <li *ngFor="let item of exercice.items; let i = index" class="item">
+            <div class="item-info">
+              <strong>{{ item.name }}</strong> (Catégorie: {{ item.category }}) - {{ item.description }}
+              <button class="btn-edit" type="button" (click)="editItem(i)" title="Modifier l'objet">
+                <i class="fas fa-edit"></i> Modifier
+              </button>
+              <button class="btn-remove" type="button" (click)="removeItem(i)" title="Supprimer l'objet">
+                <i class="fas fa-trash-alt"></i> Supprimer
+              </button>
+            </div>
+
+            <!-- Formulaire de modification visible seulement pour l'objet en édition -->
+            <div *ngIf="isEditingItem && editingItemIndex === i" class="item-form-edit">
+              <input type="text" name="itemName"
+                [(ngModel)]="itemInput.name" placeholder="Nom de l'objet" required/>
+              <input type="text" name="itemDescription"
+                [(ngModel)]="itemInput.description" placeholder="Description" required/>
+
+              <select name="itemCategory" [(ngModel)]="itemInput.category" required>
+                <option value="" disabled>Choisissez une catégorie</option>
+                <option *ngFor="let cat of exercice.categories" [value]="cat.name">
+                  {{ cat.name }}
+                </option>
+              </select>
+
+              <div class="btn-add-picture">
+                <input type="file" name="itemImage" (change)="onItemImageSelected($event)" />
+                <div *ngIf="itemInput.imagePath" class="image-ok">✅ Image ajoutée</div>
+              </div>
+
+              <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between">
+                <button type="button" class="btn-modify" (click)="updateItem()"
+                  [disabled]="!itemInput.name || !itemInput.description || !itemInput.imagePath || !itemInput.category">
+                  <i class="fas fa-edit"></i> Modifier l'objet
+                </button>
+
+                <button type="button" class="btn-cancel" (click)="cancelEditItem()">
+                  Annuler les modifications
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Formulaire ajout objet (visible seulement si on n’est pas en édition) -->
+        <div *ngIf="!isEditingItem" class="form-group item-section">
+          <h3>Ajouter un objet</h3>
+          <input type="text" name="itemName" [(ngModel)]="itemInput.name"
+                 placeholder="Nom de l'objet" required/>
+          <input type="text" name="itemDescription" [(ngModel)]="itemInput.description"
+                 placeholder="Description" required/>
+
+          <select name="itemCategory" [(ngModel)]="itemInput.category" required>
+            <option value="" disabled selected>Choisissez une catégorie</option>
+            <option *ngFor="let cat of exercice.categories" [value]="cat.name">
+              {{ cat.name }}
+            </option>
+          </select>
+
+          <div class="btn-add-picture">
+            <input type="file" name="itemImage" (change)="onItemImageSelected($event)" />
+            <div *ngIf="itemInput.imagePath" class="image-ok">✅ Image ajoutée</div>
+          </div>
+
+          <button type="button" class="btn-add" (click)="addItem()"
+            [disabled]="!itemInput.name ||!itemInput.description || !itemInput.imagePath || !itemInput.category">
+            <i class="fas fa-plus"></i> Ajouter cet objet
+          </button>
+        </div>
+
+        <button (click)="prevStep()" type="button" class="btn-prev-step">
+          &larr; PRECEDENT
+        </button>
+        <button (click)="nextStep()" type="button" class="btn-next-step">
+          SUIVANT &rarr;
+        </button>
+      </div>
+
+      <!-- Étape 3 : Résumé + sauvegarde -->
+      <div *ngIf="currentStep === 3" class="step-3-summary">
+        <h3>Résumé</h3>
+
+        <p><strong>Nom :</strong> {{ exercice.name }}</p>
+        <p><strong>Thème :</strong> {{ getFinalTheme() }}</p>
+        <p><strong>Description :</strong> {{ exercice.description }}</p>
+
+        <h4>Catégories</h4>
+        <ul>
+          <li *ngFor="let cat of exercice.categories">
+            <strong>{{ cat.name }}</strong> - {{ cat.description }}
+          </li>
+        </ul>
+
+        <h4>Objets</h4>
+        <ul>
+          <li *ngFor="let item of exercice.items">
+            <strong>{{ item.name }}</strong> (Catégorie: {{ item.category }}) - {{ item.description }}
+          </li>
+        </ul>
+
+        <button (click)="prevStep()" type="button" class="btn-prev-step">
+          &larr; Étape précédente
+        </button>
+
+        <button type="submit" class="btn-save">
+          <i class="fas fa-save"></i> Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<div class="top-nav-bar">
+  <button *ngIf="showBackToHome" (click)="navigateToHome()">⬅️ Aller à l'accueil</button>
+  <button *ngIf="showBackToUsers" (click)="navigateBackToUserList()">⬅️Liste des accueillis</button>
+  <button *ngIf="showBackToExercices" (click)="navigateBackToExerciceList()">⬅️ Liste des exercices</button>
+  <button *ngIf="showCreateExercice" (click)="navigateToCreateExercice()">➕ Créer un exercice</button>
+  <button *ngIf="showGoToCreateUser" (click)="navigateToCreateUser()">➕ Créer un nouvel utilisateur</button>
+</div>

@@ -6,7 +6,8 @@ import {HttpClient} from "@angular/common/http";
 import {User} from "../models/user.model";
 import {httpOptionsBase, serverUrl} from "../configs/server.config";
 import {catchError} from "rxjs/operators";
-import { map } from 'rxjs/operators'; // Add this at the top of the filecl
+import { map } from 'rxjs/operators';
+import {UserExerciseList} from "../models/user-exercise-list.model"; // Add this at the top of the filecl
 
 @Injectable({
   providedIn: 'root'
@@ -109,15 +110,21 @@ export class ExerciceService {
    * Met à jour un exercice existant.
    */
   updateExercice(updatedExercice: Exercice): void {
-    const currentExercices = this.exercices$.value;
-    const index = currentExercices.findIndex(e => e.id === updatedExercice.id);
+    if (this.USE_LOCAL_STORAGE) {
+      const currentExercices = this.exercices$.value;
+      const index = currentExercices.findIndex(e => e.id === updatedExercice.id);
 
-    if (index !== -1) {
-      const updatedExercices = [...currentExercices];
-      updatedExercices[index] = updatedExercice;
+      if (index !== -1) {
+        const updatedExercices = [...currentExercices];
+        updatedExercices[index] = updatedExercice;
 
-      this.exercices$.next(updatedExercices);
-      this.saveExercices(updatedExercices);
+        this.exercices$.next(updatedExercices);
+        this.saveExercices(updatedExercices);
+      }
+    } else {
+      this.http.put<Exercice>(`${this.exercicesUrl}/${updatedExercice.id}`, updatedExercice, httpOptionsBase)
+        .pipe(catchError(err => { console.error(err); return of(); }))
+        .subscribe(() => { this.loadExercices(); });
     }
   }
 
@@ -173,4 +180,24 @@ export class ExerciceService {
     );
   }
 
+  getUserExercisesByUserId(userId: string): Observable<UserExerciseList> {
+    return this.http.get<UserExerciseList>(`${serverUrl}/users/${userId}/exercices`, httpOptionsBase);
+  }
+
+  assignExerciceToUser(exercice: Exercice, userId: string): Observable<void> {
+    const exerciceToSend = {
+      ...exercice,
+      id: String(exercice.id),
+      categories: exercice.categories.map(c => ({ ...c })),
+      items: exercice.items.map(i => ({ ...i }))
+    };
+
+    const body = { userId: userId, userExerciceList: [exerciceToSend] };
+    return this.http.post<void>(`${serverUrl}/users/${userId}/exercices/`, body, httpOptionsBase);
+  }
+
+  removeExerciceFromUser(exerciceId: string | number, userId: string): Observable<void> {
+    const exerciceIdStr = String(exerciceId);
+    return this.http.delete<void>(`${serverUrl}/users/${userId}/exercices/${exerciceIdStr}`, httpOptionsBase);
+  }
 }

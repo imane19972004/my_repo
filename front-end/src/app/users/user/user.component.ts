@@ -11,6 +11,9 @@ export class UserComponent implements OnInit {
   @Input()
   user?: User;
 
+  @Input()
+  mode: string = 'manage';
+
   @Output()
   deleteUser: EventEmitter<User> = new EventEmitter<User>();
 

@@ -62,7 +62,7 @@ module.exports = class BaseModel {
 
   update(id, obj) {
     if (typeof id === 'string') id = parseInt(id, 10)
-    const prevObjIndex = this.items.findIndex((item) => item.id === id)
+    const prevObjIndex = this.items.findIndex((item) => Number(item.id) === id)
     if (prevObjIndex === -1) throw new NotFoundError(`Cannot update ${this.name} id=${id} : not found`)
     const updatedItem = { ...this.items[prevObjIndex], ...obj }
     const { error } = Joi.validate(updatedItem, this.schema)

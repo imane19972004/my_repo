@@ -1,11 +1,14 @@
 <div class="user-history">
+  <app-top-nav-bar [showBackToHome]="true" [showBackToUsers]="true" class="top-nav-bar"></app-top-nav-bar>
   <h2>Détails de l'utilisateur</h2>
 
   <div *ngIf="user">
-    <p><strong>Nom :</strong> {{ user.firstName }} {{ user.lastName }}</p>
-    <p><strong>Âge :</strong> {{ user.age }} ans</p>
-    <p><strong>Particularité :</strong> {{ user.particularity }}</p>
-    <p><strong>Rôle :</strong> {{ user.role }}</p>
+    <div class="user-info-inline">
+      <p><strong>Nom :</strong> {{ user.firstName }} {{ user.lastName }}</p>
+      <p><strong>Âge :</strong> {{ user.age }} ans</p>
+      <p><strong>Rôle :</strong> {{ user.role }}</p>
+    </div>
+    <p class="particularity"><strong>Particularité :</strong> {{ user.particularity }}</p>
   </div>
 
   <hr>
@@ -13,38 +16,48 @@
   <h2>Historique de l'utilisateur</h2>
 
   <div *ngIf="user?.role?.startsWith('Encadrant')">
-    <p>Pas d'historique pour les encadrants.</p>
+    <p class="message-historique">Pas d'historique pour les encadrants.</p>
   </div>
 
   <div *ngIf="loading && user?.role?.startsWith('Accueilli')">
-    <p>Chargement de l'historique...</p>
+    <p class="message-historique">Chargement de l'historique...</p>
   </div>
 
-  <div *ngIf="!loading && filteredExerciseHistories.length === 0">
-    <p>Aucun exercice joué pour cet utilisateur.</p>
+  <div *ngIf="!loading && filteredExerciseHistories.length === 0 && user?.role?.startsWith('Accueilli')">
+    <p class="message-historique">Aucun exercice joué pour cet utilisateur.</p>
   </div>
 
-  <div *ngFor="let exerciceId of objectKeys(groupedHistory)" class="exercise-block">
+  <label for="exerciseSelect" *ngIf="user?.role?.startsWith('Accueilli')"><strong style="font-size: 20px">Choisir un exercice : </strong></label>
+  <select id="exerciseSelect" *ngIf="user?.role?.startsWith('Accueilli')" [ngModel]="selectedExerciseId" (ngModelChange)="onExerciseChange($event)">
+    <option *ngFor="let exoId of objectKeys(groupedHistory)" [value]="exoId">
+      {{ groupedHistory[exoId][0].exerciceName }}
+    </option>
+  </select>
+
+  <div *ngIf="selectedExerciseId as exerciceId" class="exercise-block">
     <h3>{{ groupedHistory[exerciceId][0].exerciceName }}</h3>
 
     <!-- Graphique global exercice -->
     <canvas #exerciseCanvas></canvas>
 
     <!-- Dernière tentative -->
-    <div class="card">
-      <p><strong>Dernière tentative :</strong></p>
-      <p>Objets bien placés : {{ getLatestAttempt(exerciceId).success }}</p>
-      <p>Nombre de mauvais placements : {{ getLatestAttempt(exerciceId).failure }}</p>
+    <div class="card super-compact">
+      <p class="last-attempt"> <strong>Dernière tentative :</strong></p>
+      <div>
+        <p>✅ Objets bien placés : {{ getLatestAttempt(exerciceId).success }}</p>
+        <p>❌ Mauvais placements : {{ getLatestAttempt(exerciceId).failure }}</p>
+      </div>
     </div>
+
 
     <!-- Erreurs par objet pour la dernière tentative -->
     <div class="card" *ngIf="getLatestAttempt(exerciceId).itemFailures">
       <h4><strong>Erreurs par objet</strong> (dernière tentative) :</h4>
-      <ul>
-        <p>Sélectionnez un objet pour voir son historique</p>
+      <p>Sélectionnez un objet pour voir son historique</p>
+      <ul class="compact-object-list">
         <li *ngFor="let item of getAllItemNames(exerciceId)">
           <button (click)="showItemGraph(exerciceId, item, $event)">
-            {{ item }} : {{ getLatestItemFailureCount(exerciceId, item) }} erreur(s)
+            {{ item }} : {{ getLatestItemFailureCount(exerciceId, item) }} erreur(s) (total : {{ getTotalItemFailureCount(exerciceId, item) }})
           </button>
         </li>
       </ul>
@@ -52,7 +65,7 @@
 
     <!-- Graphique spécifique à un objet -->
     <div *ngIf="selectedItem && selectedExerciseId === exerciceId">
-      <h4>Historique pour l'objet : {{ selectedItem }}</h4>
+      <h4><strong>Historique pour l'objet : {{ selectedItem }}</strong></h4>
       <canvas #itemCanvas></canvas>
     </div>
   </div>

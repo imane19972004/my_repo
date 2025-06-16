@@ -19,6 +19,9 @@ import { ExerciceListComponent } from "./exercice-list/exercice-list-manager/exe
 import { SettingsComponent } from './settings/settings.component';
 import { SettingsApplierComponent } from './settings/settings-applier/settings-applier.component';
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
+import {UserExerciseListComponent} from "./users/user-exercise-list/user-exercise-list.component";
+import {TopNavBarComponent} from "./top-nav-bar/top-nav-bar.component";
+import {EditExerciceComponent} from "./exercice-list/edit-exercice/edit-exercice.component";
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
     ExerciceListComponent,
     SettingsComponent,
     SettingsApplierComponent,
+    UserExerciseListComponent,
+    TopNavBarComponent,
+    EditExerciceComponent,
   ],
 
   imports: [

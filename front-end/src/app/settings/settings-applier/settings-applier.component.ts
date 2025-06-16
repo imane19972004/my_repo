@@ -35,7 +35,6 @@ applySettings() {
       fontWeight: this.settings.textStyle === 'bold' ? 'bold' : 'normal',
       fontStyle: this.settings.textStyle === 'italic' ? 'italic' : 'normal',
       filter: `contrast(${this.settings.contrast}%)`,
-      transition: `all ${0.3 / this.settings.animationSpeed}s ease-in-out`,
       backgroundColor: this.settings.highVisibility ? 'rgba(255, 255, 255, 0.9)' : 'inherit',
       color: this.settings.highVisibility ? '#000' : 'inherit'
     };

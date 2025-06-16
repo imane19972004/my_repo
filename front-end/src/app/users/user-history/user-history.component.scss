@@ -1,15 +1,14 @@
-/* 🎨 Couleurs */
 $purple1: #5e3a8a;
 $purple2: #8c6bb1;
 $yellow1: #f7df1e;
 $yellow2: #fbe64a;
 $gray-light: #f5f5f5;
 $gray-medium: #999;
-$gray-dark: #292929;
+$gray-dark: #191919;
 
 /* 🧱 Conteneur principal */
 .user-history {
-  max-width: 960px;
+  max-width: 1000px;
   margin: 30px auto;
   background-color: #fff;
   border-radius: 16px;
@@ -48,8 +47,7 @@ h4 {
   font-weight: 600;
 }
 
-/* Infos utilisateur */
-div > p {
+.message-historique {
   font-size: 1.1rem;
   color: $gray-dark;
   background: lighten($yellow1, 12%);
@@ -59,9 +57,51 @@ div > p {
   font-weight: 600;
   box-shadow: 4px 4px 10px rgba($purple1, 0.08);
   transition: background-color 0.3s ease;
+  width: max-content;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  align-items: center;
+  align-self: center;
+
 
   &:hover {
     background-color: $yellow2;
+  }
+}
+
+/* Infos utilisateur */
+.user-info-inline {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.user-info-inline p {
+  margin: 10px 0;
+  padding: 14px 20px;
+  background: lighten($yellow1, 12%);
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $gray-dark;
+  box-shadow: 4px 4px 10px rgba($purple1, 0.08);
+  transition: background-color 0.3s ease;
+}
+
+.particularity {
+  margin-top: 10px;
+  padding: 14px 20px;
+  background: lighten($purple2, 12%);
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: black;
+  box-shadow: 4px 4px 10px rgba($purple1, 0.08);
+  transition: background-color 0.3s ease;
+
+  strong {
+    color: $yellow1;
   }
 }
 
@@ -73,7 +113,7 @@ strong {
 hr {
   border: 0;
   border-top: 2px solid lighten($gray-medium, 35%);
-  margin: 40px 0;
+  margin: 20px;
 }
 
 /* Cartes */
@@ -102,7 +142,7 @@ hr {
   p {
     font-size: 1.15rem;
     font-weight: 600;
-    background: lighten($yellow1, 8%);
+    background: lighten($purple2, 3%);
     color: $gray-dark;
     border-radius: 10px;
     box-shadow: 4px 4px 8px rgba($purple1, 0.2);
@@ -115,30 +155,25 @@ hr {
     margin: 8px 0;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-    width: 100%;
+  ul.compact-object-list {
     display: flex;
-    flex-direction: column;
+    list-style: none;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-around;
+    gap: 15px;
 
     li {
-      background-color: $gray-light;
-      margin: 10px 0;
-      padding: 14px 20px;
+      background-color: lighten($gray-light, 3%);
       border-radius: 10px;
-      font-size: 1.1rem;
-      box-shadow: 3px 5px 10px rgba($purple2, 0.2);
-      color: $purple2;
-      width: 90%;
-      max-width: 440px;
-      text-align: center;
+      box-shadow: 2px 3px 6px rgba($purple1, 0.12);
+      padding: 10px 14px;
       transition: background-color 0.3s ease;
+      width: 350px;
 
-      &:nth-child(odd) {
-        background-color: lighten($gray-light, 5%);
+      &:hover {
+        background-color: lighten($yellow1, 28%);
       }
 
       button {
@@ -150,7 +185,7 @@ hr {
         border: none;
         cursor: pointer;
         transition: color 0.3s ease;
-        width: 100%;
+        width: max-content;
 
         &:hover {
           color: darken($purple1, 12%);
@@ -161,6 +196,11 @@ hr {
   }
 }
 
+.card.super-compact {
+  &:hover {
+    background: lighten($yellow1, 8%);
+  }
+}
 /* États */
 .loading,
 .no-history,
@@ -204,5 +244,56 @@ canvas {
 
   h2, h3, h4 {
     text-align: center;
+  }
+}
+
+select {
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 2px solid $purple2;
+  background-color: $gray-light;
+  color: $purple1;
+  margin-bottom: 20px;
+  box-shadow: 2px 4px 10px rgba($purple2, 0.15);
+
+  &:focus {
+    outline: none;
+    border-color: darken($purple2, 10%);
+  }
+}
+
+.card.super-compact {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: lighten($yellow1, 30%);
+  border-radius: 10px;
+  font-size: 1rem;
+  box-shadow: 2px 4px 8px rgba($purple2, 0.1);
+  gap: 16px;
+
+  &:first-child { color: $yellow1; }
+
+  p {
+    margin: 0;
+    font-weight: 600;
+    color: $gray-dark;
+    width: max-content;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+  }
+}
+
+.last-attempt {
+  strong {
+    color: $yellow1;
+    font-weight: 650;
+    font-size: 1.2rem;
   }
 }

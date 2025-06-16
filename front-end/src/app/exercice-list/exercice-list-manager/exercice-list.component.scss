@@ -20,6 +20,16 @@
     padding-bottom: 10px;
   }
 
+  .top-nav-bar {
+    border-radius: 20px;
+    align-content: center;
+    padding: 15px;
+    width: 500px;
+    align-self: center;
+    background: white;
+    box-shadow: 4px 4px 8px 12px var(--yellow1);
+  }
+
   .empty-state {
     text-align: center;
     padding: 40px 20px;

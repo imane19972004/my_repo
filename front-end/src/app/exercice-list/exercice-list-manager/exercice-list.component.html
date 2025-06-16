@@ -1,4 +1,5 @@
 <div class="exercice-list">
+  <app-top-nav-bar [showBackToHome]="true" [showCreateExercice]="true" [showBackToExercices]="false" [showBackToUsers]="false" class="top-nav-bar"></app-top-nav-bar>
   <h2>Nos exercices de mémoire</h2>
 
   <!-- État vide (quand il n'y a pas d'exercices) -->
@@ -50,8 +51,13 @@
       <!-- Actions sur l'exercice (selon le mode) -->
       <div class="card-actions">
         <!-- Si mode 'play', affiche le bouton "Jouer" -->
-        <button *ngIf="mode === 'play'" class="btn-play" (click)="selectExercice(exercice)">
+        <button class="btn-play" (click)="selectExercice(exercice)">
           <i class="fas fa-play"></i> Jouer
+        </button>
+
+        <!-- Bouton Modifier visible seulement en mode manage -->
+        <button class="btn-edit" *ngIf="mode === 'manage'" (click)="editExercice(exercice)">
+          <i class="fas fa-edit"></i> Modifier
         </button>
 
         <!-- Si mode 'manage', affiche le bouton "Supprimer" -->
@@ -60,12 +66,5 @@
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- Bouton pour créer un nouvel exercice (affiché dans tous les cas sauf quand il n'y a aucun exercice) -->
-  <div class="create-button-container" *ngIf="exerciceList.length > 0">
-    <button routerLink="/create-exercice" class="btn-create">
-      <i class="fas fa-plus-circle"></i> Créer un nouvel exercice
-    </button>
   </div>
 </div>

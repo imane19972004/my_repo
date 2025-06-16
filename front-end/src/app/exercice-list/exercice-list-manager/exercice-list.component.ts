@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Exercice } from "../../../models/exercice.model";
 import { ExerciceService } from "../../../services/exercice.service";
 import { Router, ActivatedRoute } from "@angular/router";
-import { UserService } from "../../../services/user.service"; // Service pour récupérer l'utilisateur
+import { UserService } from "../../../services/user.service";
 
 @Component({
   selector: 'app-exercice-list',
@@ -13,22 +13,19 @@ export class ExerciceListComponent implements OnInit {
 
   public exerciceList: Exercice[] = [];
   public mode: 'play' | 'manage' = 'manage'; // Définition du mode
-  public playerId: string = ''; // Variable pour stocker l'ID du joueur
+  public playerId: string = '';
 
   constructor(
     private exerciceService: ExerciceService,
-    private userService: UserService,  // Service pour l'utilisateur
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Vérification du mode depuis les paramètres de route
     this.route.url.subscribe(urlSegments => {
       if (urlSegments.some(seg => seg.path === 'choose-exercice')) {
         this.mode = 'play'; // Change de mode en 'play' si nécessaire
       }
     });
     this.playerId = this.route.snapshot.params['idUser'];
-    // Souscription à la liste des exercices pour mettre à jour le tableau dans le composant
     this.exerciceService.exercices$.subscribe((exercices: Exercice[]) => {
       this.exerciceList = exercices;
     });
@@ -36,12 +33,12 @@ export class ExerciceListComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // Méthode pour supprimer un exercice
   deleteExercice(exercice: Exercice): void {
-    this.exerciceService.deleteExercice(exercice);
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette exercice ?')) {
+      this.exerciceService.deleteExercice(exercice);
+    }
   }
 
-  // Méthode pour sélectionner un exercice
   selectExercice(exercice: Exercice): void {
     this.exerciceService.setSelectedExercice(exercice.id);
 
@@ -57,7 +54,12 @@ export class ExerciceListComponent implements OnInit {
       }
     } else {
       console.log('Player ID is not defined');
-      this.router.navigate(['/user-list']);
+      this.router.navigate(['/choose-user']);
     }
   }
+
+  editExercice(exercice: Exercice): void {
+    this.router.navigate(['/edit-exercice', exercice.id]);
+  }
+
 }

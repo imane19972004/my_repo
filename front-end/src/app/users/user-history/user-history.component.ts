@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, ElementRef, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewChild, ElementRef, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
@@ -17,11 +17,12 @@ export class UserHistoryComponent implements OnInit {
   groupedHistory: { [exerciceId: string]: UserHistory[] } = {};
   loading: boolean = true;
 
-  @ViewChildren('exerciseCanvas') exerciseCanvases!: QueryList<ElementRef<HTMLCanvasElement>>;
+  @ViewChild('exerciseCanvas') exerciseCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChildren('itemCanvas') itemCanvases!: QueryList<ElementRef<HTMLCanvasElement>>;
 
   selectedItem: string | null = null;
   selectedExerciseId: string | null = null;
+  exerciseChart: Chart | null = null;
 
   constructor(private route: ActivatedRoute, private userService: UserService) {
     Chart.register(...registerables);
@@ -48,6 +49,8 @@ export class UserHistoryComponent implements OnInit {
         this.groupedHistory[entry.exerciceId].push(entry);
       }
 
+      const firstExoId = Object.keys(this.groupedHistory)[0];
+      this.selectedExerciseId = firstExoId ?? null;
       this.loading = false;
 
       setTimeout(() => this.renderExerciseCharts(), 0);
@@ -80,48 +83,65 @@ export class UserHistoryComponent implements OnInit {
   }
 
   renderExerciseCharts() {
-    if (!this.exerciseCanvases) return;
+    if (this.exerciseChart) {
+      this.exerciseChart.destroy();
+      this.exerciseChart = null;
+    }
 
-    this.exerciseCanvases.forEach((canvasRef, index) => {
-      const exerciceId = this.objectKeys(this.groupedHistory)[index];
-      const history = this.groupedHistory[exerciceId].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    if (!this.exerciseCanvas) return;
+    if (!this.selectedExerciseId) return;
 
-      const ctx = canvasRef.nativeElement.getContext('2d');
-      if (!ctx) return;
+    const history = this.groupedHistory[this.selectedExerciseId].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const ctx = this.exerciseCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
 
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: history.map(h => new Date(h.date).toLocaleDateString()),
-          datasets: [
-            {
-              label: 'Objets bien placés',
-              data: history.map(h => h.success),
-              borderColor: 'green',
-              fill: false,
-              backgroundColor: 'green',
-              tension: 0.3
-            },
-            {
-              label: 'Nombre de mauvais placements',
-              data: history.map(h => h.failure),
-              borderColor: 'red',
-              fill: false,
-              backgroundColor: 'red',
-              tension: 0.3
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {legend: { display: true, labels: {boxWidth: 16, boxHeight: 16, useBorderRadius: true, borderRadius: 8}}},
-          scales: {
-            x: { title: { display: true, text: 'Date de la partie' }},
-            y: { title: { display: true, text: 'Nombre d’objets placés' }, beginAtZero: true }
+    const uniqueFailures = history.map(h =>
+      Object.values(h.itemFailures || {}).filter(v => v > 0).length
+    );
+
+    this.exerciseChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: history.map(h => new Date(h.date).toLocaleDateString()),
+        datasets: [
+          {
+            label: 'Objets bien placés',
+            data: history.map(h => h.success),
+            borderColor: 'green',
+            fill: false,
+            backgroundColor: 'green',
+            tension: 0.3
+          },
+          {
+            label: 'Objets mal placés',
+            data: uniqueFailures,
+            borderColor: 'red',
+            fill: false,
+            backgroundColor: 'red',
+            tension: 0.3
           }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: { boxWidth: 16, boxHeight: 16, useBorderRadius: true, borderRadius: 8 }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Date de la partie' } },
+          y: { title: { display: true, text: 'Nombre d’objets placés' }, beginAtZero: true }
         }
-      });
+      }
     });
+  }
+
+  onExerciseChange(newExerciceId: string) {
+    this.selectedExerciseId = newExerciceId;
+    this.selectedItem = null;  // reset l'item sélectionné (optionnel)
+    this.renderExerciseCharts();
   }
 
   showItemGraph(exerciceId: string, itemName: string, event: Event) {
@@ -130,6 +150,11 @@ export class UserHistoryComponent implements OnInit {
     this.selectedExerciseId = exerciceId;
 
     setTimeout(() => this.renderItemChart(), 0);
+  }
+
+  getTotalItemFailureCount(exerciceId: string, itemName: string): number {
+    return this.groupedHistory[exerciceId]
+      .reduce((total, attempt) => total + (attempt.itemFailures?.[itemName] ?? 0), 0);
   }
 
   renderItemChart() {
@@ -175,6 +200,7 @@ export class UserHistoryComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.exerciseChart?.destroy();
     if (this.itemChart) {
       this.itemChart.destroy();
       this.itemChart = null;

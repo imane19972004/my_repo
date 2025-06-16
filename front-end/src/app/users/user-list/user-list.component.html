@@ -1,5 +1,5 @@
 <div class="user-list-page">
-  <app-user-form *ngIf="mode === 'manage'"></app-user-form>
+  <app-top-nav-bar [showBackToHome]="true" [showGoToCreateUser]="true" class="header-actions"></app-top-nav-bar>
 
   <div class="directive" *ngIf="mode === 'play'">
     <p><strong>Veuillez appuyer sur un utilisateur pour le sélectionner</strong></p>
@@ -15,6 +15,7 @@
         <!-- Affiche les accueillis uniquement en mode 'play' -->
         <app-user
           [user]="user"
+          [mode]="mode"
           (deleteUser)="deleteUser($event)"
           *ngIf="user?.role?.startsWith('Accueilli') && mode === 'play'">
         </app-user>
@@ -22,6 +23,7 @@
         <!-- Affiche tous les utilisateurs en mode 'manage' -->
         <app-user
           [user]="user"
+          [mode]="mode"
           (deleteUser)="deleteUser($event)"
           *ngIf="mode === 'manage'">
         </app-user>

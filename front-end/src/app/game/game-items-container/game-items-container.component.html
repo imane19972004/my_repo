@@ -17,8 +17,10 @@
       class="object-image"
     />
 
-    <p *ngIf="numberOfFailure > 3">{{ item.name }}</p>
-    <p *ngIf="numberOfFailure > 6"><em>{{ item.description }}</em></p>
+    <!-- récupère le nombre d’erreurs pour cet item -->
+    <ng-container>
+      <p *ngIf="getFails(item) >= 3" style="font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px">{{ item.name }}</p>
+      <p *ngIf="getFails(item) >= 6" style="font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px"><em>{{ item.description }}</em></p>
+    </ng-container>
   </div>
 </div>
-

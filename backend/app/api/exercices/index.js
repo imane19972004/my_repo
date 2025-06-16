@@ -53,14 +53,26 @@ router.post('/', (req, res) => {
   }
 })
 
-// PUT modifier un exercice
 router.put('/:idExercice', (req, res) => {
+  const id = req.params.idExercice
+  logger.info(`PUT /exercices/${id} called`)
   try {
-    Exercice.getById(req.params.idExercice) // vérification existence
-    const updated = Exercice.update(req.params.idExercice, req.body)
-    res.status(200).json(updated)
+    try {
+      Exercice.getExerciceById(id)
+    } catch (err) {
+      if (err.name === 'NotFoundError') {
+        logger.warn(`Exercice ${id} not found`)
+        return res.status(404).json({ message: 'Exercice not found' })
+      }
+      throw err
+    }
+
+    const updated = Exercice.update(id, req.body)
+    logger.info('Exercice updated:', updated)
+    return res.status(200).json(updated)
   } catch (err) {
-    manageAllErrors(res, err)
+    logger.error('Error updating exercice:', err)
+    return manageAllErrors(res, err)
   }
 })
 

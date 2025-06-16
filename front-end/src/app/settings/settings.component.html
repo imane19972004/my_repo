@@ -1,8 +1,6 @@
 <!-- Bouton flottant pour ouvrir les paramètres -->
 <div class="settings-toggle" (click)="toggleSettings()">
-  <i class="fas fa-cog">
-    <img src="assets/resources/menu.jpg" alt="menu" class="menu-picture"/>
-  </i>
+  <i class="fas fa-cog"></i>
 </div>
 
 <!-- Panneau de paramètres qui s'ouvre -->
@@ -28,17 +26,19 @@
       <h3>Paramètres de durée</h3>
       <div class="input-control">
         <label>Durée du jeu (minutes) :</label>
-        <input type="number" min="1" max="60" [(ngModel)]="settings.gameDurationMinutes" (ngModelChange)="onSettingChange()">
-      </div>
-      
+        <input type="number" min="0" max="60" step="1" [(ngModel)]="settings.gameDurationMinutes" (ngModelChange)="onSettingChange()">      </div>
+
       <div class="slider-control">
         <label>Durée des messages : {{ settings.messageDuration }} secondes</label>
         <input type="range" min="1" max="10" step="0.5" [(ngModel)]="settings.messageDuration" (ngModelChange)="onSettingChange()">
       </div>
 
-      <div class="slider-control">
-        <label>Vitesse d'animation : {{ settings.animationSpeed }}</label>
-        <input type="range" min="0.5" max="2" step="0.1" [(ngModel)]="settings.animationSpeed" (ngModelChange)="onSettingChange()">
+      <!-- Nouveau contrôle pour afficher/masquer le timer -->
+      <div class="checkbox-control">
+        <label>
+          <input type="checkbox" [(ngModel)]="settings.showTimer" (ngModelChange)="onSettingChange()">
+          Afficher le timer pendant le jeu
+        </label>
       </div>
     </div>
 
