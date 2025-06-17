@@ -26,7 +26,7 @@ export class SettingsService {
   public settings$ = this.settingsSubject.asObservable();
 
   private serverUrl = serverUrl;
-  private settingsUrl = `${this.serverUrl}/settings`; 
+  private settingsUrl = `${this.serverUrl}/settings`;
 
   constructor() {
     // Charger les paramètres depuis le localStorage au démarrage
@@ -42,7 +42,7 @@ export class SettingsService {
       highVisibility: false,
       messageDuration: 3,
       gameDurationMinutes: 10,
-      showTimer: true // Par défaut, le timer est affiché
+      showTimer: false // Par défaut, le timer est affiché
     };
   }
 
