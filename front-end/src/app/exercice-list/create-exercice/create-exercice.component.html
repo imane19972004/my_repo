@@ -9,19 +9,18 @@
 
     <form (ngSubmit)="onSubmit()">
       <!-- Étape 1 : Catégories -->
-      <div *ngIf="currentStep === 1">
-              <div class="form-group">
-        <label for="theme">Thème de l'exercice</label>
-        <input
-          type="text"
-          id="theme"
-          name="theme"
-          [(ngModel)]="exercice.theme"
-          placeholder="Ex : Objets et pièces de la maison"
-          required
-        />
-      </div>
-
+      <div *ngIf="currentStep === 1" class="step-1" data-testid="step-1">
+        <div class="form-group">
+          <label for="theme">Thème de l'exercice</label>
+          <input
+            type="text"
+            id="theme"
+            name="theme"
+            [(ngModel)]="exercice.theme"
+            placeholder="Ex : Objets et pièces de la maison"
+            required
+          />
+        </div>
 
         <div *ngIf="exercice.theme === 'autre'" class="form-group">
           <label for="customTheme">Votre thème personnalisé</label>
@@ -42,25 +41,26 @@
         <div class="form-group">
           <label>Ajouter une catégorie</label>
           <div class="category-form">
-            <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie (ex: Cuisine)" />
-            <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" />
+            <input type="text" name="categoryName" [(ngModel)]="categoryInput.name" placeholder="Nom de la catégorie (ex: Cuisine)" data-testid="category-name-input" />
+            <input type="text" name="categoryDescription" [(ngModel)]="categoryInput.description" placeholder="Description (ex: Pièce où l'on prépare à manger)" data-testid="category-description-input" />
             <div class="btn-add-picture">
-              <input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" />
+              <input type="file" name="categoryImage" (change)="onCategoryImageSelected($event)" data-testid="category-image-input" />
               <div *ngIf="categoryInput.imagePath" class="image-ok">✅ Image ajoutée</div>
             </div>
           </div>
 
           <button type="button" class="btn-add" (click)="addCategory()"
-                  [disabled]="!categoryInput.name || !categoryInput.description || !categoryInput.imagePath || exercice.categories.length >= 3">
+                  [disabled]="!categoryInput.name || !categoryInput.description || !categoryInput.imagePath || exercice.categories.length >= 3"
+                  data-testid="add-category-button">
             <i class="fas fa-plus"></i> Ajouter cette catégorie
           </button>
 
           <div *ngIf="exercice.categories.length > 0" class="added-section">
             <h4>Catégories ajoutées:</h4>
             <ul>
-              <li *ngFor="let category of exercice.categories; let i = index" class="category-item">
+              <li *ngFor="let category of exercice.categories; let i = index" class="category-item" [attr.data-testid]="'category-item-' + i">
                 <span>📷 <strong>{{ category.name }}</strong> - {{ category.description }}</span>
-                <button class="btn-remove" (click)="removeCategory(i)">
+                <button class="btn-remove" (click)="removeCategory(i)" [attr.data-testid]="'remove-category-' + i">
                       <i class="fas fa-trash-alt"></i> Supprimer
                 </button>
               </li>
@@ -70,15 +70,17 @@
       </div>
 
       <!-- Étape 2 : Items -->
-      <div *ngIf="currentStep === 2">
+      <div *ngIf="currentStep === 2" class="step-2" data-testid="step-2">
         <div class="form-group">
           <label>Ajouter des objets à placer</label>
 
           <div class="item-box">
-            <input type="text" name="itemName" [(ngModel)]="itemInput.name" placeholder="Nom de l'objet (ex: Fourchette)" />
-            <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description (ex: Ustensile pour manger)" />
-            <div class="btn-add-picture"><input type="file" name="itemImage" (change)="onItemImageSelected($event)" /></div>
-            <select name="itemCategory" [(ngModel)]="itemInput.category">
+            <input type="text" name="itemName" [(ngModel)]="itemInput.name" placeholder="Nom de l'objet (ex: Fourchette)" data-testid="item-name-input" />
+            <input type="text" name="itemDescription" [(ngModel)]="itemInput.description" placeholder="Description (ex: Ustensile pour manger)" data-testid="item-description-input" />
+            <div class="btn-add-picture">
+              <input type="file" name="itemImage" (change)="onItemImageSelected($event)" data-testid="item-image-input" />
+            </div>
+            <select name="itemCategory" [(ngModel)]="itemInput.category" data-testid="item-category-select">
               <option value="">-- Sélectionner la catégorie de cet objet --</option>
               <option *ngFor="let category of exercice.categories" [value]="category.name">
                 {{ category.name }}
@@ -87,16 +89,17 @@
           </div>
 
           <button type="button" class="btn-add" (click)="addItem()"
-                  [disabled]=" !itemInput.name|| !itemInput.description.trim() || !itemInput.imagePath || !itemInput.category ">
+                  [disabled]=" !itemInput.name|| !itemInput.description.trim() || !itemInput.imagePath || !itemInput.category "
+                  data-testid="add-item-button">
             Ajouter cet objet
           </button>
 
           <div *ngIf="exercice.items.length > 0" class="added-section">
             <h4>Objets ajoutés:</h4>
             <ul>
-              <li *ngFor="let item of exercice.items; let i = index" class="item-list">
+              <li *ngFor="let item of exercice.items; let i = index" class="item-list" [attr.data-testid]="'item-list-' + i">
                 <span>🧩 <strong>{{ item.name }}</strong> - {{ item.description }} (Catégorie: {{ item.category }})</span>
-                    <button class="btn-remove" (click)="removeItem(i)">
+                    <button class="btn-remove" (click)="removeItem(i)" [attr.data-testid]="'remove-item-' + i">
                       <i class="fas fa-trash-alt"></i> Supprimer
                 </button>
               </li>
@@ -106,29 +109,53 @@
       </div>
 
        <!-- Étape 3 : Validation -->
-      <div *ngIf="currentStep === 3">
+      <div *ngIf="currentStep === 3" class="step-3" data-testid="step-3">
         <h3>Validation finale</h3>
         <p><strong>Nom :</strong> {{ exercice.name }}</p>
         <p><strong>Thème :</strong> {{ exercice.theme === 'autre' ? customTheme : exercice.theme }}</p>
         <p><strong>Description :</strong> {{ exercice.description }}</p>
-        <!-- reste identique -->
+        
+        <div class="validation-summary">
+          <h4>Résumé de l'exercice:</h4>
+          <div class="categories-summary">
+            <h5>Catégories ({{ exercice.categories.length }}):</h5>
+            <ul>
+              <li *ngFor="let category of exercice.categories">
+                <strong>{{ category.name }}</strong> - {{ category.description }}
+                <span class="item-count">({{ getItemsInCategory(category.name).length }} objets)</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="items-summary">
+            <h5>Objets ({{ exercice.items.length }}):</h5>
+            <ul>
+              <li *ngFor="let item of exercice.items">
+                <strong>{{ item.name }}</strong> - {{ item.description }} 
+                <em>({{ item.category }})</em>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <!-- Navigation -->
       <div class="navigation-buttons">
-        <button type="button" (click)="prevStep()" [disabled]="currentStep === 1">Précédent</button>
+        <button type="button" (click)="prevStep()" [disabled]="currentStep === 1" data-testid="previous-button">Précédent</button>
         <button type="button" (click)="nextStep()" *ngIf="currentStep < 3"
-          [disabled]="(currentStep === 1 && exercice.categories.length === 0) || (currentStep === 2 && exercice.items.length === 0)">
+          [disabled]="(currentStep === 1 && exercice.categories.length === 0) || (currentStep === 2 && exercice.items.length === 0)"
+          data-testid="next-button">
           Suivant
         </button>
         <button type="submit" *ngIf="currentStep === 3"
-                [disabled]="!exercice.name || !getFinalTheme() || exercice.categories.length === 0">
+                [disabled]="!exercice.name || !getFinalTheme() || exercice.categories.length === 0"
+                data-testid="submit-button">
           Créer l'exercice
         </button>
       </div>
     </form>
 
-    <div class="success-message" *ngIf="exerciceCreated">
+    <div class="success-message" *ngIf="exerciceCreated" data-testid="success-message">
       L'exercice a été créé avec succès !
     </div>
   </div>

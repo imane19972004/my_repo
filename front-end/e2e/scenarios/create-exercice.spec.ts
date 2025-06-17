@@ -1,280 +1,188 @@
 import { test, expect } from '@playwright/test';
-import { testUrl } from 'e2e/e2e.config';
 import { CreateExerciceFixture } from '../fixtures/create-exercice.fixture';
 import * as path from 'path';
 
-test.describe('Create Exercice', () => {
-  let createExerciceFixture: CreateExerciceFixture;
+const testImagePath = path.join(__dirname, '../../src/assets/resources/objets-et-pieces-de-la-maison/cuisine.png');
+const testImagePath2 = path.join(__dirname, '../../src/assets/resources/objets-et-pieces-de-la-maison/salon.png');
 
-  // Chemins vers les images de test dans le dossier src/assets/resources
-  const testImagePath = path.join(__dirname, '../../src/assets/resources/objets-et-pieces-de-la-maison/cuisine.png');
-  const testImagePath2 = path.join(__dirname, '../../src/assets/resources/objets-et-pieces-de-la-maison/salon.png');
+test.describe('Create Exercice', () => {
+  let fixture: CreateExerciceFixture;
 
   test.beforeEach(async ({ page }) => {
-    createExerciceFixture = new CreateExerciceFixture(page);
-    await page.goto(`${testUrl}/create-exercice`);
+    fixture = new CreateExerciceFixture(page);
+    await fixture.gotoCreateExercicePage();
   });
 
   test('Should create a complete exercice successfully', async () => {
-    // Étape 1 : Remplir les informations de base
-    await createExerciceFixture.fillExerciceBasicInfo(
+    await fixture.fillExerciceBasicInfo(
       'Rangeons notre maison !',
       'Objets et pièces de la maison',
       'Un exercice pour apprendre à ranger les objets dans les bonnes places'
     );
 
-    // Ajouter une première catégorie
-    await createExerciceFixture.addCategory(
-      'Cuisine',
-      'Place où l\'on prépare à manger',
-      testImagePath
+    // Ajout des catégories
+    await fixture.addCategory('Cuisine', 'Place où l\'on prépare à manger', testImagePath);
+    await expect(fixture.getCategoryList()).toHaveCount(1);
 
-    );
+    await fixture.addCategory('Salon', 'Place où l\'on se détend', testImagePath2);
+    await expect(fixture.getCategoryList()).toHaveCount(2);
 
-    // Vérifier que la catégorie est ajoutée
-    await expect(createExerciceFixture.getCategoryList()).toHaveCount(1);
+    // Aller à l'étape 2
+    await fixture.goToNextStep();
+    await fixture.waitForStep(2);
+    expect(await fixture.getCurrentStep()).toBe(2);
 
-    // Ajouter une deuxième catégorie
-    await createExerciceFixture.addCategory(
-      'Salon',
-      'Place où l\'on se détend',
-      testImagePath2
-    );
+    // Ajout des items
+    await fixture.addItem('Fourchette', 'Ustensile pour manger', 'Cuisine', testImagePath);
+    await fixture.waitForItemAdded();
 
-    await expect(createExerciceFixture.getCategoryList()).toHaveCount(2);
+    await fixture.addItem('Télécommande', 'Pour changer de chaîne', 'Salon', testImagePath2);
+    await fixture.waitForItemAdded();
 
-    // Passer à l'étape 2
-    await createExerciceFixture.goToNextStep();
+    await expect(fixture.getItemList().locator('.item')).toHaveCount(2);
 
-    // Vérifier qu'on est à l'étape 2
-    const currentStep = await createExerciceFixture.getCurrentStepElements();
-    expect(currentStep).toBe(2);
-
-    // Ajouter des items
-    await createExerciceFixture.addItem(
-      'Fourchette',
-      'Ustensile pour manger',
-      'Cuisine',
-      testImagePath
-    );
-
-    await createExerciceFixture.addItem(
-      'Télécommande',
-      'Pour changer de chaîne',
-      'Salon',
-      testImagePath2
-    );
-
-    // Vérifier que les items sont ajoutés
-    await expect(createExerciceFixture.getItemList()).toHaveCount(2);
-
-    // Passer à l'étape 3
-    await createExerciceFixture.goToNextStep();
-
-    // Vérifier qu'on est à l'étape 3 (validation)
-    const finalStep = await createExerciceFixture.getCurrentStepElements();
-    expect(finalStep).toBe(3);
+    // Aller à l'étape 3
+    await fixture.goToNextStep();
+    await fixture.waitForStep(3);
+    expect(await fixture.getCurrentStep()).toBe(3);
 
     // Soumettre l'exercice
-    await createExerciceFixture.submitExercice();
+    await fixture.submitExercice();
 
-    // Vérifier le message de succès
-    await expect(createExerciceFixture.getSuccessMessage()).toBeVisible();
+    await expect(fixture.getSuccessMessage()).toBeVisible({ timeout: 10000 });
   });
 
   test('Should not allow navigation to next step without required data', async () => {
-    // Essayer de passer à l'étape suivante sans ajouter de catégorie
-    const nextButton = createExerciceFixture.getNextButton();
-    await expect(nextButton).toBeDisabled();
+    await expect(fixture.getNextButton()).toBeDisabled();
 
-    // Remplir les informations de base mais sans catégorie
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
-
-    // Le bouton suivant devrait toujours être désactivé
-    await expect(nextButton).toBeDisabled();
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
+    await expect(fixture.getNextButton()).toBeDisabled();
   });
 
-  test('Should validate category creation requirements', async ({ page }) => {
-    // Remplir les infos de base
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+  test('Should validate category creation requirements', async () => {
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    // Essayer d'ajouter une catégorie sans nom
-    await createExerciceFixture.getCategoryDescriptionInput().fill('Description test');
+    await fixture.getCategoryDescriptionInput().fill('Description test');
+    await expect(fixture.getAddCategoryButton()).toBeDisabled();
 
-    const addCategoryButton = createExerciceFixture.getAddCategoryButton();
-    await expect(addCategoryButton).toBeDisabled();
+    await fixture.getCategoryNameInput().fill('Test Category');
+    await expect(fixture.getAddCategoryButton()).toBeDisabled();
 
-    // Ajouter le nom mais pas d'image
-    await createExerciceFixture.getCategoryNameInput().fill('Test Category');
-    await expect(addCategoryButton).toBeDisabled();
-
-    // Ajouter l'image - maintenant le bouton devrait être activé
-    await createExerciceFixture.getCategoryImageInput().setInputFiles(testImagePath);
-    await expect(addCategoryButton).toBeEnabled();
+    await fixture.getCategoryImageInput().setInputFiles(testImagePath);
+    await fixture.waitForCategoryAdded();
+    await expect(fixture.getAddCategoryButton()).toBeEnabled();
   });
 
-  test('Should limit categories to maximum 3', async ({ page }) => {
-    // Remplir les infos de base
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+  test('Should limit categories to maximum 3', async () => {
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    // Ajouter 3 catégories
     for (let i = 1; i <= 3; i++) {
-      await createExerciceFixture.addCategory(
-        `Catégorie ${i}`,
-        `Description ${i}`,
-        testImagePath
-      );
+      await fixture.addCategory(`Catégorie ${i}`, `Description ${i}`, testImagePath);
+      await fixture.waitForCategoryAdded();
     }
 
-    // Vérifier qu'on a bien 3 catégories
-    await expect(createExerciceFixture.getCategoryList()).toHaveCount(3);
+    await expect(fixture.getCategoryList()).toHaveCount(3);
 
-    // Le bouton d'ajout devrait être désactivé
-    const addCategoryButton = createExerciceFixture.getAddCategoryButton();
-    await expect(addCategoryButton).toBeDisabled();
+    // Essayer d’ajouter une 4ème catégorie
+    await fixture.addCategory('Catégorie 4', 'Description 4', testImagePath);
+
+    await expect(fixture.getAddCategoryButton()).toBeDisabled();
   });
 
-  test('Should allow category removal', async ({ page }) => {
-    // Remplir les infos de base et ajouter des catégories
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+  test('Should allow category removal', async () => {
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    await createExerciceFixture.addCategory(
-      'Cuisine',
-      'Test cuisine',
-      testImagePath
-    );
+    await fixture.addCategory('Cuisine', 'Test cuisine', testImagePath);
+    await fixture.waitForCategoryAdded();
 
-    await createExerciceFixture.addCategory(
-      'Salon',
-      'Test salon',
-      testImagePath2
-    );
+    await fixture.addCategory('Salon', 'Test salon', testImagePath2);
+    await fixture.waitForCategoryAdded();
 
-    await expect(createExerciceFixture.getCategoryList()).toHaveCount(2);
+    await expect(fixture.getCategoryList()).toHaveCount(2);
 
-    // Gérer la boîte de dialogue de confirmation
-    page.on('dialog', dialog => dialog.accept());
+    await fixture.acceptNextDialog();
+    await fixture.getCategoryRemoveButton(0).click();
 
-    // Supprimer la première catégorie
-    await createExerciceFixture.getCategoryRemoveButton(0).click();
-
-    // Vérifier qu'il ne reste qu'une catégorie
-    await expect(createExerciceFixture.getCategoryList()).toHaveCount(1);
+    await expect(fixture.getCategoryList()).toHaveCount(1);
   });
 
   test('Should validate item creation in step 2', async () => {
-    // Aller à l'étape 2 (il faut d'abord ajouter une catégorie)
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    await createExerciceFixture.addCategory(
-      'Test Category',
-      'Test Description',
-      testImagePath
-    );
+    await fixture.addCategory('Test Category', 'Test Description', testImagePath);
+    await fixture.waitForCategoryAdded();
 
-    await createExerciceFixture.goToNextStep();
+    await fixture.goToNextStep();
+    await fixture.waitForStep(2);
 
-    // Vérifier que le bouton d'ajout d'item est désactivé sans données complètes
-    const addItemButton = createExerciceFixture.getAddItemButton();
-    await expect(addItemButton).toBeDisabled();
+    await expect(fixture.getAddItemButton()).toBeDisabled();
 
-    // Remplir partiellement
-    await createExerciceFixture.getItemNameInput().fill('Test Item');
-    await expect(addItemButton).toBeDisabled();
+    await fixture.getItemNameInput().fill('Test Item');
+    await expect(fixture.getAddItemButton()).toBeDisabled();
 
-    // Remplir complètement
-    await createExerciceFixture.getItemDescriptionInput().fill('Test Description');
-    await createExerciceFixture.getItemCategorySelect().selectOption('Test Category');
-    await createExerciceFixture.getItemImageInput().setInputFiles(testImagePath);
+    await fixture.getItemDescriptionInput().fill('Test Description');
+    await fixture.getItemCategorySelect().selectOption('Test Category');
+    await fixture.getItemImageInput().setInputFiles(testImagePath);
+    await fixture.waitForItemAdded();
 
-    await expect(addItemButton).toBeEnabled();
+    await expect(fixture.getAddItemButton()).toBeEnabled();
   });
 
-  test('Should enforce at least one item per category rule', async ({ page }) => {
-    // Créer un exercice avec 2 catégories
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+  test('Should enforce at least one item per category rule', async () => {
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    await createExerciceFixture.addCategory('Cuisine', 'Test cuisine', testImagePath);
-    await createExerciceFixture.addCategory('Salon', 'Test salon', testImagePath2);
+    await fixture.addCategory('Cuisine', 'Test cuisine', testImagePath);
+    await fixture.waitForCategoryAdded();
 
-    await createExerciceFixture.goToNextStep();
+    await fixture.addCategory('Salon', 'Test salon', testImagePath2);
+    await fixture.waitForCategoryAdded();
 
-    // Ajouter un item seulement pour une catégorie
-    await createExerciceFixture.addItem(
-      'Fourchette',
-      'Ustensile',
-      'Cuisine',
-      testImagePath
-    );
+    await fixture.goToNextStep();
+    await fixture.waitForStep(2);
 
-    // Essayer de passer à l'étape 3
-    const nextButton = createExerciceFixture.getNextButton();
+    await fixture.addItem('Fourchette', 'Ustensile', 'Cuisine', testImagePath);
+    await fixture.waitForItemAdded();
 
-    // Gérer l'alerte
-    page.on('dialog', dialog => {
-      expect(dialog.message()).toContain('Chaque catégorie doit contenir au moins un objet');
-      dialog.accept();
+    let alertTriggered = false;
+    await fixture.handleNextDialog((message) => {
+      expect(message).toContain('Chaque catégorie doit contenir au moins un objet');
+      alertTriggered = true;
     });
 
-    await nextButton.click();
+    await fixture.getNextButton().click();
 
-    // On devrait toujours être à l'étape 2
-    const currentStep = await createExerciceFixture.getCurrentStepElements();
-    expect(currentStep).toBe(2);
+    // Laisser le temps à l'alerte de se déclencher
+    await fixture.waitForItemAdded();
+
+    expect(alertTriggered).toBe(true);
+    expect(await fixture.getCurrentStep()).toBe(2);
   });
 
   test('Should allow navigation between steps', async () => {
-    // Préparer l'exercice pour pouvoir naviguer
-    await createExerciceFixture.fillExerciceBasicInfo(
-      'Test Exercice',
-      'Test Theme'
-    );
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
 
-    await createExerciceFixture.addCategory('Test Category', 'Test Description', testImagePath);
+    await fixture.addCategory('Test Category', 'Test Description', testImagePath);
+    await fixture.waitForCategoryAdded();
 
-    // Aller à l'étape 2
-    await createExerciceFixture.goToNextStep();
-    expect(await createExerciceFixture.getCurrentStepElements()).toBe(2);
+    await fixture.goToNextStep();
+    await fixture.waitForStep(2);
+    expect(await fixture.getCurrentStep()).toBe(2);
 
-    // Ajouter un item
-    await createExerciceFixture.addItem(
-      'Test Item',
-      'Test Description',
-      'Test Category',
-      testImagePath
-    );
+    await fixture.addItem('Test Item', 'Test Description', 'Test Category', testImagePath);
+    await fixture.waitForItemAdded();
 
-    // Aller à l'étape 3
-    await createExerciceFixture.goToNextStep();
-    expect(await createExerciceFixture.getCurrentStepElements()).toBe(3);
+    await fixture.goToNextStep();
+    await fixture.waitForStep(3);
+    expect(await fixture.getCurrentStep()).toBe(3);
 
-    // Revenir à l'étape 2
-    await createExerciceFixture.goToPreviousStep();
-    expect(await createExerciceFixture.getCurrentStepElements()).toBe(2);
+    await fixture.goToPreviousStep();
+    await fixture.waitForStep(2);
+    expect(await fixture.getCurrentStep()).toBe(2);
 
-    // Revenir à l'étape 1
-    await createExerciceFixture.goToPreviousStep();
-    expect(await createExerciceFixture.getCurrentStepElements()).toBe(1);
+    await fixture.goToPreviousStep();
+    await fixture.waitForStep(1);
+    expect(await fixture.getCurrentStep()).toBe(1);
 
-    // Le bouton précédent devrait être désactivé à l'étape 1
-    await expect(createExerciceFixture.getPreviousButton()).toBeDisabled();
+    await expect(fixture.getPreviousButton()).toBeDisabled();
   });
 });
