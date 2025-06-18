@@ -7,6 +7,10 @@
       Créons un exercice amusant
     </h2>
 
+    <div class="success-message" *ngIf="exerciceCreated" data-testid="success-message">
+      L'exercice a été créé avec succès !
+    </div>
+
     <form (ngSubmit)="onSubmit()">
       <!-- Étape 1 : Catégories -->
       <div *ngIf="currentStep === 1" class="step-1" data-testid="step-1">
@@ -114,7 +118,7 @@
         <p><strong>Nom :</strong> {{ exercice.name }}</p>
         <p><strong>Thème :</strong> {{ exercice.theme === 'autre' ? customTheme : exercice.theme }}</p>
         <p><strong>Description :</strong> {{ exercice.description }}</p>
-        
+
         <div class="validation-summary">
           <h4>Résumé de l'exercice:</h4>
           <div class="categories-summary">
@@ -122,16 +126,16 @@
             <ul>
               <li *ngFor="let category of exercice.categories">
                 <strong>{{ category.name }}</strong> - {{ category.description }}
-                <span class="item-count">({{ getItemsInCategory(category.name).length }} objets)</span>
+                <span class="item-count">({{ getItemsHavingCategory(category.name).length }} objets)</span>
               </li>
             </ul>
           </div>
-          
+
           <div class="items-summary">
             <h5>Objets ({{ exercice.items.length }}):</h5>
             <ul>
               <li *ngFor="let item of exercice.items">
-                <strong>{{ item.name }}</strong> - {{ item.description }} 
+                <strong>{{ item.name }}</strong> - {{ item.description }}
                 <em>({{ item.category }})</em>
               </li>
             </ul>
@@ -155,9 +159,7 @@
       </div>
     </form>
 
-    <div class="success-message" *ngIf="exerciceCreated" data-testid="success-message">
-      L'exercice a été créé avec succès !
-    </div>
+
   </div>
   <app-top-nav-bar [showBackToExercices]="true" class="top-nav-bar-creation"></app-top-nav-bar>
 </div>

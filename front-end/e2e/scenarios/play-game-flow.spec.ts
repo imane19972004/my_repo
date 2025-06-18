@@ -77,7 +77,6 @@ test.describe('Parcours JOUER complet', () => {
         await page.mouse.move(catBox.x + catBox.width / 2, catBox.y + catBox.height / 2, { steps: 5 });
         await page.mouse.up();
 
-        // Attend brièvement un message
         await expect(game.successMessage()).toBeVisible({ timeout: 2000 });
         const msg = (await game.successMessage().textContent())?.trim();
 

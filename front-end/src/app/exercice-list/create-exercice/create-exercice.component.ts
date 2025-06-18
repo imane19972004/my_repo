@@ -210,9 +210,15 @@ export class CreateExerciceComponent {
     formData.append('image', file);
     return this.exerciceService.uploadImage(formData);
   }
-  // Ajoutez cette méthode dans create-exercice.component.ts
 
-getItemsInCategory(categoryName: string): Item[] {
-  return this.exercice.items.filter(item => item.category === categoryName);
-}
+  getItemsHavingCategory(name: string): Item[] {
+    const items: Item[] = [];
+    for (let i = 0; i < this.exercice.items.length; i++) {
+      const item = this.exercice.items[i];
+      if (item.name === name) {
+        items.push(item);
+      }
+    }
+    return items;
+  }
 }

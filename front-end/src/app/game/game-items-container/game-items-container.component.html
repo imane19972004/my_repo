@@ -19,8 +19,8 @@
 
     <!-- récupère le nombre d’erreurs pour cet item -->
     <ng-container>
-      <p *ngIf="getFails(item) >= 3" style="font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px">{{ item.name }}</p>
-      <p *ngIf="getFails(item) >= 6" style="font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px"><em>{{ item.description }}</em></p>
+      <p *ngIf="getFails(item) >= 1" style="color: var(--purple1); font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px">{{ item.name }}</p>
+      <p *ngIf="getFails(item) >= 3" style="color: var(--purple1); font-weight: 650; font-size: 20px; background: #fff; padding: 10px; border-radius: 10px"><em>{{ item.description }}</em></p>
     </ng-container>
   </div>
 </div>

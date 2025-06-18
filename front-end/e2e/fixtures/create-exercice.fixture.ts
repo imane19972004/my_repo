@@ -103,7 +103,7 @@ export class CreateExerciceFixture extends E2EComponentFixture {
   }
 
   getSuccessMessage() {
-    return this.page.locator('text=Exercice créé avec succès');
+    return this.page.locator('.success-message');
   }
 
   async fillExerciceBasicInfo(name: string, theme: string, description?: string) {
@@ -124,6 +124,7 @@ export class CreateExerciceFixture extends E2EComponentFixture {
 
   async addItem(name: string, description: string, category: string, imagePath: string) {
     await this.getItemNameInput().fill(name);
+    await this.getItemDescriptionInput().waitFor({ state: 'visible' });
     await this.getItemDescriptionInput().fill(description);
     await this.getItemCategorySelect().selectOption(category);
     await this.getItemImageInput().setInputFiles(imagePath);

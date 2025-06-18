@@ -1,4 +1,5 @@
 import { E2EComponentFixture } from "../e2e-component.fixture";
+import {Locator} from "@playwright/test";
 
 export class GamePageFixture extends E2EComponentFixture {
 
@@ -13,4 +14,12 @@ export class GamePageFixture extends E2EComponentFixture {
   successMessage() { return this.page.locator('.message'); }
   restartButton()  { return this.page.locator('button.restart-button'); }
   quitButton()     { return this.page.locator('button.quit-button'); }
+
+  itemName(): Locator {
+    return this.page.locator('.object-container p:not(:has(em))');
+  }
+
+  itemDescription(): Locator {
+    return this.page.locator('.object-container p:has(em)');
+  }
 }

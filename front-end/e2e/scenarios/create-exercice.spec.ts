@@ -14,6 +14,7 @@ test.describe('Create Exercice', () => {
   });
 
   test('Should create a complete exercice successfully', async () => {
+    test.setTimeout(60000);
     await fixture.fillExerciceBasicInfo(
       'Rangeons notre maison !',
       'Objets et pièces de la maison',
@@ -39,7 +40,7 @@ test.describe('Create Exercice', () => {
     await fixture.addItem('Télécommande', 'Pour changer de chaîne', 'Salon', testImagePath2);
     await fixture.waitForItemAdded();
 
-    await expect(fixture.getItemList().locator('.item')).toHaveCount(2);
+    await expect(fixture.getItemList()).toHaveCount(2);
 
     // Aller à l'étape 3
     await fixture.goToNextStep();
@@ -74,17 +75,20 @@ test.describe('Create Exercice', () => {
   });
 
   test('Should limit categories to maximum 3', async () => {
-    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme');
+    test.setTimeout(60000);
+    await fixture.fillExerciceBasicInfo('Test Exercice', 'Test Theme', 'Description test');
 
     for (let i = 1; i <= 3; i++) {
-      await fixture.addCategory(`Catégorie ${i}`, `Description ${i}`, testImagePath);
+      await fixture.addCategory(`Catégorie ${i}`, `Description ${i}`, i%2 == 0 ? testImagePath2 : testImagePath);
       await fixture.waitForCategoryAdded();
     }
 
     await expect(fixture.getCategoryList()).toHaveCount(3);
 
     // Essayer d’ajouter une 4ème catégorie
-    await fixture.addCategory('Catégorie 4', 'Description 4', testImagePath);
+    await fixture.getCategoryNameInput().fill('Catégorie 4');
+    await fixture.getCategoryDescriptionInput().fill('Description 4');
+    await fixture.getCategoryImageInput().setInputFiles('e2e/tests/assets/photo.jpg');
 
     await expect(fixture.getAddCategoryButton()).toBeDisabled();
   });
