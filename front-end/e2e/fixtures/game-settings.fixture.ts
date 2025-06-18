@@ -1,6 +1,15 @@
 import { E2EComponentFixture } from '../e2e-component.fixture';
+import { Page } from '@playwright/test';
 
 export class GameSettingsFixture extends E2EComponentFixture {
+  // Corriger TS2445 : exposer `page` via un getter public si besoin
+  protected override readonly page: Page;
+
+  constructor(page: Page) {
+    super(page);
+    this.page = page;
+  }
+
   settingsToggleButton() { 
     return this.page.locator('.settings-toggle'); 
   }
@@ -62,10 +71,22 @@ export class GameSettingsFixture extends E2EComponentFixture {
   }
 
   categoryTitles() { 
-    return this.page.locator('.right h2'); 
+    return this.page.locator('.category-section h2'); 
   }
 
-  settingsAppliedElements() { 
+  categoryImages() {
+    return this.page.locator('.category-section .image');
+  }
+
+  categorySections() {
+    return this.page.locator('.category-section');
+  }
+
+  dropzones() {
+    return this.page.locator('.dropzone');
+  }
+
+  settingsApplierElements() { 
     return this.page.locator('app-settings-applier'); 
   }
 
@@ -73,72 +94,60 @@ export class GameSettingsFixture extends E2EComponentFixture {
     await this.settingsToggleButton().click();
     await this.settingsPanel().waitFor({ state: 'visible' });
   }
-async waitForObjectCount(expectedCount: number, timeout = 10000) {
-  const startTime = Date.now();
-  while ((Date.now() - startTime) < timeout) {
-    const count = await this.page.evaluate(() => document.querySelectorAll('.object-image').length);
-    console.log(`Nombre d'objets détectés: ${count}, attendu: ${expectedCount}`);
-    if (count === expectedCount) return;
-    await this.page.waitForTimeout(300); // attente courte avant de réessayer
-  }
-  throw new Error(`Timeout: attendu ${expectedCount} objets, trouvé ${await this.page.evaluate(() => document.querySelectorAll('.object-image').length)}`);
-}
-
-
-
 
   async closeSettings() {
     await this.closeButton().click();
     await this.settingsPanel().waitFor({ state: 'hidden' });
   }
 
- async setObjectCount(count: number) {
-  await this.objectCountSelect().selectOption(count.toString());
-  // Pause courte pour laisser le DOM se mettre à jour
-  await this.page.waitForTimeout(500);
-  await this.waitForObjectCount(count);
-}
+  async waitForObjectCount(expectedCount: number, timeout = 10000) {
+    const startTime = Date.now();
+    while ((Date.now() - startTime) < timeout) {
+      const count = await this.page.evaluate(() => document.querySelectorAll('.object-image').length);
+      if (count === expectedCount) return;
+      await this.page.waitForTimeout(300);
+    }
+    throw new Error(`Timeout: attendu ${expectedCount} objets.`);
+  }
 
+  async setObjectCount(count: number) {
+    await this.objectCountSelect().selectOption(count.toString());
+    await this.page.waitForTimeout(500);
+    await this.waitForObjectCount(count);
+  }
 
   async setGameDuration(minutes: number) {
     await this.gameDurationInput().fill(minutes.toString());
   }
 
-//   async setMessageDuration(seconds: number) {
-//     await this.messageDurationSlider().fill(seconds.toString());
-//   }
-async setMessageDuration(seconds: number) {
-  await this.messageDurationSlider().evaluate((el, value) => {
-    (el as HTMLInputElement).value = value.toString();
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-  }, seconds);
-}
+  async setMessageDuration(seconds: number) {
+    await this.messageDurationSlider().evaluate((el, value) => {
+      (el as HTMLInputElement).value = value.toString();
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }, seconds);
+  }
+
   async toggleShowTimer() {
     await this.showTimerCheckbox().click();
   }
 
-//   async setTextSize(size: number) {
-//     await this.textSizeSlider().fill(size.toString());
-//   }
-async setTextSize(size: number) {
-  await this.textSizeSlider().evaluate((el, value) => {
-    (el as HTMLInputElement).value = value.toString();
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-  }, size);
-}
+  async setTextSize(size: number) {
+    await this.textSizeSlider().evaluate((el, value) => {
+      (el as HTMLInputElement).value = value.toString();
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }, size);
+  }
 
   async setTextStyle(style: string) {
     await this.textStyleSelect().selectOption(style);
   }
 
- async setContrast(contrast: number) {
-  // Utiliser evaluate pour modifier la valeur du slider et déclencher l'input event
-  await this.contrastSlider().evaluate((el, value) => {
-    (el as HTMLInputElement).value = value.toString();
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-  }, contrast);
-}
-
+  async setContrast(contrast: number) {
+    await this.contrastSlider().evaluate((el, value) => {
+      (el as HTMLInputElement).value = value.toString();
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }, contrast);
+  }
 
   async resetSettings() {
     await this.resetButton().click();
@@ -173,16 +182,63 @@ async setTextSize(size: number) {
 
   async getAppliedContrast(element = this.itemsContainer()) {
     const filter = await element.evaluate(el => window.getComputedStyle(el).filter);
-
-    if (filter.includes('contrast')) {
-      const match = filter.match(/contrast\(([0-9.]+)%?\)/);
-      return match ? Math.round(parseFloat(match[1])) : 100;
-    }
-    return 100;
+    const match = filter.match(/contrast\(([0-9.]+)%?\)/);
+    return match ? Math.round(parseFloat(match[1])) : 100;
   }
 
-  async waitForMessageToDismiss(timeout: number = 5000) {
+  async waitForMessageToDismiss(timeout = 5000) {
     await this.gameMessage().waitFor({ state: 'visible', timeout: 2000 });
     await this.gameMessage().waitFor({ state: 'hidden', timeout });
   }
+
+  async getCategoryCount() {
+    return await this.categorySections().count();
+  }
+
+  async waitForCategoriesToLoad(timeout = 5000) {
+    await this.categorySections().first().waitFor({ state: 'visible', timeout });
+  }
+
+  async getCategoryTitle(index: number = 0) {
+    return await this.categoryTitles().nth(index).textContent();
+  }
+
+  async getTextSizeOnCategory(index: number = 0) {
+    const fontSize = await this.categoryTitles().nth(index).evaluate(el => 
+      window.getComputedStyle(el).fontSize
+    );
+    return parseInt(fontSize.replace('px', ''));
+  }
+
+  async getContrastOnItemsContainer() {
+    const filter = await this.itemsContainer().evaluate(el => 
+      window.getComputedStyle(el).filter
+    );
+    
+    const match = filter.match(/contrast\(([0-9.]+)%?\)/);
+    return match ? Math.round(parseFloat(match[1])) : 100;
+  }
+
+  async waitForGameToLoad() {
+    await this.itemsContainer().waitFor({ state: 'visible' });
+    await this.categorySections().first().waitFor({ state: 'visible' });
+    await this.objectImages().first().waitFor({ state: 'visible' });
+  }
+
+  async getMessageDurationSliderValue() {
+    return await this.messageDurationSlider().evaluate(el => (el as HTMLInputElement).valueAsNumber);
+  }
+
+  async getTextSizeSliderValue() {
+    return await this.textSizeSlider().evaluate(el => (el as HTMLInputElement).valueAsNumber);
+  }
+
+  async getContrastSliderValue() {
+    return await this.contrastSlider().evaluate(el => (el as HTMLInputElement).valueAsNumber);
+  }
+
+  public async reloadPage(): Promise<void> {
+  await this.page.reload();
+}
+
 }
