@@ -19,5 +19,4 @@ test('Modification simple d’un exercice', async ({ page }) => {
 
   await editForm.saveButton().click();
 
-  // Ajouter ici éventuellement d’autres vérifications sur succès
 });
