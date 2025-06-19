@@ -1,77 +1,68 @@
 import { E2EComponentFixture } from '../e2e-component.fixture';
-import { Page } from '@playwright/test';
 
 export class GameSettingsFixture extends E2EComponentFixture {
-  // Corriger TS2445 : exposer `page` via un getter public si besoin
-  protected override readonly page: Page;
-
-  constructor(page: Page) {
-    super(page);
-    this.page = page;
+  settingsToggleButton() {
+    return this.page.locator('.settings-toggle');
   }
 
-  settingsToggleButton() { 
-    return this.page.locator('.settings-toggle'); 
+  settingsPanel() {
+    return this.page.locator('.settings-panel');
   }
 
-  settingsPanel() { 
-    return this.page.locator('.settings-panel'); 
+  closeButton() {
+    return this.page.locator('.close-btn');
   }
 
-  closeButton() { 
-    return this.page.locator('.close-btn'); 
+  objectCountSelect() {
+    return this.page.locator('select').first();
   }
 
-  objectCountSelect() { 
-    return this.page.locator('select').first(); 
+  gameDurationInput() {
+    return this.page.locator('input[type="number"]');
   }
 
-  gameDurationInput() { 
-    return this.page.locator('input[type="number"]'); 
+  messageDurationSlider() {
+    return this.page.locator('input[type="range"]').first();
   }
 
-  messageDurationSlider() { 
-    return this.page.locator('input[type="range"]').first(); 
+  showTimerCheckbox() {
+    return this.page.locator('input[type="checkbox"]');
   }
 
-  showTimerCheckbox() { 
-    return this.page.locator('input[type="checkbox"]'); 
+  textSizeSlider() {
+    return this.page.locator('input[type="range"]').nth(1);
   }
 
-  textSizeSlider() { 
-    return this.page.locator('input[type="range"]').nth(1); 
+  textStyleSelect() {
+    return this.page.locator('select').nth(1);
   }
 
-  textStyleSelect() { 
-    return this.page.locator('select').nth(1); 
+  contrastSlider() {
+    return this.page.locator('input[type="range"]').nth(2);
   }
 
-  contrastSlider() { 
-    return this.page.locator('input[type="range"]').nth(2); 
+  resetButton() {
+    return this.page.locator('.reset-btn');
   }
 
-  resetButton() { 
-    return this.page.locator('.reset-btn'); 
+  timerDisplay() {
+    return this.page.locator('.timer-display');
   }
 
-  timerDisplay() { 
-    return this.page.locator('.timer-display'); 
+  gameMessage() {
+    return this.page.locator('.message');
   }
 
-  gameMessage() { 
-    return this.page.locator('.message'); 
+  itemsContainer() {
+    return this.page.locator('.left');
   }
 
-  itemsContainer() { 
-    return this.page.locator('.left'); 
+  objectImages() {
+    return this.page.locator('.object-image');
   }
 
-  objectImages() { 
-    return this.page.locator('.object-image'); 
-  }
-
-  categoryTitles() { 
-    return this.page.locator('.category-section h2'); 
+  categoryTitles() {
+    return this.page.locator('.category-section h2');
   }
 
   categoryImages() {
@@ -86,8 +77,8 @@ export class GameSettingsFixture extends E2EComponentFixture {
     return this.page.locator('.dropzone');
   }
 
-  settingsApplierElements() { 
-    return this.page.locator('app-settings-applier'); 
+  settingsApplierElements() {
+    return this.page.locator('app-settings-applier');
   }
 
   async openSettings() {
@@ -204,25 +195,19 @@ export class GameSettingsFixture extends E2EComponentFixture {
   }
 
   async getTextSizeOnCategory(index: number = 0) {
-    const fontSize = await this.categoryTitles().nth(index).evaluate(el => 
+    const fontSize = await this.categoryTitles().nth(index).evaluate(el =>
       window.getComputedStyle(el).fontSize
     );
     return parseInt(fontSize.replace('px', ''));
   }
 
   async getContrastOnItemsContainer() {
-    const filter = await this.itemsContainer().evaluate(el => 
+    const filter = await this.itemsContainer().evaluate(el =>
       window.getComputedStyle(el).filter
     );
-    
+
     const match = filter.match(/contrast\(([0-9.]+)%?\)/);
     return match ? Math.round(parseFloat(match[1])) : 100;
-  }
-
-  async waitForGameToLoad() {
-    await this.itemsContainer().waitFor({ state: 'visible' });
-    await this.categorySections().first().waitFor({ state: 'visible' });
-    await this.objectImages().first().waitFor({ state: 'visible' });
   }
 
   async getMessageDurationSliderValue() {

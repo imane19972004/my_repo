@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '../../../models/user.model';
+import {backendUrl} from "../../../configs/server.config";
 
 @Component({
   selector: 'app-user',
@@ -20,7 +21,7 @@ export class UserComponent implements OnInit {
   @Output()
   goToUser: EventEmitter<User> = new EventEmitter<User>();
 
-  backendUrl = 'http://localhost:9428';
+  backendUrl = backendUrl
 
   constructor(private router: Router) { }
 

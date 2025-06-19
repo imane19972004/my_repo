@@ -9,23 +9,23 @@ test.describe('Home page display', () => {
     const appComponentFixture = new AppFixture(page);
     // Using locators functions:
     // Using page element role: see the function declaration
-    const title = await appComponentFixture.getTitle();
+    const title = appComponentFixture.getTitle();
 
     // Search by text content. Partial and exact text.
-    const description1 = await page.getByText('détente tout en entraînant');
+    const description1 = page.getByText('détente tout en entraînant');
 
     // For exact text: see the function declaration
-    const description2 = await appComponentFixture.getDescription();
+    const description2 = appComponentFixture.getDescription();
 
     // Using page.locator
-    const description3 = await page.locator(
+    const description3 = page.locator(
       'p.description:has-text("Passez un moment de détente tout en entraînant votre mémoire !")'
     );
 
-    expect(title).toBeVisible();
-    expect(description1).toBeVisible();
-    expect(description2).toBeVisible();
-    expect(description3).toBeVisible();
+    await expect(title).toBeVisible();
+    await expect(description1).toBeVisible();
+    await expect(description2).toBeVisible();
+    await expect(description3).toBeVisible();
 
     // Error case : uncomment the two lines below : "Starting" does not exist
     // const description4 = await page.getByText('Starting your first app');

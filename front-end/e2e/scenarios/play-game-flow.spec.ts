@@ -3,13 +3,14 @@ import {HomeFixture} from '../fixtures/home.fixture';
 import {UserSelectionFixture} from '../fixtures/user-selection.fixture';
 import {ExerciseSelectionFixture} from '../fixtures/exercise-selection.fixture';
 import {GamePageFixture} from '../fixtures/game-page.fixture';
+import {testUrl} from "../e2e.config";
 
 test.describe('Parcours JOUER complet', () => {
 
   test('De l’accueil à la fin de partie', async ({page}) => {
     test.setTimeout(40000);
     // Accueil > Choix utilisateur
-    await page.goto('http://localhost:4200/');
+    await page.goto(`${testUrl}`);
     const home = new HomeFixture(page);
 
     await Promise.all([

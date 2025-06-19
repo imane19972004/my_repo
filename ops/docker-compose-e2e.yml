@@ -1,1 +1,42 @@
-fcs
+name: memolink 
+services:
+  front-e2e:
+    image: memolink-front
+    build:
+      context: ../front-end
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: docker-e2e
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 90s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - back-e2e
+
+  back-e2e:
+    image: memolink-back
+    build:
+      context: ../backend
+      dockerfile: Dockerfile-e2e
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9428/api/status"]
+      interval: 90s
+      timeout: 10s
+      retries: 3
+  
+  playwright:
+    image: memolink-playwright
+    build:
+      context: ../front-end
+      dockerfile: Dockerfile-e2e
+      environment:
+         TEST_URL= http://front-e2e
+      depends_on: 
+         - back-e2e
+         - front-e2e
+      volumes:
+        - ./e2e-results/test-results/:/usr/local/app/test-results/:rw
+        - ./e2e-results/playwright-report/:/usr/local/app/playwright-report/:rw
+  

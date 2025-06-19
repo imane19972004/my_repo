@@ -1,0 +1,32 @@
+name: memolink
+services:
+  front:
+    image: memolink-front
+    build:
+      context: ../front-end
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: docker
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 90s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - back
+
+  back:
+    image: memolink-back
+    build:
+      context: ../backend
+    ports:
+      - "8081:9428"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9428/api/status"]
+      interval: 90s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ../backend/database/:/app/database/:rw

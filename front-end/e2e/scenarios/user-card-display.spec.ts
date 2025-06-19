@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { UserListFixture } from '../fixtures/user-list.fixture';
+import {testUrl} from "../e2e.config";
 
 test.describe('User list', () => {
 
   test('Toutes les cartes sont correctement affichées', async ({ page }) => {
-    await page.goto('http://localhost:4200/user-list');
+    await page.goto(`${testUrl}/user-list`);
     const users = new UserListFixture(page);
 
     const nbCards = await users.count();
@@ -28,7 +29,7 @@ test.describe('User list', () => {
   });
 
   test('Redirection vers la page historique', async ({ page }) => {
-    await page.goto('http://localhost:4200/user-list');
+    await page.goto(`${testUrl}/user-list`);
     const users = new UserListFixture(page);
     const card0 = users.firstCard();
     const fullName = (await card0.name().innerText()).trim();
@@ -43,7 +44,7 @@ test.describe('User list', () => {
   });
 
   test('Suppression d’un utilisateur retire la carte', async ({ page }) => {
-    await page.goto('http://localhost:4200/user-list');
+    await page.goto(`${testUrl}/user-list`);
     const users = new UserListFixture(page);
 
     const initialCount = await users.count();

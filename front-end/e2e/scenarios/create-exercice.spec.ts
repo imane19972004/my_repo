@@ -88,7 +88,7 @@ test.describe('Create Exercice', () => {
     // Essayer d’ajouter une 4ème catégorie
     await fixture.getCategoryNameInput().fill('Catégorie 4');
     await fixture.getCategoryDescriptionInput().fill('Description 4');
-    await fixture.getCategoryImageInput().setInputFiles('e2e/tests/assets/photo.jpg');
+    await fixture.getCategoryImageInput().setInputFiles('e2e/assets/photo.jpg');
 
     await expect(fixture.getAddCategoryButton()).toBeDisabled();
   });

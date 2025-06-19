@@ -3,11 +3,12 @@ import { HomeFixture } from '../fixtures/home.fixture';
 import { UserSelectionFixture } from '../fixtures/user-selection.fixture';
 import { ExerciseSelectionFixture } from '../fixtures/exercise-selection.fixture';
 import { GamePageFixture } from '../fixtures/game-page.fixture';
+import {testUrl} from "../e2e.config";
 
 test.describe('Affichage nom et description après erreurs', () => {
   test('Affiche le nom après 1 erreur et la description après 3 erreurs', async ({ page }) => {
     test.setTimeout(60000);
-    await page.goto('http://localhost:4200/');
+    await page.goto(`${testUrl}`);
     const home = new HomeFixture(page);
 
     await Promise.all([

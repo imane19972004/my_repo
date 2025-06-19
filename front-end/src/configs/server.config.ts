@@ -1,4 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 export const httpOptionsBase = {
   headers: new HttpHeaders({
@@ -6,4 +7,5 @@ export const httpOptionsBase = {
   })
 };
 
-export const serverUrl = 'http://localhost:9428/api';
+export const serverUrl = environment.serverUrl;
+export const backendUrl = environment.backendUrl;

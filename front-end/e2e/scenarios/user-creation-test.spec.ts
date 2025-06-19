@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { UserFormFixture } from '../fixtures/user-form.fixture';
+import {testUrl} from "../e2e.config";
 
 test('Création d’un utilisateur avec photo', async ({ page }) => {
-  await page.goto('http://localhost:4200/create-user');
+  await page.goto(`${testUrl}/create-user`);
   const form = new UserFormFixture(page);
 
   // Étape 1
@@ -13,7 +14,7 @@ test('Création d’un utilisateur avec photo', async ({ page }) => {
   await form.firstNameInput().fill('Alice');
   await form.lastNameInput().fill('Moineau');
 
-  await form.photoInput().setInputFiles('e2e/tests/assets/photo.jpg');
+  await form.photoInput().setInputFiles('e2e/assets/photo.jpg');
   await expect(form.photoPreview()).toBeVisible();
   await expect(form.photoPreviewSuccessMessage()).toContainText('Photo ajoutée');
   await form.nextStepButton().click();
